@@ -368,7 +368,7 @@ const styles = StyleSheet.create({
 
 // --- Components ---
 
-const DonutChart = ({ percent, color = '#c9a227', size = 100 }) => {
+const DonutChart = ({ percent, color = '#c9a227', size = 100 }: { percent: number; color?: string; size?: number }) => {
     const strokeWidth = 10;
     const radius = (size - strokeWidth) / 2;
     const circumference = 2 * Math.PI * radius;
