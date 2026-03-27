@@ -154,7 +154,6 @@ const styles = StyleSheet.create({
     },
     grid2: {
         flexDirection: 'row',
-        gap: 15,
         marginBottom: 20,
     },
     card: {
@@ -162,7 +161,7 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 12,
         backgroundColor: '#f8fafc',
-        border: 1,
+        borderWidth: 1,
         borderColor: '#e2e8f0',
     },
     cardDark: {
@@ -173,13 +172,14 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         position: 'relative',
         overflow: 'hidden',
+        marginRight: 15,
     },
     cardAccent: {
         flex: 1,
         padding: 15,
         borderRadius: 12,
         backgroundColor: '#fffdf5',
-        border: 1,
+        borderWidth: 1,
         borderColor: '#fde68a',
     },
     labelSmall: {
@@ -316,12 +316,12 @@ const styles = StyleSheet.create({
     glossaryContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        gap: 15,
         marginTop: 10,
     },
     glossaryItem: {
         width: '47%',
         marginBottom: 20,
+        marginRight: 15,
         padding: 12,
         backgroundColor: '#f8fafc',
         borderRadius: 10,
@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        border: 1,
+        borderWidth: 1,
         borderColor: 'rgba(201, 162, 39, 0.3)',
     },
     efficiencyLabel: {
@@ -399,9 +399,8 @@ const DonutChart = ({ percent, color = '#c9a227', size = 100 }: { percent: numbe
                 } as any)}
             />
             <Text
-                x="50%"
-                y="50%"
-                dominantBaseline="middle"
+                x={size / 2}
+                y={size / 2 + 5}
                 textAnchor="middle"
                 style={{
                     fontSize: 14,
@@ -487,8 +486,8 @@ export const RelatorioPDF = ({ data, taxes }: RelatorioPDFProps) => {
                         <Text style={styles.valueGold}>{fmtBRL(totalTrib)}</Text>
                         <Text style={{ fontSize: 7, color: '#94a3b8', marginTop: 10, fontWeight: 700 }}>GUIA CONSOLIDADA (PGDAS-D / DARF)</Text>
                     </View>
-                    <View style={{ flex: 1, gap: 15 }}>
-                        <View style={styles.card}>
+                    <View style={{ flex: 1 }}>
+                        <View style={[styles.card, { marginBottom: 15 }]}>
                             <Text style={styles.labelSmall}>Faturamento Bruto</Text>
                             <Text style={styles.valueLarge}>{fmtBRL(totalRev)}</Text>
                         </View>
@@ -542,7 +541,7 @@ export const RelatorioPDF = ({ data, taxes }: RelatorioPDFProps) => {
                 </View>
 
                 <View style={styles.grid2}>
-                    <View style={[styles.card, { flex: 2, backgroundColor: '#FFFFFF' }]}>
+                    <View style={[styles.card, { flex: 2, backgroundColor: '#FFFFFF', marginRight: 15 }]}>
                         {revItems.map((r: any, idx: number) => {
                             const val = parseNum(r.value);
                             const pct = totalRev > 0 ? (val / totalRev * 100) : 0;
@@ -578,7 +577,7 @@ export const RelatorioPDF = ({ data, taxes }: RelatorioPDFProps) => {
                             <View style={styles.sectionBar} />
                             <Text>NOTAS E OBSERVAÇÕES</Text>
                         </View>
-                        <View style={{ padding: 15, backgroundColor: '#fffbeb', borderRadius: 10, border: 1, borderColor: '#fde68a' }}>
+                        <View style={{ padding: 15, backgroundColor: '#fffbeb', borderRadius: 10, borderWidth: 1, borderColor: '#fde68a' }}>
                             <Text style={{ fontSize: 9, color: '#92400e', lineHeight: 1.6 }}>{data.observations}</Text>
                         </View>
                     </View>
