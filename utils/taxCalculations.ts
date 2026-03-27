@@ -141,16 +141,16 @@ export const SN_REPARTITIONS: Record<string, (fi: number) => Record<string, numb
 
 export const calcSN = (rbt12: number, valor: number, anexo: string, opts: any = {}) => {
     const tbl = SN_TABLES[anexo];
-    if(!tbl || rbt12<=0) return {rate:0,rateBef:0,nominal:0,deduction:0,faixa:0,totalValue:0,repart:{} as any};
+    if(!tbl || rbt12<=0) return {rate:0,rateBef:0,nominal:0,deduction:0,faixa:0,totalValue:0,repart:{} as Record<string, number>};
     const faixa = tbl.find(f=>rbt12<=f.limit) || tbl[tbl.length-1];
     const fi = tbl.indexOf(faixa)+1;
     const eff = Math.max(0,((rbt12*(faixa.rate/100))-faixa.deduction)/rbt12);
     const repartCoefs = (SN_REPARTITIONS[anexo]||(() =>({})))(fi);
     
     let total=0, totalFull=0;
-    const repartValues: any = {};
+    const repartValues: Record<string, number> = {};
     
-    Object.entries(repartCoefs).forEach(([tax,coef])=>{
+    Object.entries(repartCoefs).forEach(([tax, coef]: [string, number])=>{
         const componentValue = valor * eff * coef;
         const rounded = Math.round(componentValue * 100) / 100;
         repartValues[tax] = rounded;
@@ -196,7 +196,7 @@ export const getDueDate = (m: string | number, y: string | number, tax: string) 
     const mo=parseInt(m as string), yr=parseInt(y as string);
     let nm=mo+1, ny=yr;
     if(nm>12){nm=1;ny++;}
-    const p=n=>String(n).padStart(2,'0');
+    const p = (n: number | string) => String(n).padStart(2, '0');
     
     const lastUtil=(month: number, year: number)=>{
         const last=new Date(year,month,0).getDate();

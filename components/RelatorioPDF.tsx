@@ -171,10 +171,11 @@ interface RelatorioPDFProps {
 }
 
 export const RelatorioPDF = ({ data, taxes }: RelatorioPDFProps) => {
+    const taxesList = taxes || [];
     const totalRev = (data.revenues || []).reduce((s: number, r: any) => s + (parseFloat(r.value.replace(/\./g, '').replace(',', '.')) || 0), 0);
-    const totalTrib = taxes.reduce((s: number, t: any) => s + (parseFloat(t.value.replace(/\./g, '').replace(',', '.')) || 0), 0);
+    const totalTrib = taxesList.reduce((s: number, t: any) => s + (parseFloat(t.value.replace(/\./g, '').replace(',', '.')) || 0), 0);
     const cargaEf = totalRev > 0 ? (totalTrib / totalRev) * 100 : 0;
-    const totalEcon = taxes.reduce((s, t) => s + (t.savedValue || 0), 0);
+    const totalEcon = taxesList.reduce((s: number, t: any) => s + (t.savedValue || 0), 0);
     const compLabel = data.compMonth && data.compYear ? `${MONTHS[parseInt(data.compMonth) - 1]}/${data.compYear}` : '---';
 
     return (
