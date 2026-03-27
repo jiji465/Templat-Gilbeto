@@ -139,18 +139,18 @@ const styles = StyleSheet.create({
         marginBottom: 30,
     },
     mainTitle: {
-        fontSize: 24,
+        fontSize: 18,
         fontFamily: FONT_BOLD,
         fontWeight: 700,
         color: '#0F2318',
-        letterSpacing: -0.5,
+        letterSpacing: -0.2,
     },
     subtitle: {
-        fontSize: 10,
+        fontSize: 8,
         color: '#64748b',
-        marginTop: 6,
+        marginTop: 4,
         fontWeight: 400,
-        lineHeight: 1.5,
+        lineHeight: 1.4,
     },
     grid2: {
         flexDirection: 'row',
@@ -522,46 +522,45 @@ export const RelatorioPDF = ({ data, taxes }: RelatorioPDFProps) => {
                     <Text style={styles.subtitle}>Documento analítico destinado à análise de performance tributária e conformidade fiscal da competência {compLabel}.</Text>
                 </View>
 
-                <View style={[styles.cardDark, { padding: 30, marginBottom: 25, borderRightWidth: 4, borderRightColor: '#c9a227' }]}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 }}>
+                <View style={[styles.cardDark, { padding: 20, marginBottom: 20, borderRightWidth: 3, borderRightColor: '#c9a227' }]}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 15 }}>
                         <View>
-                            <Text style={styles.labelSmall}>Faturamento Bruto</Text>
-                            <Text style={{ fontSize: 22, color: '#FFFFFF', fontWeight: 700 }}>{fmtBRL(totalRev)}</Text>
+                            <Text style={[styles.labelSmall, { fontSize: 7, marginBottom: 4 }]}>Faturamento Bruto</Text>
+                            <Text style={{ fontSize: 18, color: '#FFFFFF', fontWeight: 700 }}>{fmtBRL(totalRev)}</Text>
                         </View>
                         <View style={{ alignItems: 'flex-end' }}>
-                            <Text style={styles.labelSmall}>Carga Tributária Efetiva</Text>
-                            <Text style={{ fontSize: 22, color: '#c9a227', fontWeight: 700 }}>{cargaEf.toFixed(2).replace('.', ',')}%</Text>
+                            <Text style={[styles.labelSmall, { fontSize: 7, marginBottom: 4 }]}>Carga Tributária Efetiva</Text>
+                            <Text style={{ fontSize: 18, color: '#c9a227', fontWeight: 700 }}>{cargaEf.toFixed(2).replace('.', ',')}%</Text>
                         </View>
                     </View>
 
-                    <View style={{ height: 1.5, backgroundColor: 'rgba(255,255,255,0.1)', marginBottom: 20 }} />
+                    <View style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.08)', marginBottom: 15 }} />
 
                     <View style={{ alignItems: 'center' }}>
-                         <Text style={{ fontSize: 10, color: '#c9a227', fontWeight: 700, letterSpacing: 3, marginBottom: 12 }}>GUIA ÚNICA PARA PAGAMENTO (DAS)</Text>
-                         <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 60 }}>
+                         <Text style={{ fontSize: 8, color: '#c9a227', fontWeight: 700, letterSpacing: 2, marginBottom: 10 }}>GUIA ÚNICA PARA PAGAMENTO (DAS)</Text>
+                         <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 50 }}>
                              <View style={{ alignItems: 'center' }}>
-                                 <Text style={{ fontSize: 8, color: '#94a3b8', marginBottom: 4 }}>VALOR TOTAL</Text>
-                                 <Text style={{ fontSize: 28, color: '#FFFFFF', fontWeight: 700 }}>{fmtBRL(totalTrib)}</Text>
+                                 <Text style={{ fontSize: 7, color: '#94a3b8', marginBottom: 2 }}>VALOR TOTAL</Text>
+                                 <Text style={{ fontSize: 22, color: '#FFFFFF', fontWeight: 700 }}>{fmtBRL(totalTrib)}</Text>
                              </View>
                              <View style={{ alignItems: 'center' }}>
-                                 <Text style={{ fontSize: 8, color: '#94a3b8', marginBottom: 4 }}>VENCIMENTO (GUIA ÚNICA)</Text>
-                                 <Text style={{ fontSize: 28, color: '#FFFFFF', fontWeight: 700 }}>{vencimentoDas}</Text>
+                                 <Text style={{ fontSize: 7, color: '#94a3b8', marginBottom: 2 }}>VENCIMENTO (GUIA ÚNICA)</Text>
+                                 <Text style={{ fontSize: 22, color: '#FFFFFF', fontWeight: 700 }}>{vencimentoDas}</Text>
                              </View>
                          </View>
                     </View>
                 </View>
 
-                <View style={{ marginBottom: 30 }}>
-                    <Text style={{ fontSize: 9, color: '#475569', lineHeight: 1.6, marginBottom: 15 }}>
-                        O DAS (Documento de Arrecadação do Simples Nacional) é a guia unificada que concentra todos os impostos da sua empresa em um único pagamento mensal, simplificando a burocracia e garantindo a regularidade fiscal perante a Receita Federal e demais órgãos.
+                <View style={{ marginBottom: 20 }}>
+                    <Text style={{ fontSize: 8, color: '#475569', lineHeight: 1.5, marginBottom: 10 }}>
+                        O DAS é a guia unificada que concentra todos os impostos da empresa em um único pagamento mensal, simplificando a burocracia e garantindo a regularidade fiscal.
                     </Text>
 
                     {totalEcon > 0 && (
-                        <View style={{ backgroundColor: 'rgba(201, 162, 39, 0.05)', padding: 15, borderRadius: 10, borderLeftWidth: 3, borderLeftColor: '#c9a227' }}>
-                            <Text style={{ fontSize: 10, color: '#0F2318', fontWeight: 700, marginBottom: 6 }}>Inteligência Tributária Aplicada</Text>
-                            <Text style={{ fontSize: 9, color: '#475569', lineHeight: 1.6 }}>
-                                A segregação técnica de produtos sujeitos à Substituição Tributária (ICMS-ST) e Tributação Monofásica (PIS/COFINS) evitou o pagamento de imposto em duplicidade. 
-                                Esta análise estratégica garantiu uma economia real de {fmtBRL(totalEcon)} neste período de apuração, otimizando o fluxo de caixa da empresa.
+                        <View style={{ backgroundColor: 'rgba(201, 162, 39, 0.04)', padding: 12, borderRadius: 8, borderLeftWidth: 2, borderLeftColor: '#c9a227' }}>
+                            <Text style={{ fontSize: 9, color: '#0F2318', fontWeight: 700, marginBottom: 4 }}>Inteligência Tributária Aplicada</Text>
+                            <Text style={{ fontSize: 8, color: '#475569', lineHeight: 1.5 }}>
+                                A segregação técnica de produtos ICMS-ST e Monofásicos evitou o pagamento em duplicidade, garantindo uma economia de {fmtBRL(totalEcon)} neste período.
                             </Text>
                         </View>
                     )}
