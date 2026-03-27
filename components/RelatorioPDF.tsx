@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        fontFamily: 'Outfit',
+        fontFamily: FONT_BOLD,
     },
     coverClient: {
         fontSize: 32,
@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
     glossaryTitle: {
         fontSize: 9,
         fontWeight: 700,
-        fontFamily: 'Outfit',
+        fontFamily: FONT_BOLD,
         color: '#0F2318',
         marginBottom: 6,
         textTransform: 'uppercase',
@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontSize: 10,
         fontWeight: 700,
-        fontFamily: 'Outfit',
+        fontFamily: FONT_BOLD,
         textTransform: 'uppercase',
         letterSpacing: 2,
     },
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
         color: '#c9a227',
         fontSize: 32,
         fontWeight: 700,
-        fontFamily: 'Outfit',
+        fontFamily: FONT_BOLD,
     }
 });
 
@@ -398,7 +398,7 @@ const DonutChart = ({ percent, color = '#c9a227', size = 100 }: { percent: numbe
                 style={{
                     fontSize: 14,
                     fontWeight: 700,
-                    fontFamily: 'Outfit',
+                    fontFamily: FONT_BOLD,
                     fill: '#0F2318'
                 }}
             >
