@@ -2,12 +2,11 @@
 
 import React from 'react';
 import { 
-    Page, Text, View, Document, StyleSheet, Font, Image 
+    Page, Text, View, Document, StyleSheet, Font 
 } from '@react-pdf/renderer';
 import { 
     fmtBRL, 
     fmtPct, 
-    fmtCNPJ, 
     MONTHS, 
     OFFICE, 
     REGIME_COLORS,
@@ -16,203 +15,250 @@ import {
     VERSION
 } from '../utils/taxCalculations';
 
-// Font registration (using standard fonts to avoid loading issues in this context, 
-// but we'll simulate the look with Helvetica/Bold)
 const styles = StyleSheet.create({
     page: {
-        padding: 30,
+        padding: 40,
         backgroundColor: '#FFFFFF',
         fontFamily: 'Helvetica',
-        fontSize: 9,
-        color: '#334155',
+        color: '#1e293b',
     },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 20,
-        borderBottom: 1,
-        borderBottomColor: '#E2E8F0',
-        paddingBottom: 10,
+        marginBottom: 30,
     },
     logoSection: {
         flexDirection: 'row',
         alignItems: 'center',
     },
     logoBox: {
-        width: 32,
-        height: 32,
+        width: 38,
+        height: 38,
         backgroundColor: '#0F2318',
-        borderRadius: 8,
-        marginRight: 10,
+        borderRadius: 10,
+        marginRight: 12,
     },
     officeName: {
-        fontSize: 10,
+        fontSize: 11,
         fontWeight: 'bold',
         color: '#0F2318',
+        letterSpacing: 0.5,
     },
     officeSub: {
         fontSize: 7,
-        color: '#94A3B8',
-        marginTop: 1,
+        color: '#64748b',
+        marginTop: 2,
+        textTransform: 'uppercase',
+        letterSpacing: 1,
     },
     badge: {
-        paddingHorizontal: 8,
-        paddingVertical: 3,
-        borderRadius: 4,
-        fontSize: 7,
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderRadius: 6,
+        fontSize: 8,
         fontWeight: 'bold',
+        textTransform: 'uppercase',
     },
     titleSection: {
-        marginBottom: 20,
+        marginBottom: 35,
     },
     mainTitle: {
-        fontSize: 18,
+        fontSize: 22,
         fontWeight: 'bold',
         color: '#0F2318',
+        letterSpacing: -0.5,
     },
     subtitle: {
         fontSize: 9,
-        color: '#64748B',
-        marginTop: 2,
+        color: '#64748b',
+        marginTop: 4,
     },
     grid2: {
         flexDirection: 'row',
-        gap: 15,
-        marginBottom: 15,
+        gap: 20,
+        marginBottom: 20,
     },
     card: {
         flex: 1,
-        padding: 12,
-        borderRadius: 10,
-        backgroundColor: '#F8FAFC',
+        padding: 15,
+        borderRadius: 12,
+        backgroundColor: '#f8fafc',
         borderWidth: 1,
-        borderColor: '#E2E8F0',
+        borderColor: '#f1f5f9',
     },
     cardDark: {
         flex: 1,
-        padding: 15,
-        borderRadius: 12,
+        padding: 18,
+        borderRadius: 14,
         backgroundColor: '#0F2318',
         color: '#FFFFFF',
     },
-    label: {
-        fontSize: 7,
+    labelSmall: {
+        fontSize: 8,
+        fontWeight: 'bold',
+        color: '#64748b',
+        textTransform: 'uppercase',
+        marginBottom: 6,
+        letterSpacing: 0.8,
+    },
+    valueLarge: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#0F2318',
+    },
+    valueLabelGold: {
+        fontSize: 8,
         fontWeight: 'bold',
         color: '#c9a227',
         textTransform: 'uppercase',
-        marginBottom: 4,
+        marginBottom: 8,
+        letterSpacing: 1,
     },
-    value: {
-        fontSize: 16,
+    valueGold: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        color: '#c9a227',
+    },
+    econBanner: {
+        backgroundColor: '#ecfdf5',
+        borderWidth: 1,
+        borderColor: '#a7f3d0',
+        padding: 12,
+        borderRadius: 8,
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 25,
+    },
+    econText: {
+        fontSize: 9,
+        color: '#065f46',
         fontWeight: 'bold',
     },
-    valueSmall: {
-        fontSize: 12,
+    econValue: {
+        color: '#047857',
+        fontSize: 10,
         fontWeight: 'bold',
     },
-    sectionTitle: {
-        fontSize: 8,
+    sectionHeader: {
+        fontSize: 9,
         fontWeight: 'bold',
         color: '#0F2318',
         textTransform: 'uppercase',
-        borderLeft: 3,
+        letterSpacing: 1.2,
+        marginBottom: 12,
+        borderLeft: 4,
         borderLeftColor: '#c9a227',
-        paddingLeft: 6,
-        marginBottom: 10,
-        marginTop: 15,
+        paddingLeft: 8,
     },
     table: {
         width: '100%',
-        marginBottom: 15,
+        marginBottom: 30,
     },
     tableHeader: {
         flexDirection: 'row',
-        backgroundColor: '#0F2318',
-        borderRadius: 6,
-        padding: 6,
+        borderBottomWidth: 1.5,
+        borderBottomColor: '#0F2318',
+        paddingBottom: 8,
+        paddingHorizontal: 4,
+        marginBottom: 4,
     },
     th: {
-        color: '#FFFFFF',
-        fontSize: 7,
+        fontSize: 8,
         fontWeight: 'bold',
+        color: '#64748b',
         textTransform: 'uppercase',
+        letterSpacing: 0.5,
     },
     tr: {
         flexDirection: 'row',
         borderBottomWidth: 1,
-        borderBottomColor: '#F1F5F9',
-        paddingVertical: 6,
+        borderBottomColor: '#e2e8f0',
+        paddingVertical: 10,
         paddingHorizontal: 4,
+        alignItems: 'center',
     },
     td: {
-        fontSize: 8,
+        fontSize: 9,
+        color: '#334155',
     },
-    tdBold: {
+    tdDesc: {
         fontWeight: 'bold',
         color: '#0F2318',
+    },
+    tdNumber: {
+        fontSize: 8,
     },
     footer: {
         position: 'absolute',
         bottom: 30,
-        left: 30,
-        right: 30,
-        borderTop: 1,
-        borderTopColor: '#E2E8F0',
-        paddingTop: 10,
+        left: 40,
+        right: 40,
+        borderTopWidth: 1,
+        borderTopColor: '#f1f5f9',
+        paddingTop: 15,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
     },
+    footerText: {
+        fontSize: 7,
+        color: '#94a3b8',
+        fontWeight: 'bold',
+    },
     chartBarContainer: {
         width: '100%',
-        height: 6,
-        backgroundColor: '#F1F5F9',
-        borderRadius: 3,
-        marginTop: 4,
+        height: 5,
+        backgroundColor: '#f1f5f9',
+        borderRadius: 2.5,
+        marginTop: 6,
         overflow: 'hidden',
     },
     chartBarFill: {
         height: '100%',
     },
-    econBanner: {
-        backgroundColor: '#ECFDF5',
-        borderWidth: 1,
-        borderColor: '#A7F3D0',
-        padding: 8,
-        borderRadius: 8,
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 10,
-    },
-    econText: {
-        fontSize: 8,
-        color: '#065F46',
-        fontWeight: 'bold',
-    },
-    glossaryGrid: {
+    glossaryContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        gap: 8,
+        gap: 12,
+        marginTop: 10,
     },
     glossaryItem: {
         width: '48%',
-        padding: 8,
-        backgroundColor: '#FFFFFF',
-        borderWidth: 1,
-        borderColor: '#E2E8F0',
-        borderRadius: 8,
+        marginBottom: 15,
+        paddingRight: 10,
     },
     glossaryTitle: {
-        fontSize: 7,
+        fontSize: 8,
         fontWeight: 'bold',
         color: '#0F2318',
-        marginBottom: 2,
+        marginBottom: 4,
     },
     glossaryText: {
-        fontSize: 6,
-        color: '#64748B',
-        lineHeight: 1.3,
+        fontSize: 7,
+        color: '#475569',
+        lineHeight: 1.4,
+    },
+    efficiencyCard: {
+        marginTop: 25,
+        padding: 20,
+        backgroundColor: '#0F2318',
+        borderRadius: 14,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    efficiencyLabel: {
+        color: '#FFFFFF',
+        fontSize: 9,
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
+        letterSpacing: 1.5,
+    },
+    efficiencyValue: {
+        color: '#c9a227',
+        fontSize: 24,
+        fontWeight: 'bold',
     }
 });
 
@@ -229,103 +275,105 @@ export const RelatorioPDF = ({ data, taxes }: RelatorioPDFProps) => {
     const totalEcon = taxesList.reduce((s: number, t: any) => s + (t.savedValue || 0), 0);
     const compLabel = data.compMonth && data.compYear ? `${MONTHS[parseInt(data.compMonth) - 1]}/${data.compYear}` : '---';
 
-    // Mix de Faturamento for the mini-chart
     const revItems = (data.revenues || []).filter((r: any) => parseNum(r.value) > 0);
 
     return (
         <Document title={`Relatorio_Fiscal_${data.clientName || 'Cliente'}`}>
-            {/* PÁGINA 1: DASHBOARD E TRIBUTOS */}
+            {/* PÁGINA 1: CONSOLIDADO E TRIBUTOS */}
             <Page size="A4" style={styles.page}>
                 <View style={styles.header}>
                     <View style={styles.logoSection}>
                         <View style={styles.logoBox} />
                         <View>
                             <Text style={styles.officeName}>{OFFICE.name}</Text>
-                            <Text style={styles.officeSub}>Consultoria Tributária e Contábil</Text>
+                            <Text style={styles.officeSub}>High-End Tax Accounting</Text>
                         </View>
                     </View>
-                    <View style={[styles.badge, { backgroundColor: REGIME_COLORS[data.regime]?.bg || '#F1F5F9', color: REGIME_COLORS[data.regime]?.text || '#475569' }]}>
-                        <Text>{data.regime || 'Não Informado'}</Text>
+                    <View style={[styles.badge, { backgroundColor: REGIME_COLORS[data.regime]?.bg || '#f1f5f9', color: REGIME_COLORS[data.regime]?.text || '#475569' }]}>
+                        <Text>{data.regime || 'Regime'}</Text>
                     </View>
                 </View>
 
                 <View style={styles.titleSection}>
                     <Text style={styles.mainTitle}>Demonstrativo de Apuração Fiscal</Text>
-                    <Text style={styles.subtitle}>Relatório consolidado de faturamento e encargos tributários · Competência {compLabel}</Text>
+                    <Text style={styles.subtitle}>Relatório analítico de encargos e faturamento · Competência {compLabel}</Text>
                 </View>
 
                 <View style={styles.grid2}>
                     <View style={styles.card}>
-                        <Text style={styles.label}>Cliente / Razão Social</Text>
-                        <Text style={styles.valueSmall}>{data.clientName || '---'}</Text>
-                        <Text style={[styles.subtitle, { fontSize: 8 }]}>{data.cnpj || 'CNPJ não informado'}</Text>
+                        <Text style={styles.labelSmall}>Contribuinte</Text>
+                        <Text style={[styles.valueLarge, { fontSize: 13, marginBottom: 4 }]}>{data.clientName || '---'}</Text>
+                        <Text style={{ fontSize: 8, color: '#94a3b8', fontWeight: 'bold' }}>{data.cnpj || 'CNPJ não informado'}</Text>
                     </View>
                     <View style={styles.cardDark}>
-                        <Text style={styles.label}>Guia Única de Pagamento</Text>
-                        <Text style={[styles.value, { color: '#c9a227' }]}>{fmtBRL(totalTrib)}</Text>
-                        <Text style={[styles.subtitle, { color: '#94A3B8', fontSize: 7 }]}>Comp. {compLabel} · Carga Ef. {fmtPct(cargaEf)}</Text>
+                        <Text style={styles.valueLabelGold}>Total de Tributos a Recolher</Text>
+                        <Text style={styles.valueGold}>{fmtBRL(totalTrib)}</Text>
+                        <Text style={{ fontSize: 7, color: '#94a3b8', marginTop: 6, fontWeight: 'bold' }}>GUIA CONSOLIDADA (PGDAS-D / DARF)</Text>
                     </View>
                 </View>
 
                 {totalEcon > 0 && (
                     <View style={styles.econBanner}>
-                        <Text style={styles.econText}>🚀 Economia Tributária Detectada: {fmtBRL(totalEcon)} economizados através de regimes especiais (Monofásico/ST).</Text>
+                        <Text style={styles.econText}>Eficiência Detectada: </Text>
+                        <Text style={styles.econValue}>{fmtBRL(totalEcon)} foram preservados através de benefícios de desoneração (Monofásico/ST).</Text>
                     </View>
                 )}
 
-                <Text style={styles.sectionTitle}>Tributos e Encargos do Período</Text>
+                <Text style={styles.sectionHeader}>Tributos e Encargos do Período</Text>
                 <View style={styles.table}>
                     <View style={styles.tableHeader}>
-                        <Text style={[styles.th, { flex: 3 }]}>Tributo / Guia</Text>
+                        <Text style={[styles.th, { flex: 3, textAlign: 'left' }]}>Tributo / Guia</Text>
                         <Text style={[styles.th, { flex: 2, textAlign: 'right' }]}>Base (R$)</Text>
-                        <Text style={[styles.th, { flex: 1, textAlign: 'center' }]}>Alíq.</Text>
+                        <Text style={[styles.th, { flex: 1, textAlign: 'right' }]}>Alíq.</Text>
                         <Text style={[styles.th, { flex: 2, textAlign: 'right' }]}>Valor (R$)</Text>
                         <Text style={[styles.th, { flex: 1.5, textAlign: 'center' }]}>Vencimento</Text>
                     </View>
                     {taxesList.map((t: any) => (
                         <View key={t.id} style={styles.tr} wrap={false}>
-                            <Text style={[styles.td, { flex: 3, fontWeight: 'bold' }]}>{t.tax}</Text>
-                            <Text style={[styles.td, { flex: 2, textAlign: 'right' }]}>{t.base}</Text>
-                            <Text style={[styles.td, { flex: 1, textAlign: 'center', color: '#64748B' }]}>{t.rate}%</Text>
-                            <Text style={[styles.td, { flex: 2, textAlign: 'right', fontWeight: 'bold', color: '#0F2318' }]}>{t.value}</Text>
-                            <Text style={[styles.td, { flex: 1.5, textAlign: 'center', color: '#B45309', fontWeight: 'bold' }]}>{t.dueDate}</Text>
+                            <Text style={[styles.td, styles.tdDesc, { flex: 3, textAlign: 'left' }]}>{t.tax}</Text>
+                            <Text style={[styles.td, styles.tdNumber, { flex: 2, textAlign: 'right' }]}>{t.base}</Text>
+                            <Text style={[styles.td, styles.tdNumber, { flex: 1, textAlign: 'right', color: '#64748b' }]}>{t.rate}%</Text>
+                            <Text style={[styles.td, styles.tdNumber, { flex: 2, textAlign: 'right', fontWeight: 'bold', color: '#0F2318', fontSize: 9 }]}>{t.value}</Text>
+                            <Text style={[styles.td, { flex: 1.5, textAlign: 'center', color: '#92400e', fontWeight: 'bold', fontSize: 8 }]}>{t.dueDate}</Text>
                         </View>
                     ))}
                 </View>
 
                 <View style={styles.grid2}>
                     <View style={styles.card}>
-                        <Text style={styles.label}>Faturamento Bruto</Text>
-                        <Text style={styles.valueSmall}>{fmtBRL(totalRev)}</Text>
+                        <Text style={styles.labelSmall}>Faturamento Bruto</Text>
+                        <Text style={[styles.valueLarge, { fontSize: 16 }]}>{fmtBRL(totalRev)}</Text>
                     </View>
                     <View style={styles.card}>
-                        <Text style={styles.label}>Resultado Líquido</Text>
-                        <Text style={styles.valueSmall}>{fmtBRL(totalRev - totalTrib)}</Text>
-                    </View>
-                    <View style={styles.card}>
-                        <Text style={styles.label}>Carga Efetiva</Text>
-                        <Text style={[styles.valueSmall, { color: '#0F2318' }]}>{fmtPct(cargaEf)}</Text>
+                        <Text style={styles.labelSmall}>Resultado Líquido</Text>
+                        <Text style={[styles.valueLarge, { fontSize: 16 }]}>{fmtBRL(totalRev - totalTrib)}</Text>
                     </View>
                 </View>
 
                 <View style={styles.footer}>
-                    <Text style={{ fontSize: 7, fontWeight: 'bold' }}>{OFFICE.name}</Text>
-                    <Text style={{ fontSize: 7, color: '#94A3B8' }}>Página 1 de 2 · Apuração Fiscal PRO v{VERSION}</Text>
+                    <Text style={[styles.footerText, { color: '#0F2318' }]}>{OFFICE.name}</Text>
+                    <Text style={styles.footerText}>Página 1 de 2 · Apuração Fiscal PRO v{VERSION}</Text>
                 </View>
             </Page>
 
-            {/* PÁGINA 2: ANÁLISE E GLOSSÁRIO */}
+            {/* PÁGINA 2: RAIO-X E GLOSSÁRIO */}
             <Page size="A4" style={styles.page}>
-                <Text style={styles.sectionTitle}>Raio-X do Faturamento</Text>
-                <View style={[styles.card, { marginBottom: 20 }]}>
+                <Text style={styles.sectionHeader}>Raio-X de Faturamento por Atividade</Text>
+                <View style={[styles.card, { marginBottom: 30, backgroundColor: '#FFFFFF', borderStyle: 'solid' }]}>
                     {revItems.map((r: any, idx: number) => {
                         const val = parseNum(r.value);
                         const pct = totalRev > 0 ? (val / totalRev * 100) : 0;
                         return (
-                            <View key={idx} style={{ marginBottom: 10 }} wrap={false}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 }}>
-                                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#0F2318' }}>{r.label || r.type} {r.anexo ? `· ${r.anexo}` : ''}</Text>
-                                    <Text style={{ fontSize: 8, fontWeight: 'bold' }}>{fmtBRL(val)} ({pct.toFixed(1)}%)</Text>
+                            <View key={idx} style={{ marginBottom: 15, borderBottomWidth: 1, borderBottomColor: '#f1f5f9', paddingBottom: 10 }} wrap={false}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                                    <View>
+                                        <Text style={styles.labelSmall}>{r.anexo || 'Atividade Operacional'}</Text>
+                                        <Text style={[styles.tdDesc, { fontSize: 10 }]}>{r.label || r.type}</Text>
+                                    </View>
+                                    <View style={{ alignItems: 'flex-end' }}>
+                                        <Text style={{ fontSize: 10, fontWeight: 'bold' }}>{fmtBRL(val)}</Text>
+                                        <Text style={{ fontSize: 7, color: '#64748b', fontWeight: 'bold' }}>{pct.toFixed(1)}% DO TOTAL</Text>
+                                    </View>
                                 </View>
                                 <View style={styles.chartBarContainer}>
                                     <View style={[styles.chartBarFill, { width: `${pct}%`, backgroundColor: COLORS_CHART[idx % COLORS_CHART.length] }]} />
@@ -335,56 +383,49 @@ export const RelatorioPDF = ({ data, taxes }: RelatorioPDFProps) => {
                     })}
                 </View>
 
-                {data.observations && (
-                    <>
-                        <Text style={styles.sectionTitle}>Mensagem ao Cliente / Observações</Text>
-                        <View style={[styles.card, { backgroundColor: '#FFFBEB', borderColor: '#FEF3C7', marginBottom: 20 }]}>
-                            <Text style={{ fontSize: 8, color: '#92400E', lineHeight: 1.5 }}>{data.observations}</Text>
+                {data.observations ? (
+                    <View style={{ marginBottom: 30 }}>
+                        <Text style={styles.sectionHeader}>Notas Transmissão / Observações</Text>
+                        <View style={{ padding: 15, backgroundColor: '#fffbeb', borderRadius: 10, borderWidth: 1, borderColor: '#fef3c7' }}>
+                            <Text style={{ fontSize: 9, color: '#92400e', lineHeight: 1.6 }}>{data.observations}</Text>
                         </View>
-                    </>
-                )}
+                    </View>
+                ) : null}
 
-                <Text style={styles.sectionTitle}>Glossário e Avisos Legais</Text>
-                <View style={styles.glossaryGrid}>
+                <Text style={styles.sectionHeader}>Glossário Explicativo</Text>
+                <View style={styles.glossaryContainer}>
                     <View style={styles.glossaryItem}>
-                        <Text style={styles.glossaryTitle}>DAS — Simples Nacional</Text>
-                        <Text style={styles.glossaryText}>Guia unificada que reúne até 8 tributos federais, estaduais e municipais em um único recolhimento mensal.</Text>
+                        <Text style={styles.glossaryTitle}>Simples Nacional</Text>
+                        <Text style={styles.glossaryText}>Regime simplificado que unifica tributos. A alíquota efetiva é calculada baseada no faturamento acumulado dos últimos 12 meses (RBT12).</Text>
+                    </View>
+                    <View style={styles.glossaryItem}>
+                        <Text style={styles.glossaryTitle}>Substituição Tributária (ST)</Text>
+                        <Text style={styles.glossaryText}>Mecanismo onde o imposto (ICMS) foi pago antecipadamente na cadeia. Realizamos a exclusão deste valor para garantir que você não pague duas vezes.</Text>
+                    </View>
+                    <View style={styles.glossaryItem}>
+                        <Text style={styles.glossaryTitle}>Regime Monofásico</Text>
+                        <Text style={styles.glossaryText}>Produtos (como autopeças ou bebidas) onde PIS/COFINS são concentrados na indústria. Identificamos e deduzimos esses valores do seu DAS.</Text>
                     </View>
                     <View style={styles.glossaryItem}>
                         <Text style={styles.glossaryTitle}>Carga Tributária Efetiva</Text>
-                        <Text style={styles.glossaryText}>Representa o percentual real de impostos pagos sobre o faturamento bruto após todas as deduções e benefícios.</Text>
-                    </View>
-                    <View style={styles.glossaryItem}>
-                        <Text style={styles.glossaryTitle}>Regime Monofásico / ST</Text>
-                        <Text style={styles.glossaryText}>Produtos com tributação antecipada na indústria. No Simples, esses valores devem ser excluídos para evitar bitributação.</Text>
-                    </View>
-                    <View style={styles.glossaryItem}>
-                        <Text style={styles.glossaryTitle}>Aviso Legal</Text>
-                        <Text style={styles.glossaryText}>Este documento é um demonstrativo auxiliar e não substitui as guias oficiais (DAS/DARF) emitidas pelo contador responsável.</Text>
+                        <Text style={styles.glossaryText}>Percentual real de impostos em relação ao seu faturamento bruto. É o principal indicador de eficiência fiscal da sua empresa.</Text>
                     </View>
                 </View>
 
-                <View style={{ marginTop: 30, padding: 15, backgroundColor: '#F8FAFC', borderRadius: 12, borderStyle: 'dashed', borderWidth: 1, borderColor: '#CBD5E1' }}>
-                    <Text style={{ fontSize: 8, fontWeight: 'bold', textAlign: 'center', color: '#64748B', marginBottom: 5 }}>VALORES CONSOLIDADOS PARA PLANEJAMENTO</Text>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-                        <View style={{ alignItems: 'center' }}>
-                            <Text style={{ fontSize: 6, color: '#94A3B8', textTransform: 'uppercase' }}>Faturamento</Text>
-                            <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#0F2318' }}>{fmtBRL(totalRev)}</Text>
-                        </View>
-                        <View style={{ alignItems: 'center' }}>
-                            <Text style={{ fontSize: 6, color: '#94A3B8', textTransform: 'uppercase' }}>Impostos</Text>
-                            <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#0F2318' }}>{fmtBRL(totalTrib)}</Text>
-                        </View>
-                        <View style={{ alignItems: 'center' }}>
-                            <Text style={{ fontSize: 6, color: '#94A3B8', textTransform: 'uppercase' }}>Eficiência</Text>
-                            <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#16A34A' }}>{fmtPct(100 - cargaEf)}</Text>
-                        </View>
+                {/* CARD ASSINATURA - EFICIÊNCIA */}
+                <View style={styles.efficiencyCard}>
+                    <View>
+                        <Text style={styles.efficiencyLabel}>Eficiência do Modelo Tributário</Text>
+                        <Text style={{ color: '#94a3b8', fontSize: 7, marginTop: 4 }}>Destaque da Performance Consolidada</Text>
+                    </View>
+                    <View style={{ alignItems: 'flex-end' }}>
+                        <Text style={styles.efficiencyValue}>{fmtPct(100 - cargaEf)}</Text>
                     </View>
                 </View>
 
                 <View style={styles.footer}>
-                    <Text style={{ fontSize: 7, fontWeight: 'bold' }}>{OFFICE.name}</Text>
-                    <Text style={{ fontSize: 7, color: '#94A3B8' }}>Página 2 de 2 · Apuração Fiscal PRO v{VERSION}</Text>
+                    <Text style={[styles.footerText, { color: '#0F2318' }]}>{OFFICE.name}</Text>
+                    <Text style={styles.footerText}>Página 2 de 2 · Apuração Fiscal PRO v{VERSION}</Text>
                 </View>
             </Page>
         </Document>
