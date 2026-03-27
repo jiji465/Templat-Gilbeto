@@ -609,7 +609,7 @@ export const RelatorioPDF = ({ data, taxes }: RelatorioPDFProps) => {
                             <View style={{ width: '48%', marginRight: 15, marginBottom: 10, padding: 15, backgroundColor: '#0F2318', borderRadius: 10, borderLeftWidth: 4, borderLeftColor: '#c9a227' }}>
                                 <Text style={{ fontSize: 8, color: '#c9a227', fontWeight: 700, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 1 }}>GUIA ÚNICA DAS (SIMPLES NACIONAL)</Text>
                                 <Text style={{ fontSize: 24, color: '#FFFFFF', fontWeight: 700 }}>{vencimentoDas}</Text>
-                                <View style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.1)', my: 8 }} />
+                                <View style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.1)', marginVertical: 8 }} />
                                 <Text style={{ fontSize: 7, color: '#94a3b8', textTransform: 'uppercase' }}>Pagamento em Guia Única Autêntica (Unificado)</Text>
                             </View>
                             
