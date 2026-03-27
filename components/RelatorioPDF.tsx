@@ -36,30 +36,40 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
     },
     coverClient: {
-        fontSize: 34,
+        fontSize: 32,
         fontWeight: 700,
         fontFamily: FONT_BOLD,
         color: '#c9a227',
-        marginTop: 40,
+        marginTop: 60,
         textTransform: 'uppercase',
-        letterSpacing: 4,
+        letterSpacing: 5,
         textAlign: 'center',
     },
-    coverLine: {
-        width: 80,
-        height: 2,
-        backgroundColor: '#c9a227',
-        marginTop: 25,
-        marginBottom: 25,
-        opacity: 0.6,
-    },
-    coverTitle: {
+    coverContabilidade: {
         fontSize: 14,
         fontWeight: 400,
-        color: '#FFFFFF',
-        letterSpacing: 6,
+        color: '#e5e7eb',
+        letterSpacing: 8,
         textTransform: 'uppercase',
-        opacity: 0.7,
+        marginTop: 10,
+        opacity: 0.9,
+    },
+    coverLine: {
+        width: 100,
+        height: 1,
+        backgroundColor: '#c9a227',
+        marginTop: 40,
+        marginBottom: 20,
+        opacity: 0.3,
+    },
+    coverTitle: {
+        fontSize: 10,
+        fontWeight: 400,
+        color: '#FFFFFF',
+        letterSpacing: 4,
+        textTransform: 'uppercase',
+        opacity: 0.6,
+        marginTop: 15,
     },
     coverSubtitle: {
         fontSize: 9,
@@ -412,17 +422,35 @@ const DonutChart = ({ percent, color = '#c9a227', size = 100 }: { percent: numbe
     );
 };
 
-const Logo = () => (
-    <View style={[styles.logoBox, { width: 40, height: 40, borderRadius: 10, backgroundColor: 'rgba(201, 162, 39, 0.1)' }]}>
-        <Svg width="22" height="22" viewBox="0 0 24 24">
-            <Path
-                d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
-                stroke="#c9a227"
-                strokeWidth="1.5"
-                fill="none"
-                strokeLinejoin="round"
-                strokeLinecap="round"
-            />
+const Logo = ({ size = 24, color = '#c9a227', arrowColor = '#FFFFFF' }) => (
+    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+        <Svg width={size} height={size} viewBox="0 0 100 100">
+            {/* Sombra sutil projetada (simulada via offset) */}
+            <G transform="translate(2, 2)" opacity={0.2}>
+                <Path d="M20 50h15v30h-15z M42 40h15v40h-15z M64 30h15v50h-15z M86 20h15v60h-15z" fill="#000" />
+            </G>
+            
+            {/* Barras Douradas */}
+            <G>
+                <Path d="M15 55h12v25h-12z" fill={color} />
+                <Path d="M35 45h12v35h-12z" fill={color} />
+                <Path d="M55 35h12v45h-12z" fill={color} />
+                <Path d="M75 25h12v55h-12z" fill={color} />
+            </G>
+
+            {/* Seta Ascendente */}
+            <G>
+                <Path 
+                    d="M10 70 L90 30" 
+                    stroke={arrowColor} 
+                    strokeWidth="2.5" 
+                    strokeLinecap="round" 
+                />
+                <Path 
+                    d="M85 30 L93 28 L91 36 Z" 
+                    fill={arrowColor} 
+                />
+            </G>
         </Svg>
     </View>
 );
@@ -491,15 +519,27 @@ export const RelatorioPDF = ({ data, taxes }: RelatorioPDFProps) => {
             <Page size="A4" style={styles.coverPage}>
                 <GridBackground />
                 <View style={{ alignItems: 'center', zIndex: 10 }}>
-                    <Logo />
-                    <Text style={styles.coverClient}>{data.clientName || 'CLIENTE'}</Text>
+                    <Logo size={120} />
+                    
+                    <View style={{ marginTop: 20, alignItems: 'center' }}>
+                        <Text style={styles.coverClient}>GILBERTO NEGREIROS</Text>
+                        <Text style={styles.coverContabilidade}>CONTABILIDADE</Text>
+                    </View>
+
                     <View style={styles.coverLine} />
+                    
                     <Text style={styles.coverTitle}>Relatório de Inteligência Fiscal</Text>
-                    <Text style={styles.coverSubtitle}>Competência: {compLabel}</Text>
+                    <Text style={[styles.coverSubtitle, { marginTop: 40, color: '#FFFFFF', opacity: 0.8 }]}>
+                        CLIENTE: {data.clientName || 'NÃO INFORMADO'}
+                    </Text>
+                    <Text style={[styles.coverSubtitle, { marginTop: 10 }]}>Competência: {compLabel}</Text>
                 </View>
+
                 <View style={styles.coverFooter}>
-                    <Text style={{ fontWeight: 700, color: '#c9a227' }}>{OFFICE.name}</Text>
-                    <Text style={{ marginTop: 6 }}>Documento analítico destinado à análise de performance tributária e conformidade fiscal.</Text>
+                    <Text style={{ fontWeight: 700, color: '#c9a227', fontSize: 10, letterSpacing: 2 }}>{OFFICE.name}</Text>
+                    <Text style={{ marginTop: 8, maxWidth: 300, alignSelf: 'center' }}>
+                        Documento analítico de alta performance destinado à análise estratégica de performance tributária e conformidade fiscal.
+                    </Text>
                 </View>
             </Page>
 
@@ -507,8 +547,8 @@ export const RelatorioPDF = ({ data, taxes }: RelatorioPDFProps) => {
             <Page size="A4" style={styles.page}>
                 <View style={styles.header}>
                     <View style={styles.logoSection}>
-                        <Logo />
-                        <View>
+                        <Logo size={32} />
+                        <View style={{ marginLeft: 10 }}>
                             <Text style={styles.officeName}>{OFFICE.name}</Text>
                         </View>
                     </View>
