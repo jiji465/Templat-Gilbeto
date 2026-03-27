@@ -251,8 +251,14 @@ export const autoCalc = (data: any) => {
             if(rev.isMono) tags.push('Monofásico');
             if(rev.isISSRetido) tags.push('ISS Retido');
 
-            let nm=`DAS — ${rev.label||rev.type}`;
-            if(tags.length) nm+=` (${tags.join(' + ')})`;
+            let nm = rev.label ? `${rev.type} (${rev.label})` : rev.type;
+            if (tags.length) {
+                if (rev.isST && rev.isMono) nm = `${rev.type} (Com ICMS-ST + Monofásico)`;
+                else if (rev.isST) nm = `${rev.type} (Com ICMS-ST)`;
+                else if (rev.isMono) nm = `${rev.type} (Monofásico)`;
+            } else {
+                nm = `${rev.type} (Tributação Normal)`;
+            }
 
             const econ = ((res.rateBef-res.rate)/100)*val;
             const obs = `${anx} Fx.${res.faixa} Alíq.Nom. ${res.nominal.toFixed(2).replace('.',',')}%${econ>0?' | Economia: '+fmtBRL(econ):''}`;
@@ -332,17 +338,17 @@ export const autoCalc = (data: any) => {
 };
 
 export const INIT_DATA = {
-    clientName: '',
-    cnpj: '',
-    compMonth: String(new Date().getMonth() + 1),
-    compYear: String(new Date().getFullYear()),
+    clientName: 'GILBERTO NEGREIROS CONTABILIDADE LTDA',
+    cnpj: '00.000.000/0000-00',
+    compMonth: '3',
+    compYear: '2026',
     regime: 'Simples Nacional',
-    setor: '',
+    setor: 'comercio',
     cnae: '',
-    proLabore: '1.412,00',
+    proLabore: '0,00',
     folha: '0,00',
     folhaMensal: '0,00',
-    rbt12: '0,00',
+    rbt12: '1.000.000,00',
     inssPago: '',
     installment: '0,00',
     installmentInfo: '',
@@ -351,6 +357,9 @@ export const INIT_DATA = {
     observations: '',
     internalNotes: '',
     revenues: [
-        { id: 1, type: 'Serviços', anexo: 'Anexo III', label: 'Serviços Prestados', value: '10.000,00', isST: false, isMono: false, isISSRetido: false }
+        { id: 1, type: 'Comércio', anexo: 'Anexo I', label: 'Tributação Normal', value: '69.210,06', isST: false, isMono: false, isISSRetido: false },
+        { id: 2, type: 'Comércio', anexo: 'Anexo I', label: 'Produtos com ICMS-ST', value: '6.438,10', isST: true, isMono: false, isISSRetido: false },
+        { id: 3, type: 'Comércio', anexo: 'Anexo I', label: 'Produtos Monofásicos', value: '4.033,90', isST: false, isMono: true, isISSRetido: false },
+        { id: 4, type: 'Comércio', anexo: 'Anexo I', label: 'Produtos ICMS-ST + Monofásico', value: '351,35', isST: true, isMono: true, isISSRetido: false }
     ]
 };
