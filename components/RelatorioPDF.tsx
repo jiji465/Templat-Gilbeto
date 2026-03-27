@@ -97,8 +97,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 30,
         paddingBottom: 15,
-        borderBottom: 1,
+        borderBottomWidth: 1,
         borderBottomColor: '#f1f5f9',
+        borderBottomStyle: 'solid',
     },
     logoSection: {
         flexDirection: 'row',
@@ -163,6 +164,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#f8fafc',
         borderWidth: 1,
         borderColor: '#e2e8f0',
+        borderStyle: 'solid',
     },
     cardDark: {
         flex: 1,
@@ -181,6 +183,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fffdf5',
         borderWidth: 1,
         borderColor: '#fde68a',
+        borderStyle: 'solid',
     },
     labelSmall: {
         fontSize: 8,
@@ -212,8 +215,9 @@ const styles = StyleSheet.create({
     },
     econBanner: {
         backgroundColor: '#f0fdf4',
-        border: 1,
+        borderWidth: 1,
         borderColor: '#bbf7d0',
+        borderStyle: 'solid',
         padding: 12,
         borderRadius: 10,
         flexDirection: 'row',
@@ -255,8 +259,9 @@ const styles = StyleSheet.create({
     tableHeader: {
         flexDirection: 'row',
         backgroundColor: '#f8fafc',
-        borderBottom: 1.5,
+        borderBottomWidth: 1.5,
         borderBottomColor: '#0F2318',
+        borderBottomStyle: 'solid',
         padding: 10,
         borderRadius: 6,
         marginBottom: 6,
@@ -270,8 +275,9 @@ const styles = StyleSheet.create({
     },
     tr: {
         flexDirection: 'row',
-        borderBottom: 1,
+        borderBottomWidth: 1,
         borderBottomColor: '#f1f5f9',
+        borderBottomStyle: 'solid',
         padding: 10,
         alignItems: 'center',
     },
@@ -288,8 +294,9 @@ const styles = StyleSheet.create({
         bottom: 30,
         left: 40,
         right: 40,
-        borderTop: 1,
+        borderTopWidth: 1,
         borderTopColor: '#f1f5f9',
+        borderTopStyle: 'solid',
         paddingTop: 15,
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -349,6 +356,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderWidth: 1,
         borderColor: 'rgba(201, 162, 39, 0.3)',
+        borderStyle: 'solid',
     },
     efficiencyLabel: {
         color: '#FFFFFF',
@@ -577,7 +585,7 @@ export const RelatorioPDF = ({ data, taxes }: RelatorioPDFProps) => {
                             <View style={styles.sectionBar} />
                             <Text>NOTAS E OBSERVAÇÕES</Text>
                         </View>
-                        <View style={{ padding: 15, backgroundColor: '#fffbeb', borderRadius: 10, borderWidth: 1, borderColor: '#fde68a' }}>
+                        <View style={{ padding: 15, backgroundColor: '#fffbeb', borderRadius: 10, borderWidth: 1, borderColor: '#fde68a', borderStyle: 'solid' }}>
                             <Text style={{ fontSize: 9, color: '#92400e', lineHeight: 1.6 }}>{data.observations}</Text>
                         </View>
                     </View>
