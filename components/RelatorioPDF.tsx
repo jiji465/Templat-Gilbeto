@@ -15,30 +15,15 @@ import {
     VERSION
 } from '../utils/taxCalculations';
 
-// --- Font Registration ---
-Font.register({
-  family: 'Outfit',
-  fonts: [
-    { src: 'https://fonts.gstatic.com/s/outfit/v11/Q_3_u5AwV_7a0Cz96fG-8F2_1KjN6_nI.woff2', fontWeight: 700 },
-    { src: 'https://fonts.gstatic.com/s/outfit/v11/Q_3_u5AwV_7a0Cz16fG-8F2_1KjN68nI.woff2', fontWeight: 600 },
-    { src: 'https://fonts.gstatic.com/s/outfit/v11/Q_3_u5AwV_7a0Cz56fG-8F2_1KjN6unI.woff2', fontWeight: 400 },
-  ]
-});
-
-Font.register({
-  family: 'Inter',
-  fonts: [
-    { src: 'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuFuYAZJhiI2B.woff2', fontWeight: 400 },
-    { src: 'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuGKYAZJhiI2B.woff2', fontWeight: 700 },
-    { src: 'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuI6fAZJhiI2B.woff2', fontWeight: 600 },
-  ]
-});
+// Use standard PDF fonts (built-in, stable across all environments)
+const FONT_BODY = 'Helvetica';
+const FONT_BOLD = 'Helvetica-Bold';
 
 const styles = StyleSheet.create({
     page: {
         padding: 40,
         backgroundColor: '#FFFFFF',
-        fontFamily: 'Inter',
+        fontFamily: FONT_BODY,
         color: '#0f172a',
     },
     coverPage: {
@@ -118,7 +103,7 @@ const styles = StyleSheet.create({
     officeName: {
         fontSize: 10,
         fontWeight: 700,
-        fontFamily: 'Outfit',
+        fontFamily: FONT_BOLD,
         color: '#0F2318',
         letterSpacing: 0.5,
     },
@@ -142,7 +127,7 @@ const styles = StyleSheet.create({
     },
     mainTitle: {
         fontSize: 24,
-        fontFamily: 'Outfit',
+        fontFamily: FONT_BOLD,
         fontWeight: 700,
         color: '#0F2318',
         letterSpacing: -0.5,
@@ -197,7 +182,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 700,
         color: '#0F2318',
-        fontFamily: 'Outfit',
+        fontFamily: FONT_BOLD,
     },
     valueLabelGold: {
         fontSize: 8,
@@ -211,7 +196,7 @@ const styles = StyleSheet.create({
         fontSize: 26,
         fontWeight: 700,
         color: '#c9a227',
-        fontFamily: 'Outfit',
+        fontFamily: FONT_BOLD,
     },
     econBanner: {
         backgroundColor: '#f0fdf4',
@@ -237,7 +222,7 @@ const styles = StyleSheet.create({
     sectionHeader: {
         fontSize: 10,
         fontWeight: 700,
-        fontFamily: 'Outfit',
+        fontFamily: FONT_BOLD,
         color: '#0F2318',
         textTransform: 'uppercase',
         letterSpacing: 1.2,
