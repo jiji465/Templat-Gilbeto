@@ -337,6 +337,8 @@ export const INIT_DATA = {
     compMonth: String(new Date().getMonth() + 1),
     compYear: String(new Date().getFullYear()),
     regime: 'Simples Nacional',
+    setor: '',
+    cnae: '',
     proLabore: '1.412,00',
     folha: '0,00',
     folhaMensal: '0,00',
@@ -346,6 +348,8 @@ export const INIT_DATA = {
     installmentInfo: '',
     difal: '0,00',
     otherTaxes: '0,00',
+    observations: '',
+    internalNotes: '',
     revenues: [
         { id: 1, type: 'Serviços', anexo: 'Anexo III', label: 'Serviços Prestados', value: '10.000,00', isST: false, isMono: false, isISSRetido: false }
     ]
