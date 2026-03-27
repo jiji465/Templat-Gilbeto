@@ -12,7 +12,8 @@ import {
     OFFICE, 
     REGIME_COLORS,
     COLORS_CHART,
-    parseNum
+    parseNum,
+    VERSION
 } from '../utils/taxCalculations';
 
 // Font registration (using standard fonts to avoid loading issues in this context, 
