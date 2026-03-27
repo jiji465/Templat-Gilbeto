@@ -27,54 +27,57 @@ const styles = StyleSheet.create({
         color: '#0f172a',
     },
     coverPage: {
-        padding: 50,
         backgroundColor: '#0F2318',
         height: '100%',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        fontFamily: FONT_BOLD,
+        position: 'relative',
+        overflow: 'hidden',
     },
     coverClient: {
-        fontSize: 32,
+        fontSize: 34,
         fontWeight: 700,
+        fontFamily: FONT_BOLD,
         color: '#c9a227',
-        marginTop: 60,
+        marginTop: 40,
         textTransform: 'uppercase',
-        letterSpacing: 2,
+        letterSpacing: 4,
         textAlign: 'center',
     },
     coverLine: {
-        width: 60,
-        height: 4,
+        width: 80,
+        height: 2,
         backgroundColor: '#c9a227',
-        marginTop: 20,
-        marginBottom: 20,
+        marginTop: 25,
+        marginBottom: 25,
+        opacity: 0.6,
     },
     coverTitle: {
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: 400,
         color: '#FFFFFF',
-        letterSpacing: 4,
+        letterSpacing: 6,
         textTransform: 'uppercase',
-        opacity: 0.8,
+        opacity: 0.7,
     },
     coverSubtitle: {
-        fontSize: 10,
+        fontSize: 9,
         color: '#94a3b8',
-        marginTop: 100,
-        fontWeight: 600,
-        letterSpacing: 1.5,
+        marginTop: 120,
+        fontWeight: 700,
+        letterSpacing: 2,
         textTransform: 'uppercase',
     },
     coverFooter: {
         position: 'absolute',
         bottom: 50,
-        fontSize: 9,
+        fontSize: 8,
         color: '#FFFFFF',
-        opacity: 0.6,
+        opacity: 0.5,
         textAlign: 'center',
         width: '100%',
+        letterSpacing: 1,
     },
     header: {
         flexDirection: 'row',
@@ -220,22 +223,22 @@ const styles = StyleSheet.create({
         fontWeight: 400,
     },
     sectionHeader: {
-        fontSize: 10,
+        fontSize: 9,
         fontWeight: 700,
         fontFamily: FONT_BOLD,
         color: '#0F2318',
         textTransform: 'uppercase',
-        letterSpacing: 1.2,
+        letterSpacing: 2.5,
         marginBottom: 15,
-        marginTop: 10,
+        marginTop: 25,
         flexDirection: 'row',
         alignItems: 'center',
     },
     sectionBar: {
-        width: 15,
-        height: 3,
+        width: 20,
+        height: 2,
         backgroundColor: '#c9a227',
-        marginRight: 8,
+        marginRight: 10,
     },
     table: {
         width: '100%',
@@ -409,16 +412,58 @@ const DonutChart = ({ percent, color = '#c9a227', size = 100 }: { percent: numbe
 };
 
 const Logo = () => (
-    <View style={styles.logoBox}>
-        <Svg width="18" height="18" viewBox="0 0 24 24">
+    <View style={[styles.logoBox, { width: 40, height: 40, borderRadius: 10, backgroundColor: 'rgba(201, 162, 39, 0.1)' }]}>
+        <Svg width="22" height="22" viewBox="0 0 24 24">
             <Path
                 d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
                 stroke="#c9a227"
-                strokeWidth="2"
+                strokeWidth="1.5"
                 fill="none"
                 strokeLinejoin="round"
                 strokeLinecap="round"
             />
+        </Svg>
+    </View>
+);
+
+const GridBackground = () => (
+    <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0.15 }}>
+        <Svg width="100%" height="100%">
+            {/* Horizontal lines */}
+            {Array.from({ length: 40 }).map((_, i) => (
+                <Line
+                    key={`h-${i}`}
+                    x1="0"
+                    y1={i * 20}
+                    x2="100%"
+                    y2={i * 20}
+                    stroke="#c9a227"
+                    strokeWidth="0.3"
+                />
+            ))}
+            {/* Vertical lines */}
+            {Array.from({ length: 30 }).map((_, i) => (
+                <Line
+                    key={`v-${i}`}
+                    x1={i * 20}
+                    y1="0"
+                    x2={i * 20}
+                    y2="100%"
+                    stroke="#c9a227"
+                    strokeWidth="0.3"
+                />
+            ))}
+            {/* Small decorative circles at intersections */}
+            {Array.from({ length: 10 }).map((_, i) => (
+                <Circle
+                    key={`c-${i}`}
+                    cx={i * 60 + 20}
+                    cy={i * 80 + 20}
+                    r="1.5"
+                    fill="#c9a227"
+                    opacity={0.3}
+                />
+            ))}
         </Svg>
     </View>
 );
@@ -441,14 +486,17 @@ export const RelatorioPDF = ({ data, taxes }: RelatorioPDFProps) => {
         <Document title={`Relatorio_Fiscal_${data.clientName || 'Cliente'}`}>
             {/* PÁGINA 0: CAPA */}
             <Page size="A4" style={styles.coverPage}>
-                <Logo />
-                <Text style={styles.coverClient}>{data.clientName || 'CLIENTE'}</Text>
-                <View style={styles.coverLine} />
-                <Text style={styles.coverTitle}>Relatório de Inteligência Fiscal</Text>
-                <Text style={styles.coverSubtitle}>Competência: {compLabel}</Text>
+                <GridBackground />
+                <View style={{ alignItems: 'center', zIndex: 10 }}>
+                    <Logo />
+                    <Text style={styles.coverClient}>{data.clientName || 'CLIENTE'}</Text>
+                    <View style={styles.coverLine} />
+                    <Text style={styles.coverTitle}>Relatório de Inteligência Fiscal</Text>
+                    <Text style={styles.coverSubtitle}>Competência: {compLabel}</Text>
+                </View>
                 <View style={styles.coverFooter}>
-                    <Text style={{ fontWeight: 700 }}>{OFFICE.name}</Text>
-                    <Text style={{ marginTop: 5 }}>Documento oficial destinado à análise de performance tributária e conformidade legal.</Text>
+                    <Text style={{ fontWeight: 700, color: '#c9a227' }}>{OFFICE.name}</Text>
+                    <Text style={{ marginTop: 6 }}>Documento analítico destinado à análise de performance tributária e conformidade fiscal.</Text>
                 </View>
             </Page>
 
@@ -472,17 +520,19 @@ export const RelatorioPDF = ({ data, taxes }: RelatorioPDFProps) => {
                 </View>
 
                 <View style={styles.grid2}>
-                    <View style={styles.cardDark}>
+                    <View style={[styles.cardDark, { padding: 25 }]}>
+                        <View style={{ position: 'absolute', top: 0, right: 0, width: 60, height: 60, backgroundColor: 'rgba(201, 162, 39, 0.05)', borderRadius: 30, marginRight: -20, marginTop: -20 }} />
                         <Text style={styles.valueLabelGold}>Tributos a Recolher</Text>
                         <Text style={styles.valueGold}>{fmtBRL(totalTrib)}</Text>
-                        <Text style={{ fontSize: 7, color: '#94a3b8', marginTop: 10, fontWeight: 700 }}>GUIA CONSOLIDADA (PGDAS-D / DARF)</Text>
+                        <View style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.1)', marginVertical: 15 }} />
+                        <Text style={{ fontSize: 7, color: '#94a3b8', fontWeight: 700, letterSpacing: 1 }}>GUIA CONSOLIDADA (PGDAS-D / DARF)</Text>
                     </View>
                     <View style={{ flex: 1 }}>
-                        <View style={[styles.card, { marginBottom: 15 }]}>
+                        <View style={[styles.card, { marginBottom: 15, borderLeftWidth: 3, borderLeftColor: '#0F2318' }]}>
                             <Text style={styles.labelSmall}>Faturamento Bruto</Text>
                             <Text style={styles.valueLarge}>{fmtBRL(totalRev)}</Text>
                         </View>
-                        <View style={styles.cardAccent}>
+                        <View style={[styles.cardAccent, { borderLeftWidth: 3, borderLeftColor: '#c9a227' }]}>
                             <Text style={[styles.labelSmall, { color: '#b45309' }]}>Carga Tributária Efetiva</Text>
                             <Text style={[styles.valueLarge, { color: '#b45309' }]}>{cargaEf.toFixed(2).replace('.', ',')}%</Text>
                         </View>
@@ -555,19 +605,26 @@ export const RelatorioPDF = ({ data, taxes }: RelatorioPDFProps) => {
                             );
                         })}
                     </View>
-                    <View style={[styles.card, { flex: 1, backgroundColor: '#0F2318', padding: 20 }]}>
-                        <Text style={[styles.labelSmall, { color: '#c9a227', marginBottom: 15 }]}>Valor Agregado (Economia)</Text>
-                        <Text style={{ fontSize: 24, fontWeight: 700, color: '#FFFFFF', fontFamily: FONT_BOLD }}>{fmtBRL(totalEcon)}</Text>
-                        <Text style={{ fontSize: 7, color: '#94a3b8', marginTop: 10, lineHeight: 1.4 }}>
-                            Este montante foi preservado através da correta aplicação de benefícios fiscais (Monofásico/ST), evitando o recolhimento indevido.
-                        </Text>
+                    <View style={[styles.card, { flex: 1, backgroundColor: '#0F2318', padding: 25, borderRightWidth: 4, borderRightColor: '#c9a227' }]}>
+                        <View style={{ marginBottom: 20 }}>
+                            <Text style={[styles.labelSmall, { color: '#c9a227', marginBottom: 12, letterSpacing: 2 }]}>Valor Agregado (Economia)</Text>
+                            <Text style={{ fontSize: 28, fontWeight: 700, color: '#FFFFFF', fontFamily: FONT_BOLD }}>{fmtBRL(totalEcon)}</Text>
+                            <Text style={{ fontSize: 7, color: '#94a3b8', marginTop: 12, lineHeight: 1.6, opacity: 0.8 }}>
+                                Montante preservado através da aplicação estratégica de benefícios fiscais (Monofásico/ST).
+                            </Text>
+                        </View>
                         
-                        <View style={{ marginTop: 25, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.1)', borderTopStyle: 'solid', paddingTop: 15 }}>
-                            <Text style={[styles.labelSmall, { color: '#c9a227', fontSize: 7 }]}>Cronograma de Vencimentos</Text>
+                        <View style={{ marginTop: 15, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.1)', borderTopStyle: 'solid', paddingTop: 20 }}>
+                            <Text style={[styles.labelSmall, { color: '#c9a227', fontSize: 7, marginBottom: 10 }]}>Agenda de Vencimentos</Text>
                             {taxesList.slice(0, 4).map((t: any, i: number) => (
-                                <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
-                                    <Text style={{ fontSize: 8, color: '#FFFFFF', fontWeight: 600 }}>{t.tax}</Text>
-                                    <Text style={{ fontSize: 8, color: '#c9a227', fontWeight: 700 }}>{t.dueDate || '---'}</Text>
+                                <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10, alignItems: 'center' }}>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <View style={{ width: 4, height: 4, backgroundColor: '#c9a227', borderRadius: 2, marginRight: 6 }} />
+                                        <Text style={{ fontSize: 8, color: '#FFFFFF', fontWeight: 600 }}>{t.tax}</Text>
+                                    </View>
+                                    <View style={{ backgroundColor: 'rgba(201, 162, 39, 0.15)', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 }}>
+                                        <Text style={{ fontSize: 7, color: '#c9a227', fontWeight: 700 }}>{t.dueDate || '---'}</Text>
+                                    </View>
                                 </View>
                             ))}
                         </View>
@@ -575,7 +632,7 @@ export const RelatorioPDF = ({ data, taxes }: RelatorioPDFProps) => {
                 </View>
 
                 {/* ALERTA DE CONFORMIDADE */}
-                <View style={{ backgroundColor: '#f8fafc', borderLeftWidth: 4, borderLeftColor: '#0F2318', borderLeftStyle: 'solid', padding: 15, marginBottom: 25, borderRadius: 4 }}>
+                <View style={{ backgroundColor: '#f8fafc', borderLeftWidth: 4, borderLeftColor: '#0F2318', borderStyle: 'solid', padding: 15, marginBottom: 25, borderRadius: 4 }}>
                     <Text style={{ fontSize: 10, fontWeight: 700, color: '#0F2318', marginBottom: 3 }}>Status de Conformidade: 100%</Text>
                     <Text style={{ fontSize: 8, color: '#64748b' }}>Todos os cálculos seguem as normas vigentes da Receita Federal e legislações complementares.</Text>
                 </View>
@@ -612,7 +669,7 @@ export const RelatorioPDF = ({ data, taxes }: RelatorioPDFProps) => {
 
                 <View style={styles.footer}>
                     <Text style={styles.footerText}>{OFFICE.name}</Text>
-                    <Text style={styles.footerText}>Página Analítica · Documento Digital</Text>
+                    <Text style={styles.footerText}>Página Analítica · Documento Digital Autêntico</Text>
                 </View>
             </Page>
         </Document>
