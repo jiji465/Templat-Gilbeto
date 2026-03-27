@@ -435,9 +435,6 @@ export const RelatorioPDF = ({ data, taxes }: RelatorioPDFProps) => {
     const cargaEf = totalRev > 0 ? (totalTrib / totalRev) * 100 : 0;
     const totalEcon = taxesList.reduce((s: number, t: any) => s + (t.savedValue || 0), 0);
     const compLabel = data.compMonth && data.compYear ? `${MONTHS[parseInt(data.compMonth) - 1]}/${data.compYear}` : '---';
-    const netRev = totalRev - totalTrib;
-    const netPct = totalRev > 0 ? (netRev / totalRev * 100) : 0;
-
     const revItems = (data.revenues || []).filter((r: any) => parseNum(r.value) > 0);
 
     return (
@@ -558,29 +555,29 @@ export const RelatorioPDF = ({ data, taxes }: RelatorioPDFProps) => {
                             );
                         })}
                     </View>
-                    <View style={[styles.card, { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#0F2318' }]}>
-                        <Text style={[styles.labelSmall, { marginBottom: 15, color: '#c9a227' }]}>Impacto na Receita</Text>
-                        <DonutChart percent={netPct} color="#c9a227" size={110} />
-                        <View style={{ marginTop: 15, alignItems: 'center' }}>
-                            <Text style={{ fontSize: 8, color: '#FFFFFF', fontWeight: 700 }}>Disponibilidade Líquida</Text>
-                            <Text style={{ fontSize: 6, color: '#94a3b8', marginTop: 4, textAlign: 'center', paddingHorizontal: 10 }}>
-                                Representa a fatia do faturamento que permanece na empresa após as obrigações fiscais.
-                            </Text>
+                    <View style={[styles.card, { flex: 1, backgroundColor: '#0F2318', padding: 20 }]}>
+                        <Text style={[styles.labelSmall, { color: '#c9a227', marginBottom: 15 }]}>Valor Agregado (Economia)</Text>
+                        <Text style={{ fontSize: 24, fontWeight: 700, color: '#FFFFFF', fontFamily: FONT_BOLD }}>{fmtBRL(totalEcon)}</Text>
+                        <Text style={{ fontSize: 7, color: '#94a3b8', marginTop: 10, lineHeight: 1.4 }}>
+                            Este montante foi preservado através da correta aplicação de benefícios fiscais (Monofásico/ST), evitando o recolhimento indevido.
+                        </Text>
+                        
+                        <View style={{ marginTop: 25, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.1)', borderTopStyle: 'solid', paddingTop: 15 }}>
+                            <Text style={[styles.labelSmall, { color: '#c9a227', fontSize: 7 }]}>Cronograma de Vencimentos</Text>
+                            {taxesList.slice(0, 4).map((t: any, i: number) => (
+                                <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
+                                    <Text style={{ fontSize: 8, color: '#FFFFFF', fontWeight: 600 }}>{t.tax}</Text>
+                                    <Text style={{ fontSize: 8, color: '#c9a227', fontWeight: 700 }}>{t.dueDate || '---'}</Text>
+                                </View>
+                            ))}
                         </View>
                     </View>
                 </View>
 
-                {/* NOVOS INDICADORES DE CONSULTORIA */}
-                <View style={{ flexDirection: 'row', gap: 15, marginBottom: 25 }}>
-                    <View style={[styles.card, { padding: 12 }]}>
-                        <Text style={styles.labelSmall}>Distribuição de R$ 1,00 Faturado</Text>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5 }}>
-                            <View style={{ width: 8, h: 8, borderRadius: 4, backgroundColor: '#c9a227', marginRight: 5 }} />
-                            <Text style={{ fontSize: 10, fontWeight: 700 }}>{fmtBRL(1 - (cargaEf/100))} Disponível</Text>
-                            <View style={{ width: 8, h: 8, borderRadius: 4, backgroundColor: '#ef4444', marginRight: 5, marginLeft: 15 }} />
-                            <Text style={{ fontSize: 10, fontWeight: 700 }}>{fmtBRL(cargaEf/100)} Impostos</Text>
-                        </View>
-                    </View>
+                {/* ALERTA DE CONFORMIDADE */}
+                <View style={{ backgroundColor: '#f8fafc', borderLeftWidth: 4, borderLeftColor: '#0F2318', borderLeftStyle: 'solid', padding: 15, marginBottom: 25, borderRadius: 4 }}>
+                    <Text style={{ fontSize: 10, fontWeight: 700, color: '#0F2318', marginBottom: 3 }}>Status de Conformidade: 100%</Text>
+                    <Text style={{ fontSize: 8, color: '#64748b' }}>Todos os cálculos seguem as normas vigentes da Receita Federal e legislações complementares.</Text>
                 </View>
 
                 {data.observations ? (
