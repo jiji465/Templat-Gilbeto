@@ -11,6 +11,7 @@ import {
     INIT_DATA, 
     autoCalc, 
     fmtBRL, 
+    fmtPct,
     fmtCNPJ, 
     inputBRL, 
     parseNum, 
