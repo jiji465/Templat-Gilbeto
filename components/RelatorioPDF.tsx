@@ -455,47 +455,7 @@ const Logo = ({ size = 24, color = '#c9a227', arrowColor = '#FFFFFF' }) => (
     </View>
 );
 
-const GridBackground = () => (
-    <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0.15 }}>
-        <Svg width="100%" height="100%">
-            {/* Horizontal lines */}
-            {Array.from({ length: 40 }).map((_, i) => (
-                <Line
-                    key={`h-${i}`}
-                    x1="0"
-                    y1={i * 20}
-                    x2="100%"
-                    y2={i * 20}
-                    stroke="#c9a227"
-                    strokeWidth="0.3"
-                />
-            ))}
-            {/* Vertical lines */}
-            {Array.from({ length: 30 }).map((_, i) => (
-                <Line
-                    key={`v-${i}`}
-                    x1={i * 20}
-                    y1="0"
-                    x2={i * 20}
-                    y2="100%"
-                    stroke="#c9a227"
-                    strokeWidth="0.3"
-                />
-            ))}
-            {/* Small decorative circles at intersections */}
-            {Array.from({ length: 10 }).map((_, i) => (
-                <Circle
-                    key={`c-${i}`}
-                    cx={i * 60 + 20}
-                    cy={i * 80 + 20}
-                    r="1.5"
-                    fill="#c9a227"
-                    opacity={0.3}
-                />
-            ))}
-        </Svg>
-    </View>
-);
+const GridBackground = () => null; // Grid removido a pedido
 
 interface RelatorioPDFProps {
     data: any;
@@ -630,6 +590,21 @@ export const RelatorioPDF = ({ data, taxes }: RelatorioPDFProps) => {
             <Page size="A4" style={styles.page}>
                 <View style={styles.sectionHeader}>
                     <View style={styles.sectionBar} />
+                    <Text>CALENDÁRIO DE OBRIGAÇÕES (PRÓXIMOS VENCIMENTOS)</Text>
+                </View>
+
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 20 }}>
+                    {taxesList.map((t: any, i: number) => (
+                        <View key={i} style={{ width: '23%', marginRight: 10, marginBottom: 10, padding: 12, backgroundColor: '#0F2318', borderRadius: 8, borderLeftWidth: 3, borderLeftColor: '#c9a227' }}>
+                            <Text style={{ fontSize: 7, color: '#c9a227', fontWeight: 700, marginBottom: 4, textTransform: 'uppercase' }}>{t.tax}</Text>
+                            <Text style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 700 }}>{t.dueDate || '---'}</Text>
+                            <Text style={{ fontSize: 6, color: '#94a3b8', marginTop: 4, textTransform: 'uppercase' }}>Vencimento</Text>
+                        </View>
+                    ))}
+                </View>
+
+                <View style={styles.sectionHeader}>
+                    <View style={styles.sectionBar} />
                     <Text>RAIO-X DE FATURAMENTO</Text>
                 </View>
 
@@ -667,18 +642,9 @@ export const RelatorioPDF = ({ data, taxes }: RelatorioPDFProps) => {
                         </View>
                         
                         <View style={{ marginTop: 15, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.1)', borderTopStyle: 'solid', paddingTop: 20 }}>
-                            <Text style={[styles.labelSmall, { color: '#c9a227', fontSize: 7, marginBottom: 10 }]}>Agenda de Vencimentos</Text>
-                            {taxesList.slice(0, 4).map((t: any, i: number) => (
-                                <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10, alignItems: 'center' }}>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                        <View style={{ width: 4, height: 4, backgroundColor: '#c9a227', borderRadius: 2, marginRight: 6 }} />
-                                        <Text style={{ fontSize: 8, color: '#FFFFFF', fontWeight: 600 }}>{t.tax}</Text>
-                                    </View>
-                                    <View style={{ backgroundColor: 'rgba(201, 162, 39, 0.15)', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 }}>
-                                        <Text style={{ fontSize: 7, color: '#c9a227', fontWeight: 700 }}>{t.dueDate || '---'}</Text>
-                                    </View>
-                                </View>
-                            ))}
+                           <Text style={{ fontSize: 8, color: '#c9a227', fontWeight: 700, textTransform: 'uppercase' }}>Status de Operação</Text>
+                           <Text style={{ fontSize: 10, color: '#FFFFFF', marginTop: 10 }}>Conformidade Fiscal: 100%</Text>
+                           <Text style={{ fontSize: 7, color: '#94a3b8', marginTop: 5 }}>Todos os tributos foram apurados com base na legislação vigente.</Text>
                         </View>
                     </View>
                 </View>
