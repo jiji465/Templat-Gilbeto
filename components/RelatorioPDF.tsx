@@ -460,7 +460,6 @@ export const RelatorioPDF = ({ data, taxes }: RelatorioPDFProps) => {
                         <Logo />
                         <View>
                             <Text style={styles.officeName}>{OFFICE.name}</Text>
-                            <Text style={styles.officeSub}>High-End Tax Accounting</Text>
                         </View>
                     </View>
                     <View style={[styles.badge, { backgroundColor: '#f1f5f9', color: '#475569' }]}>
@@ -522,7 +521,7 @@ export const RelatorioPDF = ({ data, taxes }: RelatorioPDFProps) => {
 
                 <View style={styles.footer}>
                     <Text style={styles.footerText}>{OFFICE.name}</Text>
-                    <Text style={styles.footerText}>Página 2 de 3 · Versão {VERSION}</Text>
+                    <Text style={styles.footerText}>Documento Analítico Pessoal e Instrutivo</Text>
                 </View>
             </Page>
 
@@ -592,19 +591,10 @@ export const RelatorioPDF = ({ data, taxes }: RelatorioPDFProps) => {
                     </View>
                 </View>
 
-                <View style={styles.efficiencyCard}>
-                    <View>
-                        <Text style={styles.efficiencyLabel}>Eficiência do Modelo</Text>
-                        <Text style={{ color: '#94a3b8', fontSize: 7, marginTop: 4, fontWeight: 600 }}>Performance Consolidada</Text>
-                    </View>
-                    <View style={{ alignItems: 'flex-end' }}>
-                        <Text style={styles.efficiencyValue}>{fmtPct(100 - cargaEf)}</Text>
-                    </View>
-                </View>
 
                 <View style={styles.footer}>
                     <Text style={styles.footerText}>{OFFICE.name}</Text>
-                    <Text style={styles.footerText}>Página 3 de 3 · Versão {VERSION}</Text>
+                    <Text style={styles.footerText}>Página Analítica · Documento Digital</Text>
                 </View>
             </Page>
         </Document>
