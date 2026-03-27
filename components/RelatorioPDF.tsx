@@ -560,7 +560,7 @@ export const RelatorioPDF = ({ data, taxes }: RelatorioPDFProps) => {
 
                 <View style={styles.sectionHeader}>
                     <View style={styles.sectionBar} />
-                    <Text>Detalhamento da Composição do DAS</Text>
+                    <Text>COMPOSIÇÃO INTERNA DA GUIA ÚNICA (DAS)</Text>
                 </View>
 
                 <View style={styles.table}>
@@ -594,13 +594,34 @@ export const RelatorioPDF = ({ data, taxes }: RelatorioPDFProps) => {
                 </View>
 
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 20 }}>
-                    {taxesList.map((t: any, i: number) => (
-                        <View key={i} style={{ width: '23%', marginRight: 10, marginBottom: 10, padding: 12, backgroundColor: '#0F2318', borderRadius: 8, borderLeftWidth: 3, borderLeftColor: '#c9a227' }}>
-                            <Text style={{ fontSize: 7, color: '#c9a227', fontWeight: 700, marginBottom: 4, textTransform: 'uppercase' }}>{t.tax}</Text>
-                            <Text style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 700 }}>{t.dueDate || '---'}</Text>
-                            <Text style={{ fontSize: 6, color: '#94a3b8', marginTop: 4, textTransform: 'uppercase' }}>Vencimento</Text>
-                        </View>
-                    ))}
+                    {/* Agrupamento por Guia/Vencimento para Simples Nacional */}
+                    {data.regime === 'Simples Nacional' ? (
+                        <>
+                            <View style={{ width: '48%', marginRight: 15, marginBottom: 10, padding: 15, backgroundColor: '#0F2318', borderRadius: 10, borderLeftWidth: 4, borderLeftColor: '#c9a227' }}>
+                                <Text style={{ fontSize: 8, color: '#c9a227', fontWeight: 700, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 1 }}>GUIA ÚNICA DAS (SIMPLES NACIONAL)</Text>
+                                <Text style={{ fontSize: 24, color: '#FFFFFF', fontWeight: 700 }}>{vencimentoDas}</Text>
+                                <View style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.1)', my: 8 }} />
+                                <Text style={{ fontSize: 7, color: '#94a3b8', textTransform: 'uppercase' }}>Pagamento em Guia Única Autêntica (Unificado)</Text>
+                            </View>
+                            
+                            {/* Outras obrigações fora do DAS (ex: Parcelamentos, se houver) */}
+                            {taxesList.filter((t: any) => !t.tax.includes('Serviços') && !t.tax.includes('Comércio') && !t.tax.includes('Indústria') && !t.tax.includes('DAS')).map((t: any, i: number) => (
+                                <View key={i} style={{ width: '48%', marginBottom: 10, padding: 15, backgroundColor: '#f8fafc', borderRadius: 10, borderLeftWidth: 4, borderLeftColor: '#64748b' }}>
+                                    <Text style={{ fontSize: 8, color: '#475569', fontWeight: 700, marginBottom: 8, textTransform: 'uppercase' }}>{t.tax}</Text>
+                                    <Text style={{ fontSize: 20, color: '#0F2318', fontWeight: 700 }}>{t.dueDate || '---'}</Text>
+                                    <Text style={{ fontSize: 7, color: '#64748b', textTransform: 'uppercase' }}>Vencimento Local/Específico</Text>
+                                </View>
+                            ))}
+                        </>
+                    ) : (
+                        taxesList.map((t: any, i: number) => (
+                            <View key={i} style={{ width: '23%', marginRight: 10, marginBottom: 10, padding: 12, backgroundColor: '#0F2318', borderRadius: 8, borderLeftWidth: 3, borderLeftColor: '#c9a227' }}>
+                                <Text style={{ fontSize: 7, color: '#c9a227', fontWeight: 700, marginBottom: 4 }}>{t.tax}</Text>
+                                <Text style={{ fontSize: 14, color: '#FFFFFF', fontWeight: 700 }}>{t.dueDate || '---'}</Text>
+                                <Text style={{ fontSize: 6, color: '#94a3b8', marginTop: 4 }}>Vencimento</Text>
+                            </View>
+                        ))
+                    )}
                 </View>
 
                 <View style={styles.sectionHeader}>
