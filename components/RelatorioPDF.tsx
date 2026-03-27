@@ -435,6 +435,8 @@ export const RelatorioPDF = ({ data, taxes }: RelatorioPDFProps) => {
     const cargaEf = totalRev > 0 ? (totalTrib / totalRev) * 100 : 0;
     const totalEcon = taxesList.reduce((s: number, t: any) => s + (t.savedValue || 0), 0);
     const compLabel = data.compMonth && data.compYear ? `${MONTHS[parseInt(data.compMonth) - 1]}/${data.compYear}` : '---';
+    const netRev = totalRev - totalTrib;
+    const netPct = totalRev > 0 ? (netRev / totalRev * 100) : 0;
 
     const revItems = (data.revenues || []).filter((r: any) => parseNum(r.value) > 0);
 
@@ -556,10 +558,28 @@ export const RelatorioPDF = ({ data, taxes }: RelatorioPDFProps) => {
                             );
                         })}
                     </View>
-                    <View style={[styles.card, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}>
-                        <Text style={[styles.labelSmall, { marginBottom: 15 }]}>Distribuição de Receita</Text>
-                        <DonutChart percent={100} color="#0F2318" size={110} />
-                        <Text style={{ fontSize: 7, color: '#64748b', marginTop: 10, textAlign: 'center' }}>Análise de participação por categoria operacional</Text>
+                    <View style={[styles.card, { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#0F2318' }]}>
+                        <Text style={[styles.labelSmall, { marginBottom: 15, color: '#c9a227' }]}>Impacto na Receita</Text>
+                        <DonutChart percent={netPct} color="#c9a227" size={110} />
+                        <View style={{ marginTop: 15, alignItems: 'center' }}>
+                            <Text style={{ fontSize: 8, color: '#FFFFFF', fontWeight: 700 }}>Disponibilidade Líquida</Text>
+                            <Text style={{ fontSize: 6, color: '#94a3b8', marginTop: 4, textAlign: 'center', paddingHorizontal: 10 }}>
+                                Representa a fatia do faturamento que permanece na empresa após as obrigações fiscais.
+                            </Text>
+                        </View>
+                    </View>
+                </View>
+
+                {/* NOVOS INDICADORES DE CONSULTORIA */}
+                <View style={{ flexDirection: 'row', gap: 15, marginBottom: 25 }}>
+                    <View style={[styles.card, { padding: 12 }]}>
+                        <Text style={styles.labelSmall}>Distribuição de R$ 1,00 Faturado</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5 }}>
+                            <View style={{ width: 8, h: 8, borderRadius: 4, backgroundColor: '#c9a227', marginRight: 5 }} />
+                            <Text style={{ fontSize: 10, fontWeight: 700 }}>{fmtBRL(1 - (cargaEf/100))} Disponível</Text>
+                            <View style={{ width: 8, h: 8, borderRadius: 4, backgroundColor: '#ef4444', marginRight: 5, marginLeft: 15 }} />
+                            <Text style={{ fontSize: 10, fontWeight: 700 }}>{fmtBRL(cargaEf/100)} Impostos</Text>
+                        </View>
                     </View>
                 </View>
 
@@ -570,7 +590,8 @@ export const RelatorioPDF = ({ data, taxes }: RelatorioPDFProps) => {
                             <Text>NOTAS E OBSERVAÇÕES</Text>
                         </View>
                         <View style={{ padding: 15, backgroundColor: '#fffbeb', borderRadius: 10, borderWidth: 1, borderColor: '#fde68a', borderStyle: 'solid' }}>
-                            <Text style={{ fontSize: 9, color: '#92400e', lineHeight: 1.6 }}>{data.observations}</Text>
+                            <Text style={{ fontSize: 9, color: '#92400e', lineHeight: 1.6, fontWeight: 700, marginBottom: 5 }}>Parecer do Analista:</Text>
+                            <Text style={{ fontSize: 9, color: '#78350f', lineHeight: 1.5 }}>{data.observations}</Text>
                         </View>
                     </View>
                 ) : null}
