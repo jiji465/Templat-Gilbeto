@@ -385,16 +385,18 @@ const DonutChart = ({ percent, color = '#c9a227', size = 100 }: { percent: numbe
                 fill="none"
             />
             <Circle
-                cx={size / 2}
-                cy={size / 2}
-                r={radius}
-                stroke={color}
-                strokeWidth={strokeWidth}
-                strokeDasharray={`${circumference} ${circumference}`}
-                strokeDashoffset={offset}
-                strokeLinecap="round"
-                fill="none"
-                transform={`rotate(-90 ${size / 2} ${size / 2})`}
+                {...({
+                    cx: size / 2,
+                    cy: size / 2,
+                    r: radius,
+                    stroke: color,
+                    strokeWidth: strokeWidth,
+                    strokeDasharray: `${circumference} ${circumference}`,
+                    strokeDashoffset: offset,
+                    strokeLinecap: "round",
+                    fill: "none",
+                    transform: `rotate(-90 ${size / 2} ${size / 2})`
+                } as any)}
             />
             <Text
                 x="50%"
