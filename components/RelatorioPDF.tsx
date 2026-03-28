@@ -80,7 +80,8 @@ const styles = StyleSheet.create({
     },
     coverFooter: {
         width: '100%',
-        borderTop: 1,
+        borderTopWidth: 1,
+        borderTopStyle: 'solid',
         borderTopColor: 'rgba(255,255,255,0.1)',
         paddingTop: 30,
         alignItems: 'center',
@@ -99,7 +100,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 30,
-        borderBottom: 1,
+        borderBottomWidth: 1,
+        borderBottomStyle: 'solid',
         borderBottomColor: colors.light,
         paddingBottom: 15,
     },
@@ -131,12 +133,12 @@ const styles = StyleSheet.create({
         padding: 20,
         borderRadius: 12,
         backgroundColor: colors.light,
-        border: 1,
+        borderWidth: 1,
+        borderStyle: 'solid',
         borderColor: colors.border,
     },
     kpiCardDark: {
         backgroundColor: colors.primary,
-        color: colors.white,
     },
     kpiLabel: {
         fontSize: 7,
@@ -172,13 +174,15 @@ const styles = StyleSheet.create({
     tableHeaderBase: {
         flexDirection: 'row',
         backgroundColor: colors.light,
-        borderBottom: 1,
+        borderBottomWidth: 1,
+        borderBottomStyle: 'solid',
         borderBottomColor: colors.primary,
         padding: 8,
     },
     tableRow: {
         flexDirection: 'row',
-        borderBottom: 1,
+        borderBottomWidth: 1,
+        borderBottomStyle: 'solid',
         borderBottomColor: '#f1f5f9',
         padding: 8,
         alignItems: 'center',
@@ -202,7 +206,8 @@ const styles = StyleSheet.create({
         bottom: 30,
         left: 40,
         right: 40,
-        borderTop: 1,
+        borderTopWidth: 1,
+        borderTopStyle: 'solid',
         borderTopColor: '#f1f5f9',
         paddingTop: 15,
         flexDirection: 'row',
@@ -292,7 +297,7 @@ export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
                 </View>
 
                 {totalEcon > 0 && (
-                    <View style={{ backgroundColor: '#fffdf5', border: 1, borderColor: colors.accent, padding: 15, borderRadius: 10, marginBottom: 20 }}>
+                    <View style={{ backgroundColor: '#fffdf5', borderWidth: 1, borderStyle: 'solid', borderColor: colors.accent, padding: 15, borderRadius: 10, marginBottom: 20 }}>
                         <Text style={{ fontSize: 9, fontFamily: FONT_BOLD, color: colors.accent, marginBottom: 4 }}>Diferencial Estratégico:</Text>
                         <Text style={{ fontSize: 8, color: colors.primary, lineHeight: 1.4 }}>
                             Através da aplicação correta de benefícios de Substituição Tributária (ICMS-ST) e Regime Monofásico (PIS/COFINS), conseguimos uma economia real de <Text style={styles.tdBold}>{fmtBRL(totalEcon)}</Text> neste período.
@@ -320,16 +325,16 @@ export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
                             <Text style={[styles.td, styles.tdBold, { flex: 2, textAlign: 'right' }]}>{String(t.value || '0,00')}</Text>
                         </View>
                     ))}
-                    <View style={[styles.tableRow, { backgroundColor: colors.primary, color: colors.white, border: 0, marginTop: 10, borderRadius: 4 }]}>
+                    <View style={[styles.tableRow, { backgroundColor: colors.primary, color: colors.white, borderWidth: 0, marginTop: 10, borderRadius: 4 }]}>
                         <Text style={[styles.tdBold, { flex: 4.2 }]}>TOTAL CONSOLIDADO</Text>
                         <Text style={[styles.tdBold, { flex: 3, textAlign: 'right', fontSize: 12, color: colors.accent }]}>{fmtBRL(totalTrib)}</Text>
                     </View>
                 </View>
 
                 {data.observations ? (
-                    <View style={{ marginTop: 30, padding: 15, borderLeft: 3, borderLeftColor: colors.accent, backgroundColor: colors.light }}>
+                    <View style={{ marginTop: 30, padding: 15, borderLeftWidth: 3, borderLeftStyle: 'solid', borderLeftColor: colors.accent, backgroundColor: colors.light }}>
                         <Text style={{ fontSize: 8, fontFamily: FONT_BOLD, marginBottom: 5 }}>NOTAS DO ANALISTA:</Text>
-                        <Text style={{ fontSize: 8, color: colors.slate, lineHeight: 1.5 }}>{data.observations}</Text>
+                        <Text style={{ fontSize: 8, color: colors.slate, lineHeight: 1.5 }}>{String(data.observations)}</Text>
                     </View>
                 ) : null}
 
