@@ -227,11 +227,13 @@ const LogoIcon = ({ size = 40, color = colors.accent }) => (
 
 export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
     const taxesList = taxes || [];
-    const totalRev = (data.revenues || []).reduce((s: number, r: any) => s + (parseNum(r.value)), 0);
+    const totalRev = (data?.revenues || []).reduce((s: number, r: any) => s + (parseNum(r.value)), 0);
     const totalTrib = taxesList.reduce((s: number, t: any) => s + (parseNum(t.value)), 0);
     const cargaEf = totalRev > 0 ? (totalTrib / totalRev) * 100 : 0;
     const totalEcon = taxesList.reduce((s: number, t: any) => s + (t.savedValue || 0), 0);
-    const month = data.compMonth ? MONTHS[parseInt(data.compMonth) - 1] : 'Mês';
+    
+    const monthIdx = parseInt(data?.compMonth || '1') - 1;
+    const month = MONTHS[monthIdx >= 0 && monthIdx < 12 ? monthIdx : 0] || 'Mês';
 
     return (
         <Document title={`Relatorio_${data.clientName}`}>
@@ -241,12 +243,12 @@ export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
                     <LogoIcon size={100} />
                     <View style={{ marginTop: 40, alignItems: 'center' }}>
                         <Text style={styles.coverClientLabel}>Relatório Customizado para:</Text>
-                        <Text style={styles.coverClientName}>{data.clientName || 'CLIENTE'}</Text>
+                        <Text style={styles.coverClientName}>{String(data?.clientName || 'CLIENTE')}</Text>
                     </View>
-                    <Text style={styles.coverTitle}>INTELIGÊNCIA{'\n'}FISCAL PRO</Text>
+                    <Text style={styles.coverTitle}>INTELIGÊNCIA{"\n"}FISCAL PRO</Text>
                     <View style={styles.coverLine} />
                     <Text style={{ color: colors.white, fontSize: 12, letterSpacing: 2, textTransform: 'uppercase' }}>
-                        Competência {month} / {data.compYear}
+                        Competência {String(month)} / {String(data?.compYear || '')}
                     </Text>
                 </View>
 
@@ -262,10 +264,10 @@ export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
                     <View style={styles.headerBrand}>
                         <LogoIcon size={24} />
                         <View style={{ marginLeft: 10 }}>
-                            <Text style={styles.headerOffice}>{OFFICE.name}</Text>
+                            <Text style={styles.headerOffice}>{String(OFFICE.name || '')}</Text>
                         </View>
                     </View>
-                    <Text style={styles.kpiLabel}>{data.regime}</Text>
+                    <Text style={styles.kpiLabel}>{String(data?.regime || '')}</Text>
                 </View>
 
                 <Text style={{ fontSize: 24, fontFamily: FONT_BOLD, marginBottom: 5 }}>Resumo Consolidado</Text>
@@ -309,10 +311,10 @@ export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
                     </View>
                     {taxesList.map((t, i) => (
                         <View key={i} style={styles.tableRow} wrap={false}>
-                            <Text style={[styles.td, styles.tdBold, { flex: 3 }]}>{t.tax}</Text>
-                            <Text style={[styles.td, { flex: 1.2, textAlign: 'right', color: colors.slate }]}>{t.base}</Text>
-                            <Text style={[styles.td, { flex: 1, textAlign: 'right', color: colors.slate }]}>{t.rate}%</Text>
-                            <Text style={[styles.td, styles.tdBold, { flex: 2, textAlign: 'right' }]}>{t.value}</Text>
+                            <Text style={[styles.td, styles.tdBold, { flex: 3 }]}>{String(t.tax || '')}</Text>
+                            <Text style={[styles.td, { flex: 1.2, textAlign: 'right', color: colors.slate }]}>{String(t.base || '0,00')}</Text>
+                            <Text style={[styles.td, { flex: 1, textAlign: 'right', color: colors.slate }]}>{String(t.rate || '0')}%</Text>
+                            <Text style={[styles.td, styles.tdBold, { flex: 2, textAlign: 'right' }]}>{String(t.value || '0,00')}</Text>
                         </View>
                     ))}
                     <View style={[styles.tableRow, { backgroundColor: colors.primary, color: colors.white, border: 0, marginTop: 10, borderRadius: 4 }]}>
