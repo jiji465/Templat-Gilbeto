@@ -337,6 +337,34 @@ export const autoCalc = (data: any) => {
     return out;
 };
 
+export const genWppSummary = (data: any, taxes: any[]) => {
+    const totalRev = (data.revenues || []).reduce((s: number, r: any) => s + parseNum(r.value), 0);
+    const totalTrib = taxes.reduce((s: number, t: any) => s + parseNum(t.value), 0);
+    const cargaEf = totalRev > 0 ? (totalTrib / totalRev) * 100 : 0;
+    const mo = MONTHS[parseInt(data.compMonth) - 1];
+
+    let msg = `*RESUMO DE APURAÇÃO FISCAL*\n`;
+    msg += `🏢 *Cliente:* ${data.clientName}\n`;
+    msg += `📅 *Competência:* ${mo}/${data.compYear}\n`;
+    msg += `━━━━━━━━━━━━━━\n\n`;
+    
+    msg += `💰 *Faturamento Bruto:* ${fmtBRL(totalRev)}\n`;
+    msg += `📉 *Impostos Totais:* ${fmtBRL(totalTrib)}\n`;
+    msg += `📊 *Carga Efetiva:* ${fmtPct(cargaEf)}\n\n`;
+    
+    msg += `*DETALHAMENTO:* \n`;
+    taxes.forEach(t => {
+        msg += `• *${t.tax}:* ${fmtBRL(parseNum(t.value))} (Vcto: ${t.dueDate || 'N/A'})\n`;
+    });
+    
+    msg += `\n✅ *Resultado Líquido:* ${fmtBRL(totalRev - totalTrib)}\n`;
+    msg += `━━━━━━━━━━━━━━\n`;
+    msg += `🚨 _Não esqueça de conferir o PDF detalhado para as guias oficiais._\n`;
+    msg += `🙏 _Atenciosamente, ${OFFICE.name}_`;
+    
+    return msg;
+};
+
 export const INIT_DATA = {
     clientName: 'GILBERTO NEGREIROS CONTABILIDADE LTDA',
     cnpj: '00.000.000/0000-00',
