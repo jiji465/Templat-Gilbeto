@@ -32,8 +32,11 @@ export default function Home() {
     const [clientData, setClientData] = useState<any>(null);
     const [taxes, setTaxes] = useState<any[]>([]);
     const [copied, setCopied] = useState(false);
+    const [isClient, setIsClient] = useState(false);
+    const [calcId, setCalcId] = useState(0);
 
     useEffect(() => {
+        setIsClient(true);
         const STORAGE_KEY = 'fiscal_pro_v3';
         try {
             const saved = localStorage.getItem(STORAGE_KEY);
@@ -70,6 +73,7 @@ export default function Home() {
     const handleCalc = () => {
         const result = autoCalc(clientData);
         setTaxes(result);
+        setCalcId(prev => prev + 1);
     };
 
     const addRev = () => upd('revenues', [...(clientData.revenues || []), { id: Date.now(), type: 'Serviços', anexo: 'Anexo III', label: '', value: '', isST: false, isMono: false, isISSRetido: false }]);
@@ -136,18 +140,20 @@ export default function Home() {
                             {copied ? 'Copiado!' : 'Resumo WhatsApp'}
                         </button>
 
-                        <PDFDownloadLink 
-                            key={taxes.length + JSON.stringify(taxes)}
-                            document={<RelatorioPDF data={clientData} taxes={taxes} />} 
-                            fileName={`Relatorio_${(clientData.clientName || 'cliente').replace(/\s+/g, '_')}.pdf`}
-                        >
-                            {({ loading }) => (
-                                <button className="bg-primary text-accent px-6 py-2.5 rounded-xl font-black text-[10px] hover:bg-slate-900 transition-all shadow-xl uppercase flex items-center gap-2 border border-accent/30 group">
-                                    <Printer className="w-4 h-4 group-hover:scale-110 transition-transform" /> 
-                                    {loading ? 'Preparando...' : 'Gerar PDF Executivo'}
-                                </button>
-                            )}
-                        </PDFDownloadLink>
+                        {isClient && (
+                            <PDFDownloadLink 
+                                key={`pdf-${calcId}-${taxes.length}`}
+                                document={<RelatorioPDF data={clientData} taxes={taxes} />} 
+                                fileName={`Relatorio_${(clientData.clientName || 'cliente').replace(/\s+/g, '_')}.pdf`}
+                            >
+                                {({ loading }) => (
+                                    <button className="bg-primary text-accent px-6 py-2.5 rounded-xl font-black text-[10px] hover:bg-slate-900 transition-all shadow-xl uppercase flex items-center gap-2 border border-accent/30 group">
+                                        <Printer className="w-4 h-4 group-hover:scale-110 transition-transform" /> 
+                                        {loading ? 'Calculando PDF...' : 'Gerar PDF Executivo'}
+                                    </button>
+                                )}
+                            </PDFDownloadLink>
+                        )}
                     </div>
                 </div>
             </header>

@@ -245,7 +245,10 @@ export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
                         <Text style={styles.coverClientLabel}>Relatório Customizado para:</Text>
                         <Text style={styles.coverClientName}>{String(data?.clientName || 'CLIENTE')}</Text>
                     </View>
-                    <Text style={styles.coverTitle}>INTELIGÊNCIA{"\n"}FISCAL PRO</Text>
+                    <View style={{ alignItems: 'center' }}>
+                        <Text style={styles.coverTitle}>INTELIGÊNCIA</Text>
+                        <Text style={styles.coverTitle}>FISCAL PRO</Text>
+                    </View>
                     <View style={styles.coverLine} />
                     <Text style={{ color: colors.white, fontSize: 12, letterSpacing: 2, textTransform: 'uppercase' }}>
                         Competência {String(month)} / {String(data?.compYear || '')}
