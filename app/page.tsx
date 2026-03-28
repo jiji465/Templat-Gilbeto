@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { 
     Shield, RotateCcw, Printer, Plus, Trash2, 
     Zap, Briefcase, Calculator, DollarSign, FileText, Receipt,
-    Info, MessageSquare, Copy, Check
+    Info, MessageSquare, Copy, Check, TrendingUp
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { 
