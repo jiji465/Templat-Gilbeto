@@ -30,6 +30,10 @@ const PDFDownloadLink = dynamic(
     () => import('@react-pdf/renderer').then(mod => mod.PDFDownloadLink),
     { ssr: false }
 );
+const PDFViewer = dynamic(
+    () => import('@react-pdf/renderer').then(mod => mod.PDFViewer),
+    { ssr: false }
+);
 
 export default function Home() {
     const [clientData, setClientData] = useState<ClientData | null>(null);
@@ -37,6 +41,7 @@ export default function Home() {
     const [copied, setCopied] = useState(false);
     const [isClient, setIsClient] = useState(false);
     const [calcId, setCalcId] = useState(0);
+    const [showPreview, setShowPreview] = useState(false);
 
     useEffect(() => {
         const STORAGE_KEY = 'fiscal_pro_v3';
@@ -147,6 +152,16 @@ export default function Home() {
                         </button>
 
                         {isClient && (
+                            <button
+                                onClick={() => setShowPreview(!showPreview)}
+                                className="bg-slate-800 text-white px-5 py-2.5 rounded-xl font-black text-[10px] hover:bg-slate-700 transition-all uppercase flex items-center gap-2 shadow-md"
+                            >
+                                <FileText className="w-4 h-4" />
+                                {showPreview ? 'Ocultar Prévia' : 'Ver Prévia'}
+                            </button>
+                        )}
+
+                        {isClient && (
                             <PDFDownloadLink 
                                 key={`pdf-${calcId}-${taxes.length}`}
                                 document={<RelatorioPDF data={clientData} taxes={taxes} />} 
@@ -163,6 +178,16 @@ export default function Home() {
                     </div>
                 </div>
             </header>
+
+            {showPreview && isClient && (
+                <div className="max-w-[1400px] mx-auto p-6 mt-4">
+                    <div className="bg-white rounded-3xl overflow-hidden border border-border glass-shadow h-[800px]">
+                        <PDFViewer width="100%" height="100%" className="border-none">
+                            <RelatorioPDF data={clientData} taxes={taxes} />
+                        </PDFViewer>
+                    </div>
+                </div>
+            )}
 
             <div className="max-w-[1400px] mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-8 mt-4">
                 

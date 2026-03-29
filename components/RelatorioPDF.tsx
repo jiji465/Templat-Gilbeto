@@ -17,12 +17,14 @@ const FONT_BODY = 'Helvetica';
 const FONT_BOLD = 'Helvetica-Bold';
 
 const colors = {
-    primary: '#0F2318',
-    accent: '#c9a227',
-    slate: '#475569',
+    primary: '#0f172a',
+    accent: '#6366f1',
+    slate: '#64748b',
     light: '#f8fafc',
     white: '#FFFFFF',
-    border: '#e2e8f0'
+    border: '#e2e8f0',
+    red: '#ef4444',
+    green: '#10b981'
 };
 
 const styles = StyleSheet.create({
@@ -103,61 +105,122 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 30,
+        marginBottom: 20,
         borderBottomWidth: 1,
         borderBottomStyle: 'solid',
-        borderBottomColor: colors.light,
+        borderBottomColor: colors.border,
         paddingBottom: 15,
     },
-    headerBrand: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    headerLogo: {
-        width: 24,
-        height: 24,
-        backgroundColor: colors.primary,
-        borderRadius: 4,
-        marginRight: 8,
-    },
-    headerOffice: {
-        fontSize: 10,
+    headerTitle: {
+        fontSize: 16,
         fontFamily: FONT_BOLD,
         color: colors.primary,
+        textTransform: 'uppercase',
     },
 
     // KPI SECTION
     kpiRow: {
         flexDirection: 'row',
-        gap: 15,
-        marginBottom: 20,
+        gap: 10,
+        marginBottom: 25,
     },
     kpiCard: {
         flex: 1,
-        padding: 20,
-        borderRadius: 12,
+        padding: 15,
+        borderRadius: 8,
         backgroundColor: colors.light,
         borderWidth: 1,
         borderStyle: 'solid',
         borderColor: colors.border,
     },
-    kpiCardDark: {
-        backgroundColor: colors.primary,
+    kpiIconContainer: {
+        marginBottom: 10,
     },
     kpiLabel: {
-        fontSize: 7,
-        fontWeight: 700,
-        color: colors.slate,
+        fontSize: 6,
+        fontFamily: FONT_BOLD,
+        color: '#94a3b8',
         textTransform: 'uppercase',
-        letterSpacing: 1,
-        marginBottom: 8,
+        letterSpacing: 0.5,
+        marginBottom: 4,
     },
     kpiValue: {
-        fontSize: 20,
+        fontSize: 14,
         fontFamily: FONT_BOLD,
+        marginBottom: 2,
     },
-    kpiAccent: {
-        color: colors.accent,
+    kpiSub: {
+        fontSize: 6,
+        color: '#cbd5e1',
+    },
+
+    // CHARTS SECTION
+    dashboardRow: {
+        flexDirection: 'row',
+        gap: 15,
+        marginBottom: 25,
+    },
+    dashboardCard: {
+        flex: 1,
+        backgroundColor: colors.light,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderStyle: 'solid',
+        borderColor: colors.border,
+        padding: 15,
+    },
+    dashboardTitleRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        borderBottomWidth: 1,
+        borderBottomColor: colors.border,
+        paddingBottom: 5,
+        marginBottom: 10,
+    },
+    dashboardTitle: {
+        fontSize: 9,
+        fontFamily: FONT_BOLD,
+        color: colors.primary,
+        textTransform: 'uppercase',
+    },
+
+    // CHART DETAILS
+    donutContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 10,
+    },
+    donutLegend: {
+        marginLeft: 15,
+        flex: 1,
+    },
+    legendItem: {
+        marginBottom: 6,
+    },
+    legendLabelRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 2,
+    },
+    legendDot: {
+        width: 4,
+        height: 4,
+        borderRadius: 2,
+        marginRight: 4,
+    },
+    legendLabel: {
+        fontSize: 6,
+        fontFamily: FONT_BOLD,
+        color: '#94a3b8',
+        textTransform: 'uppercase',
+        width: 80,
+    },
+    legendValue: {
+        fontSize: 9,
+        fontFamily: FONT_BOLD,
+        color: colors.primary,
+        marginLeft: 8,
     },
 
     // TABLES
@@ -177,24 +240,23 @@ const styles = StyleSheet.create({
     },
     tableHeaderBase: {
         flexDirection: 'row',
-        backgroundColor: colors.light,
-        borderBottomWidth: 1,
-        borderBottomStyle: 'solid',
-        borderBottomColor: colors.primary,
-        padding: 8,
+        backgroundColor: colors.primary,
+        borderTopLeftRadius: 8,
+        borderTopRightRadius: 8,
+        padding: 10,
     },
     tableRow: {
         flexDirection: 'row',
         borderBottomWidth: 1,
         borderBottomStyle: 'solid',
-        borderBottomColor: '#f1f5f9',
-        padding: 8,
+        borderBottomColor: colors.border,
+        padding: 12,
         alignItems: 'center',
     },
     th: {
-        fontSize: 7,
-        fontWeight: 700,
-        color: colors.slate,
+        fontSize: 6,
+        fontFamily: FONT_BOLD,
+        color: colors.white,
         textTransform: 'uppercase',
     },
     td: {
@@ -202,6 +264,31 @@ const styles = StyleSheet.create({
     },
     tdBold: {
         fontFamily: FONT_BOLD,
+    },
+    badge: {
+        backgroundColor: '#e0e7ff',
+        paddingHorizontal: 4,
+        paddingVertical: 2,
+        borderRadius: 4,
+        marginRight: 6,
+    },
+    badgeText: {
+        fontSize: 6,
+        fontFamily: FONT_BOLD,
+        color: colors.accent,
+    },
+    totalRow: {
+        flexDirection: 'row',
+        backgroundColor: colors.accent,
+        borderBottomLeftRadius: 8,
+        borderBottomRightRadius: 8,
+        padding: 12,
+        alignItems: 'center',
+    },
+    totalText: {
+        color: colors.white,
+        fontFamily: FONT_BOLD,
+        fontSize: 8,
     },
 
     // FOOTER
@@ -326,6 +413,46 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
     const monthIdx = parseInt(data?.compMonth || '1') - 1;
     const month = MONTHS[monthIdx >= 0 && monthIdx < 12 ? monthIdx : 0] || 'Mês';
 
+    // Helper for donut chart logic
+    const createDonutSVG = (items: {val: number, color: string}[]) => {
+        const total = items.reduce((sum, i) => sum + i.val, 0);
+        if (total === 0) return null;
+
+        let currentAngle = -90; // Start at top
+        const cx = 50, cy = 50, r = 40, strokeWidth = 15;
+
+        return items.map((item, i) => {
+            if (item.val === 0) return null;
+            const angle = (item.val / total) * 360;
+            const startAngle = currentAngle;
+            const endAngle = currentAngle + angle;
+            currentAngle = endAngle;
+
+            // Handle the case where the angle is 360 (full circle)
+            if (angle === 360) {
+                return <Path key={i} d={`M 50, 10 a 40,40 0 1,0 0,80 a 40,40 0 1,0 0,-80`} fill="none" stroke={item.color} strokeWidth={strokeWidth} />;
+            }
+
+            const startRad = (startAngle * Math.PI) / 180;
+            const endRad = (endAngle * Math.PI) / 180;
+
+            const x1 = cx + r * Math.cos(startRad);
+            const y1 = cy + r * Math.sin(startRad);
+            const x2 = cx + r * Math.cos(endRad);
+            const y2 = cy + r * Math.sin(endRad);
+
+            const largeArcFlag = angle > 180 ? 1 : 0;
+
+            // Draw arc
+            const d = [
+                "M", x1, y1,
+                "A", r, r, 0, largeArcFlag, 1, x2, y2
+            ].join(" ");
+
+            return <Path key={i} d={d} fill="none" stroke={item.color} strokeWidth={strokeWidth} />;
+        });
+    };
+
     return (
         <Document title={`Relatorio_${data.clientName}`}>
             {/* PÁGINA 1: CAPA PREMIUM */}
@@ -349,88 +476,120 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
             {/* PÁGINA 2: DASHBOARD */}
             <Page size="A4" style={styles.page}>
                 <View style={styles.header}>
-                    <View style={styles.headerBrand}>
-                        <LogoIcon size={24} />
-                        <View style={{ marginLeft: 10 }}>
-                            <Text style={styles.headerOffice}>{String(OFFICE.name || '')}</Text>
-                        </View>
-                    </View>
-                    <Text style={styles.kpiLabel}>{String(data?.regime || '')}</Text>
+                    <Text style={styles.headerTitle}>RESUMO EXECUTIVO</Text>
                 </View>
-
-                <Text style={{ fontSize: 24, fontFamily: FONT_BOLD, marginBottom: 5 }}>Resumo Consolidado</Text>
-                <Text style={{ fontSize: 9, color: colors.slate, marginBottom: 30 }}>Demonstrativo analítico de apuração tributária para o período de {month}.</Text>
 
                 <View style={styles.kpiRow}>
                     <View style={styles.kpiCard}>
-                        <Text style={styles.kpiLabel}>Receita Bruta</Text>
-                        <Text style={styles.kpiValue}>{fmtBRL(totalRev)}</Text>
+                        <View style={styles.kpiIconContainer}>
+                            <Svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={colors.slate} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <Path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                            </Svg>
+                        </View>
+                        <Text style={styles.kpiLabel}>Faturamento Total</Text>
+                        <Text style={[styles.kpiValue, { color: colors.primary }]}>{fmtBRL(totalRev)}</Text>
+                        <Text style={styles.kpiSub}>Período Analisado</Text>
                     </View>
-                    <View style={[styles.kpiCard, styles.kpiCardDark]}>
-                        <Text style={[styles.kpiLabel, { color: 'rgba(255,255,255,0.6)' }]}>Total em Impostos</Text>
-                        <Text style={[styles.kpiValue, styles.kpiAccent]}>{fmtBRL(totalTrib)}</Text>
-                    </View>
+
                     <View style={styles.kpiCard}>
+                        <View style={styles.kpiIconContainer}>
+                            <Svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={colors.red} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <Path d="M21 21H3V3" /><Path d="M21 3l-6 6-4-4-6 6" />
+                            </Svg>
+                        </View>
+                        <Text style={styles.kpiLabel}>Total Tributos</Text>
+                        <Text style={[styles.kpiValue, { color: colors.red }]}>{fmtBRL(totalTrib)}</Text>
+                        <Text style={styles.kpiSub}>Carga Tributária</Text>
+                    </View>
+
+                    <View style={styles.kpiCard}>
+                        <View style={styles.kpiIconContainer}>
+                            <Svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <Path d="M21.21 15.89A10 10 0 1 1 8 2.83" /><Path d="M22 12A10 10 0 0 0 12 2v10z" />
+                            </Svg>
+                        </View>
                         <Text style={styles.kpiLabel}>Carga Efetiva</Text>
-                        <Text style={styles.kpiValue}>{fmtPct(cargaEf)}</Text>
+                        <Text style={[styles.kpiValue, { color: colors.accent }]}>{fmtPct(cargaEf)}</Text>
+                        <Text style={styles.kpiSub}>Percentual Médio</Text>
+                    </View>
+
+                    <View style={styles.kpiCard}>
+                        <View style={styles.kpiIconContainer}>
+                            <Svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={colors.green} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <Path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><Path d="M22 4L12 14.01l-3-3" />
+                            </Svg>
+                        </View>
+                        <Text style={styles.kpiLabel}>Economia Gerada</Text>
+                        <Text style={[styles.kpiValue, { color: colors.green }]}>{fmtBRL(totalEcon)}</Text>
+                        <Text style={styles.kpiSub}>Otimização</Text>
                     </View>
                 </View>
 
-                {totalEcon > 0 && (
-                    <View style={{ backgroundColor: '#fffdf5', borderWidth: 1, borderStyle: 'solid', borderColor: colors.accent, padding: 15, borderRadius: 10, marginBottom: 20 }}>
-                        <Text style={{ fontSize: 9, fontFamily: FONT_BOLD, color: colors.accent, marginBottom: 4 }}>Diferencial Estratégico:</Text>
-                        <Text style={{ fontSize: 8, color: colors.primary, lineHeight: 1.4 }}>
-                            Através da aplicação correta de benefícios de Substituição Tributária (ICMS-ST) e Regime Monofásico (PIS/COFINS), conseguimos uma economia real de <Text style={styles.tdBold}>{fmtBRL(totalEcon)}</Text> neste período.
-                        </Text>
+                <View style={styles.dashboardRow}>
+                    <View style={styles.dashboardCard}>
+                        <View style={styles.dashboardTitleRow}>
+                            <Text style={styles.dashboardTitle}>COMPOSIÇÃO DE RECEITA</Text>
+                        </View>
+
+                        <View style={styles.donutContainer}>
+                            <View style={{ width: 100, height: 100 }}>
+                                <Svg width={100} height={100} viewBox="0 0 100 100">
+                                    {createDonutSVG((data?.revenues || []).map((r, i) => ({ val: parseNum(r.value), color: CHART_COLORS[i % CHART_COLORS.length] })))}
+                                </Svg>
+                            </View>
+                            <View style={styles.donutLegend}>
+                                {(data?.revenues || []).map((r: Revenue, i: number) => {
+                                    const val = parseNum(r.value);
+                                    const pct = totalRev > 0 ? (val / totalRev * 100) : 0;
+                                    if (val === 0) return null;
+                                    return (
+                                        <View key={`rev-${i}`} style={styles.legendItem}>
+                                            <View style={styles.legendLabelRow}>
+                                                <View style={[styles.legendDot, { backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }]} />
+                                                <Text style={styles.legendLabel}>{String(r.label || r.type).substring(0, 15)}</Text>
+                                            </View>
+                                            <Text style={styles.legendValue}>{pct.toFixed(0)}%</Text>
+                                        </View>
+                                    );
+                                })}
+                            </View>
+                        </View>
+                        <Text style={{ fontSize: 6, color: colors.slate, fontStyle: 'italic', marginTop: 15, textAlign: 'center' }}>Distribuição percentual por categoria de faturamento.</Text>
                     </View>
-                )}
 
-                <View style={styles.sectionTitle}>
-                    <View style={{ width: 12, height: 2, backgroundColor: colors.accent, marginRight: 8 }} />
-                    <Text>DASHBOARD DE FATURAMENTO</Text>
-                </View>
+                    <View style={styles.dashboardCard}>
+                        <View style={styles.dashboardTitleRow}>
+                            <Text style={styles.dashboardTitle}>COMPOSIÇÃO TRIBUTÁRIA</Text>
+                        </View>
 
-                <View style={styles.chartContainer}>
-                    {(data?.revenues || []).map((r: Revenue, i: number) => {
-                        const val = parseNum(r.value);
-                        const pct = totalRev > 0 ? (val / totalRev * 100) : 0;
-                        if (val === 0) return null;
-                        return (
-                            <View key={i} style={styles.chartRow} wrap={false}>
-                                <View style={styles.chartLabelRow}>
-                                    <Text style={styles.chartLabel}>{String(r.label || r.type).substring(0, 50)}</Text>
-                                    <Text style={styles.chartPct}>{pct.toFixed(1)}%</Text>
-                                </View>
-                                <View style={styles.chartTrack}>
-                                    <View style={[styles.chartFill, { width: `${pct}%`, backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }]} />
-                                </View>
+                        <View style={styles.donutContainer}>
+                            <View style={{ width: 100, height: 100 }}>
+                                <Svg width={100} height={100} viewBox="0 0 100 100">
+                                    {createDonutSVG(taxesList.map((t, i) => ({ val: parseNum(t.value), color: CHART_COLORS[(i + 4) % CHART_COLORS.length] })))}
+                                </Svg>
                             </View>
-                        );
-                    })}
-                </View>
-
-                <View style={styles.sectionTitle}>
-                    <View style={{ width: 12, height: 2, backgroundColor: colors.accent, marginRight: 8 }} />
-                    <Text>COMPOSIÇÃO TRIBUTÁRIA</Text>
-                </View>
-
-                <View style={styles.chartContainer}>
-                    {taxesList.map((t: TaxResult, i: number) => {
-                        const val = parseNum(t.value);
-                        const pct = totalTrib > 0 ? (val / totalTrib * 100) : 0;
-                        if (val === 0) return null;
-                        return (
-                            <View key={`tax-${i}`} style={styles.chartRow} wrap={false}>
-                                <View style={styles.chartLabelRow}>
-                                    <Text style={styles.chartLabel}>{String(t.tax).substring(0, 50)}</Text>
-                                    <Text style={styles.chartPct}>{pct.toFixed(1)}%</Text>
-                                </View>
-                                <View style={styles.chartTrack}>
-                                    <View style={[styles.chartFill, { width: `${pct}%`, backgroundColor: CHART_COLORS[(i + 4) % CHART_COLORS.length] }]} />
-                                </View>
+                            <View style={styles.donutLegend}>
+                                {taxesList.slice(0, 4).map((t: TaxResult, i: number) => {
+                                    const val = parseNum(t.value);
+                                    const pct = totalTrib > 0 ? (val / totalTrib * 100) : 0;
+                                    if (val === 0) return null;
+                                    return (
+                                        <View key={`tax-${i}`} style={styles.legendItem}>
+                                            <View style={styles.legendLabelRow}>
+                                                <View style={[styles.legendDot, { backgroundColor: CHART_COLORS[(i + 4) % CHART_COLORS.length] }]} />
+                                                <Text style={styles.legendLabel}>{String(t.tax).substring(0, 15)}</Text>
+                                            </View>
+                                            <Text style={styles.legendValue}>{pct.toFixed(0)}%</Text>
+                                        </View>
+                                    );
+                                })}
+                                {taxesList.length > 4 && (
+                                    <Text style={{ fontSize: 6, color: colors.slate, fontStyle: 'italic', marginTop: 4 }}>+ Outros tributos menores...</Text>
+                                )}
                             </View>
-                        );
-                    })}
+                        </View>
+                        <Text style={{ fontSize: 6, color: colors.slate, fontStyle: 'italic', marginTop: 15, textAlign: 'center' }}>Distribuição percentual da carga tributária apurada.</Text>
+                    </View>
                 </View>
 
                 <View style={styles.footer}>
@@ -439,45 +598,68 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
                 </View>
             </Page>
 
-            {/* PÁGINA 3: APURAÇÃO E GLOSSÁRIO */}
+            {/* PÁGINA 2.5: DETALHES DA APURAÇÃO */}
             <Page size="A4" style={styles.page}>
                 <View style={styles.header}>
-                    <View style={styles.headerBrand}>
-                        <LogoIcon size={24} />
-                        <View style={{ marginLeft: 10 }}>
-                            <Text style={styles.headerOffice}>{String(OFFICE.name || '')}</Text>
-                        </View>
-                    </View>
+                    <Text style={[styles.headerTitle, { fontSize: 10 }]}>DETALHAMENTO DE TRIBUTOS</Text>
                 </View>
 
-                <View style={styles.sectionTitle}>
-                    <View style={{ width: 12, height: 2, backgroundColor: colors.accent, marginRight: 8 }} />
-                    <Text>Detalhes da Apuração</Text>
+                {/* Info Cards (Fator R, RBT12, etc) */}
+                <View style={[styles.dashboardRow, { marginBottom: 15 }]}>
+                    <View style={[styles.kpiCard, { padding: 10, backgroundColor: '#eff6ff', borderColor: '#bfdbfe' }]}>
+                        <Text style={[styles.kpiLabel, { color: '#60a5fa' }]}>FATOR R / FOLHA</Text>
+                        <Text style={[styles.kpiValue, { color: '#1e40af', fontSize: 10 }]}>{data?.folhaMensal ? fmtBRL(data.folhaMensal) : '-'}</Text>
+                    </View>
+                    <View style={[styles.kpiCard, { padding: 10 }]}>
+                        <Text style={styles.kpiLabel}>RBT12</Text>
+                        <Text style={[styles.kpiValue, { color: colors.primary, fontSize: 10 }]}>{data?.rbt12 ? fmtBRL(data.rbt12) : '-'}</Text>
+                        <Text style={styles.kpiSub}>Receita Bruta 12m</Text>
+                    </View>
+                    <View style={[styles.kpiCard, { padding: 10, backgroundColor: '#f0fdf4', borderColor: '#bbf7d0' }]}>
+                        <Text style={[styles.kpiLabel, { color: '#4ade80' }]}>PRÓ-LABORE</Text>
+                        <Text style={[styles.kpiValue, { color: '#166534', fontSize: 10 }]}>{data?.proLabore ? fmtBRL(data.proLabore) : '-'}</Text>
+                    </View>
                 </View>
 
                 <View style={styles.table}>
                     <View style={styles.tableHeaderBase}>
-                        <Text style={[styles.th, { flex: 3 }]}>Descrição do Tributo</Text>
-                        <Text style={[styles.th, { flex: 1.2, textAlign: 'right' }]}>Base de Cálculo</Text>
-                        <Text style={[styles.th, { flex: 1, textAlign: 'right' }]}>Alíquota</Text>
-                        <Text style={[styles.th, { flex: 2, textAlign: 'right' }]}>Valor Devido</Text>
+                        <Text style={[styles.th, { flex: 3 }]}>TRIBUTO FEDERAL/ESTADUAL</Text>
+                        <Text style={[styles.th, { flex: 1.2, textAlign: 'center' }]}>ALÍQUOTA APLICADA</Text>
+                        <Text style={[styles.th, { flex: 1.5, textAlign: 'center' }]}>BASE DE CÁLCULO</Text>
+                        <Text style={[styles.th, { flex: 2, textAlign: 'right' }]}>VALOR FINAL</Text>
                     </View>
-                    {taxesList.map((t: TaxResult, i: number) => (
-                        <View key={i} style={styles.tableRow} wrap={false}>
-                            <Text style={[styles.td, styles.tdBold, { flex: 3 }]}>{String(t.tax || '')}</Text>
-                            <Text style={[styles.td, { flex: 1.2, textAlign: 'right', color: colors.slate }]}>{String(t.base || '0,00')}</Text>
-                            <Text style={[styles.td, { flex: 1, textAlign: 'right', color: colors.slate }]}>{String(t.rate || '0')}%</Text>
-                            <Text style={[styles.td, styles.tdBold, { flex: 2, textAlign: 'right' }]}>{String(t.value || '0,00')}</Text>
-                        </View>
-                    ))}
-                    <View style={[styles.tableRow, { backgroundColor: colors.primary, color: colors.white, borderBottomWidth: 0, marginTop: 10, borderRadius: 4 }]}>
-                        <Text style={[styles.tdBold, { flex: 4.2 }]}>TOTAL CONSOLIDADO</Text>
-                        <Text style={[styles.tdBold, { flex: 3, textAlign: 'right', fontSize: 12, color: colors.accent }]}>{fmtBRL(totalTrib)}</Text>
+                    {taxesList.map((t: TaxResult, i: number) => {
+                        const badgeText = t.tax.toUpperCase().includes('SIMPLES') || t.tax.toUpperCase().includes('DAS') ? 'SN' :
+                                          t.tax.toUpperCase().includes('DIFAL') || t.tax.toUpperCase().includes('ICMS') ? 'DF' : 'IM';
+
+                        return (
+                            <View key={i} style={styles.tableRow} wrap={false}>
+                                <View style={{ flex: 3, flexDirection: 'row', alignItems: 'center' }}>
+                                    <View style={styles.badge}><Text style={styles.badgeText}>{badgeText}</Text></View>
+                                    <Text style={[styles.td, styles.tdBold, { color: colors.primary }]}>{String(t.tax || '')}</Text>
+                                </View>
+                                <Text style={[styles.td, { flex: 1.2, textAlign: 'center', color: colors.accent, fontFamily: FONT_BOLD, backgroundColor: '#e0e7ff', padding: 2, borderRadius: 2 }]}>{String(t.rate || '0')}%</Text>
+                                <Text style={[styles.td, { flex: 1.5, textAlign: 'center', color: '#94a3b8' }]}>{String(t.base || '0,00')}</Text>
+                                <Text style={[styles.td, styles.tdBold, { flex: 2, textAlign: 'right', color: colors.primary, fontSize: 9 }]}>{String(t.value || '0,00')}</Text>
+                            </View>
+                        );
+                    })}
+                    <View style={styles.totalRow}>
+                        <Text style={[styles.totalText, { flex: 1 }]}>TOTAL CONSOLIDADO</Text>
+                        <Text style={[styles.totalText, { textAlign: 'right', fontSize: 12 }]}>{fmtBRL(totalTrib)}</Text>
                     </View>
                 </View>
 
+                {/* PAGE BREAK TO PÁGINA 3 FOR GLOSSARY AND NOTES */}
+            </Page>
+
+            <Page size="A4" style={styles.page}>
+                <View style={styles.header}>
+                    <Text style={[styles.headerTitle, { fontSize: 10 }]}>NOTAS E GLOSSÁRIO</Text>
+                </View>
+
                 {data.observations ? (
-                    <View style={{ marginTop: 30, padding: 15, borderLeftWidth: 3, borderLeftStyle: 'solid', borderLeftColor: colors.accent, backgroundColor: colors.light }}>
+                    <View style={{ marginTop: 10, padding: 15, borderLeftWidth: 3, borderLeftStyle: 'solid', borderLeftColor: colors.accent, backgroundColor: colors.light, marginBottom: 20 }}>
                         <Text style={{ fontSize: 8, fontFamily: FONT_BOLD, marginBottom: 5 }}>NOTAS DO ANALISTA:</Text>
                         <Text style={{ fontSize: 8, color: colors.slate, lineHeight: 1.5 }}>{String(data.observations)}</Text>
                     </View>
