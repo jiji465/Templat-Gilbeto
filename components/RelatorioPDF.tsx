@@ -17,9 +17,9 @@ const FONT_BODY = 'Helvetica';
 const FONT_BOLD = 'Helvetica-Bold';
 
 const colors = {
-    primary: '#0f172a',
-    accent: '#6366f1',
-    slate: '#64748b',
+    primary: '#0F2318',
+    accent: '#c9a227',
+    slate: '#475569',
     light: '#f8fafc',
     white: '#FFFFFF',
     border: '#e2e8f0',
@@ -525,6 +525,22 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
                     </View>
                 </View>
 
+                {totalEcon > 0 && (
+                    <View style={{ backgroundColor: colors.primary, borderWidth: 1, borderStyle: 'solid', borderColor: colors.accent, padding: 15, borderRadius: 8, marginBottom: 20, flexDirection: 'row', alignItems: 'center' }}>
+                        <View style={{ marginRight: 15 }}>
+                            <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <Path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                            </Svg>
+                        </View>
+                        <View style={{ flex: 1 }}>
+                            <Text style={{ fontSize: 10, fontFamily: FONT_BOLD, color: colors.accent, marginBottom: 4, textTransform: 'uppercase', letterSpacing: 1 }}>Economia Tributária Gerada</Text>
+                            <Text style={{ fontSize: 8, color: '#e2e8f0', lineHeight: 1.4 }}>
+                                Através da nossa inteligência tributária e correta aplicação de benefícios legais (Substituição Tributária e Monofásico), sua empresa evitou o pagamento indevido de <Text style={[styles.tdBold, { color: colors.white }]}>{fmtBRL(totalEcon)}</Text> neste período.
+                            </Text>
+                        </View>
+                    </View>
+                )}
+
                 <View style={styles.dashboardRow}>
                     <View style={styles.dashboardCard}>
                         <View style={styles.dashboardTitleRow}>
@@ -606,26 +622,27 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
 
                 {/* Info Cards (Fator R, RBT12, etc) */}
                 <View style={[styles.dashboardRow, { marginBottom: 15 }]}>
-                    <View style={[styles.kpiCard, { padding: 10, backgroundColor: '#eff6ff', borderColor: '#bfdbfe' }]}>
-                        <Text style={[styles.kpiLabel, { color: '#60a5fa' }]}>FATOR R / FOLHA</Text>
-                        <Text style={[styles.kpiValue, { color: '#1e40af', fontSize: 10 }]}>{data?.folhaMensal ? fmtBRL(data.folhaMensal) : '-'}</Text>
+                    <View style={[styles.kpiCard, { padding: 10, backgroundColor: '#f0fdf4', borderColor: '#bbf7d0' }]}>
+                        <Text style={[styles.kpiLabel, { color: '#4ade80' }]}>FATOR R / FOLHA</Text>
+                        <Text style={[styles.kpiValue, { color: '#166534', fontSize: 10 }]}>{data?.folhaMensal ? fmtBRL(data.folhaMensal) : '-'}</Text>
                     </View>
                     <View style={[styles.kpiCard, { padding: 10 }]}>
                         <Text style={styles.kpiLabel}>RBT12</Text>
                         <Text style={[styles.kpiValue, { color: colors.primary, fontSize: 10 }]}>{data?.rbt12 ? fmtBRL(data.rbt12) : '-'}</Text>
                         <Text style={styles.kpiSub}>Receita Bruta 12m</Text>
                     </View>
-                    <View style={[styles.kpiCard, { padding: 10, backgroundColor: '#f0fdf4', borderColor: '#bbf7d0' }]}>
-                        <Text style={[styles.kpiLabel, { color: '#4ade80' }]}>PRÓ-LABORE</Text>
-                        <Text style={[styles.kpiValue, { color: '#166534', fontSize: 10 }]}>{data?.proLabore ? fmtBRL(data.proLabore) : '-'}</Text>
+                    <View style={[styles.kpiCard, { padding: 10, backgroundColor: '#fefce8', borderColor: '#fef08a' }]}>
+                        <Text style={[styles.kpiLabel, { color: colors.accent }]}>PRÓ-LABORE</Text>
+                        <Text style={[styles.kpiValue, { color: '#854d0e', fontSize: 10 }]}>{data?.proLabore ? fmtBRL(data.proLabore) : '-'}</Text>
                     </View>
                 </View>
 
                 <View style={styles.table}>
                     <View style={styles.tableHeaderBase}>
                         <Text style={[styles.th, { flex: 3 }]}>TRIBUTO FEDERAL/ESTADUAL</Text>
-                        <Text style={[styles.th, { flex: 1.2, textAlign: 'center' }]}>ALÍQUOTA APLICADA</Text>
-                        <Text style={[styles.th, { flex: 1.5, textAlign: 'center' }]}>BASE DE CÁLCULO</Text>
+                        <Text style={[styles.th, { flex: 1.2, textAlign: 'center' }]}>ALÍQUOTA</Text>
+                        <Text style={[styles.th, { flex: 1.5, textAlign: 'center' }]}>BASE</Text>
+                        <Text style={[styles.th, { flex: 1.2, textAlign: 'center' }]}>VENCIMENTO</Text>
                         <Text style={[styles.th, { flex: 2, textAlign: 'right' }]}>VALOR FINAL</Text>
                     </View>
                     {taxesList.map((t: TaxResult, i: number) => {
@@ -635,11 +652,12 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
                         return (
                             <View key={i} style={styles.tableRow} wrap={false}>
                                 <View style={{ flex: 3, flexDirection: 'row', alignItems: 'center' }}>
-                                    <View style={styles.badge}><Text style={styles.badgeText}>{badgeText}</Text></View>
+                                    <View style={[styles.badge, { backgroundColor: '#fefce8' }]}><Text style={[styles.badgeText, { color: '#854d0e' }]}>{badgeText}</Text></View>
                                     <Text style={[styles.td, styles.tdBold, { color: colors.primary }]}>{String(t.tax || '')}</Text>
                                 </View>
-                                <Text style={[styles.td, { flex: 1.2, textAlign: 'center', color: colors.accent, fontFamily: FONT_BOLD, backgroundColor: '#e0e7ff', padding: 2, borderRadius: 2 }]}>{String(t.rate || '0')}%</Text>
-                                <Text style={[styles.td, { flex: 1.5, textAlign: 'center', color: '#94a3b8' }]}>{String(t.base || '0,00')}</Text>
+                                <Text style={[styles.td, { flex: 1.2, textAlign: 'center', color: '#854d0e', fontFamily: FONT_BOLD, backgroundColor: '#fefce8', padding: 2, borderRadius: 2 }]}>{String(t.rate || '0')}%</Text>
+                                <Text style={[styles.td, { flex: 1.5, textAlign: 'center', color: colors.slate }]}>{String(t.base || '0,00')}</Text>
+                                <Text style={[styles.td, { flex: 1.2, textAlign: 'center', color: '#854d0e', fontFamily: FONT_BOLD, fontSize: 7 }]}>{String(t.dueDate || 'N/A')}</Text>
                                 <Text style={[styles.td, styles.tdBold, { flex: 2, textAlign: 'right', color: colors.primary, fontSize: 9 }]}>{String(t.value || '0,00')}</Text>
                             </View>
                         );

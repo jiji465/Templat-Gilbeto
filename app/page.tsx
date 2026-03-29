@@ -343,6 +343,24 @@ export default function Home() {
                                 <input className="w-full p-3 bg-slate-50 border border-border rounded-xl text-xs font-mono font-bold" value={clientData.folhaMensal} onChange={e => upd('folhaMensal', inputBRL(e.target.value))} />
                             </div>
                         </div>
+
+                        <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-8 mb-4 flex items-center gap-2">
+                            <Plus className="w-3.5 h-3.5" /> Obrigações Adicionais
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-5 bg-slate-50 rounded-2xl border border-slate-100">
+                            <div>
+                                <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block">DIFAL / Antecipação (R$)</label>
+                                <input className="w-full p-3 bg-white border border-border rounded-xl text-xs font-mono font-bold" value={clientData.difal} onChange={e => upd('difal', inputBRL(e.target.value))} placeholder="0,00" />
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block">Valor Parcela (R$)</label>
+                                <input className="w-full p-3 bg-white border border-border rounded-xl text-xs font-mono font-bold" value={clientData.installment} onChange={e => upd('installment', inputBRL(e.target.value))} placeholder="0,00" />
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block">Aviso sobre a Parcela</label>
+                                <input className="w-full p-3 bg-white border border-border rounded-xl text-xs font-bold" value={clientData.installmentInfo} onChange={e => upd('installmentInfo', e.target.value)} placeholder="Ex: Refis PGFN 3/60" />
+                            </div>
+                        </div>
                     </section>
 
                     {/* Tax Results */}
