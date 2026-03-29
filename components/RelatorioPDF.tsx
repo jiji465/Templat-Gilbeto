@@ -9,8 +9,7 @@ import {
     fmtPct, 
     MONTHS, 
     OFFICE, 
-    parseNum,
-    VERSION
+    parseNum
 } from '../utils/taxCalculations';
 
 // Integrated Fonts & Styles
@@ -40,12 +39,13 @@ const styles = StyleSheet.create({
         padding: 60,
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         alignItems: 'center',
     },
     coverTop: {
         alignItems: 'center',
-        marginTop: 100,
+        flex: 1,
+        justifyContent: 'center',
     },
     coverClientLabel: {
         fontSize: 10,
@@ -85,6 +85,10 @@ const styles = StyleSheet.create({
         borderTopColor: 'rgba(255,255,255,0.1)',
         paddingTop: 30,
         alignItems: 'center',
+        position: 'absolute',
+        bottom: 60,
+        left: 60,
+        right: 60,
     },
     coverVersion: {
         fontSize: 7,
@@ -331,10 +335,6 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
                     <View style={{ marginTop: 40, alignItems: 'center' }}>
                         <Text style={styles.coverClientName}>{String(data?.clientName || 'CLIENTE')}</Text>
                     </View>
-                    <View style={{ alignItems: 'center' }}>
-                        <Text style={styles.coverTitle}>INTELIGÊNCIA</Text>
-                        <Text style={styles.coverTitle}>FISCAL PRO</Text>
-                    </View>
                     <View style={styles.coverLine} />
                     <Text style={{ color: colors.white, fontSize: 12, letterSpacing: 2, textTransform: 'uppercase' }}>
                         Competência {String(month)} / {String(data?.compYear || '')}
@@ -495,14 +495,14 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
                         let isPresent = false;
 
                         // Verifica no nome do imposto
-                        if (taxesList.some(t => String(t.tax).toUpperCase().includes(term))) {
+                        if (taxesList.some(t => String(t.tax).toUpperCase().includes(term.toUpperCase()))) {
                             isPresent = true;
                         }
 
                         // Verifica na repartição do Simples Nacional (se existir)
                         if (!isPresent && taxesList.some(t => {
                             if (!t.repart) return false;
-                            return Object.keys(t.repart).some(k => k.toUpperCase().includes(term) && Number(t.repart![k]) > 0);
+                            return Object.keys(t.repart).some(k => k.toUpperCase().includes(term.toUpperCase()) && Number(t.repart![k]) > 0);
                         })) {
                             isPresent = true;
                         }
