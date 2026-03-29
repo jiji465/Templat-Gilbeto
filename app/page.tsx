@@ -16,6 +16,7 @@ import {
     inputBRL, 
     parseNum, 
     SETORES,
+    SETORES_MAP,
     MONTHS,
     OFFICE,
     COLORS_CHART,
@@ -245,7 +246,7 @@ export default function Home() {
                                 <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block">Segmento Predefinido</label>
                                 <select className="w-full p-3.5 bg-slate-50 border border-border rounded-xl text-xs font-black hover:bg-slate-100 transition-all" value={clientData.setor} 
                                     onChange={e => {
-                                        const s = SETORES.find(x => x.value === e.target.value);
+                                        const s = SETORES_MAP.get(e.target.value);
                                         if(s) {
                                             upd('setor', s.value);
                                             if(s.regime) upd('regime', s.regime);
