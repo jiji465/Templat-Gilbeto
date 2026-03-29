@@ -17,10 +17,10 @@ const FONT_BODY = 'Helvetica';
 const FONT_BOLD = 'Helvetica-Bold';
 
 const colors = {
-    primary: '#0F2318',
-    accent: '#c9a227',
+    primary: '#475C3B', // Dark Green
+    accent: '#D1AC5B', // Gold
     slate: '#6B7280',
-    light: '#F9FAFB',
+    light: '#F8F9FA', // Lighter background
     white: '#FFFFFF',
     border: '#E5E7EB',
     muted: '#9CA3AF'
@@ -28,10 +28,79 @@ const colors = {
 
 const styles = StyleSheet.create({
     page: {
-        padding: 40,
-        backgroundColor: colors.white,
+        paddingTop: 85, // Space for absolute header
+        paddingBottom: 40, // Space for footer
+        paddingHorizontal: 40,
+        backgroundColor: '#F7F6F2', // Light cream/grey background seen in the image
         fontFamily: FONT_BODY,
         color: colors.primary,
+        position: 'relative',
+    },
+    // PAGE HEADER (ABSOLUTE)
+    pageHeaderBg: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: 60,
+        backgroundColor: colors.primary,
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 40,
+        justifyContent: 'space-between',
+        borderBottomWidth: 3,
+        borderBottomColor: colors.accent,
+    },
+    pageHeaderLeft: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderLeftWidth: 2,
+        borderLeftColor: colors.accent,
+        paddingLeft: 15,
+        height: 35,
+    },
+    pageHeaderTitle: {
+        color: colors.white,
+        fontFamily: FONT_BOLD,
+        fontSize: 14,
+        marginBottom: 2,
+    },
+    pageHeaderSub: {
+        color: colors.accent,
+        fontSize: 8,
+    },
+    pageHeaderRight: {
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+    },
+    pageHeaderNumber: {
+        color: colors.accent,
+        fontFamily: FONT_BOLD,
+        fontSize: 10,
+        marginBottom: 2,
+    },
+    pageHeaderConfidential: {
+        color: colors.white,
+        fontSize: 6,
+        opacity: 0.6,
+        letterSpacing: 1,
+    },
+    // PAGE FOOTER (ABSOLUTE)
+    pageFooterBg: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: 25,
+        backgroundColor: colors.primary,
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 40,
+        justifyContent: 'space-between',
+    },
+    pageFooterText: {
+        color: 'rgba(255,255,255,0.6)',
+        fontSize: 7,
     },
     // COVER PAGE
     cover: {
@@ -123,196 +192,238 @@ const styles = StyleSheet.create({
     },
 
     // CONTENT HEADER
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
+
+
+    // PAGE 3 - HERO BANNER
+    heroBanner: {
+        backgroundColor: colors.primary,
+        borderRadius: 8,
+        padding: 20,
         marginBottom: 20,
-        borderBottomWidth: 1,
-        borderBottomStyle: 'solid',
-        borderBottomColor: colors.border,
-        paddingBottom: 15,
+        position: 'relative',
+        overflow: 'hidden',
     },
-    headerTitle: {
-        fontSize: 16,
+    heroTitle: {
+        color: colors.accent,
         fontFamily: FONT_BOLD,
-        color: colors.primary,
+        fontSize: 8,
+        letterSpacing: 1,
         textTransform: 'uppercase',
+        marginBottom: 10,
+    },
+    heroValue: {
+        color: colors.white,
+        fontFamily: FONT_BOLD,
+        fontSize: 36,
+        marginBottom: 10,
+    },
+    heroSub: {
+        color: colors.white,
+        fontSize: 7,
+        fontStyle: 'italic',
+        opacity: 0.8,
+    },
+    heroBadgeBox: {
+        position: 'absolute',
+        right: 20,
+        top: 20,
+        backgroundColor: 'rgba(255,255,255,0.1)',
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.2)',
+        borderRadius: 8,
+        padding: 10,
+        alignItems: 'center',
+        width: 100,
+    },
+    heroBadgeValue: {
+        color: colors.accent,
+        fontFamily: FONT_BOLD,
+        fontSize: 16,
+    },
+    heroBadgeLabel: {
+        color: colors.white,
+        fontFamily: FONT_BOLD,
+        fontSize: 8,
+        letterSpacing: 1,
+        marginTop: 2,
+    },
+    heroBadgeSub: {
+        color: colors.white,
+        fontSize: 5,
+        opacity: 0.6,
+        textAlign: 'center',
+        marginTop: 4,
+    },
+    // PAGE 3 - STEPS
+    stepCard: {
+        backgroundColor: colors.white,
+        borderRadius: 4,
+        borderLeftWidth: 4,
+        borderLeftColor: colors.primary,
+        padding: 15,
+        marginBottom: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    stepNumberBox: {
+        width: 40,
+        height: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 15,
+    },
+    stepNumberText: {
+        color: colors.accent,
+        fontFamily: FONT_BOLD,
+        fontSize: 16,
+    },
+    stepContent: {
+        flex: 1,
+    },
+    stepTitle: {
+        color: colors.primary,
+        fontFamily: FONT_BOLD,
+        fontSize: 10,
+        marginBottom: 4,
+    },
+    stepText: {
+        color: colors.slate,
+        fontSize: 8,
+        lineHeight: 1.4,
     },
 
-    // KPI SECTION
-    kpiRow: {
+    // UI ELEMENTS - SHARED
+    sectionTitle: {
+        fontSize: 9,
+        fontFamily: FONT_BOLD,
+        color: colors.primary,
+        marginBottom: 10,
+        textTransform: 'uppercase',
+        borderBottomWidth: 1,
+        borderBottomColor: colors.accent,
+        paddingBottom: 4,
+    },
+    dashboardRow: {
         flexDirection: 'row',
-        gap: 10,
-        marginBottom: 25,
+        gap: 15,
+        marginBottom: 20,
     },
     kpiCard: {
         flex: 1,
-        padding: 15,
-        borderRadius: 8,
-        backgroundColor: colors.light,
-        borderWidth: 1,
-        borderStyle: 'solid',
-        borderColor: colors.border,
-    },
-    kpiIconContainer: {
-        marginBottom: 10,
+        backgroundColor: colors.white,
+        padding: 12,
+        borderRadius: 4,
+        borderTopWidth: 4,
+        borderTopColor: colors.primary,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
     },
     kpiLabel: {
         fontSize: 6,
-        fontFamily: FONT_BOLD,
-        color: colors.muted,
+        color: colors.slate,
         textTransform: 'uppercase',
+        marginBottom: 8,
         letterSpacing: 0.5,
-        marginBottom: 4,
     },
     kpiValue: {
         fontSize: 14,
         fontFamily: FONT_BOLD,
         color: colors.primary,
-        marginBottom: 2,
+        marginBottom: 4,
     },
     kpiSub: {
-        fontSize: 6,
-        color: colors.muted,
+        fontSize: 7,
+        color: colors.accent,
     },
-
-    // CHARTS SECTION
-    dashboardRow: {
-        flexDirection: 'row',
-        gap: 15,
-        marginBottom: 25,
-    },
-    dashboardCard: {
+    // KPIs with Bars
+    kpiBarCard: {
         flex: 1,
-        backgroundColor: colors.light,
-        borderRadius: 8,
-        borderWidth: 1,
-        borderStyle: 'solid',
-        borderColor: colors.border,
-        padding: 15,
+        backgroundColor: colors.white,
+        padding: 12,
+        borderRadius: 4,
+        borderLeftWidth: 3,
+        borderLeftColor: colors.primary,
+        alignItems: 'center',
     },
-    dashboardTitleRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        borderBottomWidth: 1,
-        borderBottomColor: colors.border,
-        paddingBottom: 5,
-        marginBottom: 10,
-    },
-    dashboardTitle: {
-        fontSize: 9,
+    kpiBarValue: {
+        fontSize: 16,
         fontFamily: FONT_BOLD,
         color: colors.primary,
-        textTransform: 'uppercase',
-    },
-
-    // CHART DETAILS
-    donutContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginTop: 10,
-    },
-    donutLegend: {
-        marginLeft: 15,
-        flex: 1,
-    },
-    legendItem: {
         marginBottom: 6,
     },
-    legendLabelRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 2,
-    },
-    legendDot: {
-        width: 4,
+    kpiBarTrack: {
         height: 4,
+        width: '100%',
+        backgroundColor: '#E5E7EB',
         borderRadius: 2,
-        marginRight: 4,
+        marginBottom: 6,
+        overflow: 'hidden',
     },
-    legendLabel: {
+    kpiBarFill: {
+        height: '100%',
+        backgroundColor: colors.accent,
+        borderRadius: 2,
+    },
+    kpiBarLabel: {
         fontSize: 6,
-        fontFamily: FONT_BOLD,
+        color: colors.slate,
+        textTransform: 'uppercase',
+        textAlign: 'center',
+    },
+    kpiBarSubLabel: {
+        fontSize: 5,
         color: colors.muted,
-        textTransform: 'uppercase',
-        flex: 1,
+        textAlign: 'center',
+        marginTop: 2,
     },
-    legendValue: {
-        fontSize: 9,
-        fontFamily: FONT_BOLD,
-        color: colors.primary,
-        marginLeft: 8,
-    },
-
     // TABLES
-    sectionTitle: {
-        fontSize: 10,
-        fontFamily: FONT_BOLD,
-        marginBottom: 15,
-        marginTop: 25,
-        textTransform: 'uppercase',
-        letterSpacing: 1.5,
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
     table: {
         width: '100%',
-        marginTop: 10,
+        marginBottom: 20,
     },
     tableHeaderBase: {
         flexDirection: 'row',
         backgroundColor: colors.primary,
-        borderTopLeftRadius: 8,
-        borderTopRightRadius: 8,
-        padding: 10,
+        padding: 8,
+        borderTopLeftRadius: 4,
+        borderTopRightRadius: 4,
+    },
+    th: {
+        color: colors.white,
+        fontFamily: FONT_BOLD,
+        fontSize: 7,
+        textTransform: 'uppercase',
     },
     tableRow: {
         flexDirection: 'row',
         borderBottomWidth: 1,
-        borderBottomStyle: 'solid',
         borderBottomColor: colors.border,
-        padding: 12,
+        padding: 8,
         alignItems: 'center',
-    },
-    th: {
-        fontSize: 6,
-        fontFamily: FONT_BOLD,
-        color: colors.white,
-        textTransform: 'uppercase',
     },
     td: {
         fontSize: 8,
+        color: colors.primary,
     },
     tdBold: {
         fontFamily: FONT_BOLD,
     },
-    badge: {
-        backgroundColor: '#e0e7ff',
-        paddingHorizontal: 4,
-        paddingVertical: 2,
-        borderRadius: 4,
-        marginRight: 6,
-    },
-    badgeText: {
-        fontSize: 6,
-        fontFamily: FONT_BOLD,
-        color: colors.accent,
-    },
     totalRow: {
         flexDirection: 'row',
-        backgroundColor: colors.accent,
-        borderBottomLeftRadius: 8,
-        borderBottomRightRadius: 8,
-        padding: 12,
+        backgroundColor: colors.primary,
+        padding: 10,
+        borderBottomLeftRadius: 4,
+        borderBottomRightRadius: 4,
         alignItems: 'center',
     },
     totalText: {
-        color: colors.white,
         fontFamily: FONT_BOLD,
-        fontSize: 8,
+        fontSize: 9,
+        color: colors.white,
     },
+
 
     // FOOTER
     footer: {
@@ -445,338 +556,332 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
     const monthIdx = parseInt(data?.compMonth || '1') - 1;
     const month = MONTHS[monthIdx >= 0 && monthIdx < 12 ? monthIdx : 0] || 'Mês';
 
-    return (
-        <Document title={`Relatorio_${data.clientName}`}>
-            {/* PÁGINA 1: CAPA PREMIUM */}
-            <Page size="A4" style={styles.cover}>
-                {/* Geometric Background */}
-                <View style={styles.bgGraphics}>
-                    <Svg width="100%" height="100%" viewBox="0 0 595 842">
-                        <Path d="M-100 -100 L200 -100 L-100 200 Z" fill={colors.accent} opacity={0.03} />
-                        <Path d="M695 942 L395 942 L695 642 Z" fill={colors.accent} opacity={0.03} />
-                        <G opacity={0.05}>
-                            <PdfCircle cx="500" cy="150" r="120" stroke={colors.accent} strokeWidth="1" fill="none" />
-                            <PdfCircle cx="500" cy="150" r="80" stroke={colors.accent} strokeWidth="0.5" fill="none" />
-                            <PdfCircle cx="100" cy="700" r="150" stroke={colors.accent} strokeWidth="1" fill="none" />
-                            <PdfCircle cx="100" cy="700" r="100" stroke={colors.accent} strokeWidth="0.5" fill="none" />
-                        </G>
-                    </Svg>
-                </View>
 
-                <View style={styles.coverTop}>
-                    <View style={{ marginBottom: 40 }}>
-                        <LogoIcon size={80} />
-                    </View>
+    // Extra Indicators for Dashboard
+     // fallback to sum of bases if totalRevenue not available
+    const cargaEfetiva = totalRev > 0 ? (totalTrib / totalRev) * 100 : 0;
 
-                    <View style={styles.coverBadge}>
-                        <Text style={styles.coverBadgeText}>{String(data?.regime || 'Regime')} • {String(month)}/{String(data?.compYear || '')}</Text>
-                    </View>
+    // Extract specific taxes for indicators
+    const dasTax = taxesList.find(t => String(t.tax).toUpperCase().includes('DAS'))?.value;
+    const dasAmount = parseNum(dasTax || 0);
+    const inssTax = taxesList.find(t => String(t.tax).toUpperCase().includes('INSS'))?.value;
+    const inssAmount = parseNum(inssTax || 0);
 
-                    <Text style={styles.coverClientName}>{String(data?.clientName || 'CLIENTE')}</Text>
-                    <Text style={styles.coverTitle}>Relatório Estratégico de Performance Tributária</Text>
-                </View>
+    const compDas = totalTrib > 0 ? (dasAmount / totalTrib) * 100 : 0;
+    const impactoProLabore = totalTrib > 0 ? (inssAmount / totalTrib) * 100 : 0;
 
-                <View style={styles.coverKpiContainer}>
-                    <View style={styles.coverKpiCard}>
-                        <Text style={styles.coverKpiLabel}>Faturamento Total</Text>
-                        <Text style={styles.coverKpiValue}>{fmtBRL(totalRev)}</Text>
-                    </View>
-                    <View style={styles.coverKpiCard}>
-                        <Text style={styles.coverKpiLabel}>Total Tributos</Text>
-                        <Text style={styles.coverKpiValue}>{fmtBRL(totalTrib)}</Text>
-                    </View>
-                    <View style={styles.coverKpiCard}>
-                        <Text style={styles.coverKpiLabel}>Carga Efetiva</Text>
-                        <Text style={styles.coverKpiValue}>{fmtPct(cargaEf)}</Text>
-                    </View>
-                    <View style={styles.coverKpiCard}>
-                        <Text style={[styles.coverKpiLabel, { color: colors.accent }]}>Economia Gerada</Text>
-                        <Text style={[styles.coverKpiValue, styles.coverKpiAccent]}>{fmtBRL(globalEcon)}</Text>
-                    </View>
-                </View>
+    // Fator R metrics
+    const fatorRPct = (data?.folha && data?.rbt12) ? (parseNum(data.folha) / parseNum(data.rbt12)) * 100 : 0;
 
-                <View style={{ alignItems: 'center', position: 'relative', zIndex: 10 }}>
-                    <Text style={{ color: 'rgba(255,255,255,0.3)', fontSize: 7, letterSpacing: 2, textTransform: 'uppercase' }}>{OFFICE.name}</Text>
-                </View>
-            </Page>
+    // Economy metrics
+    const salarioMinimo = 1412; // 2024
+    const economiaSalarios = globalEcon / salarioMinimo;
+    const economiaFaturamento = totalRev > 0 ? (globalEcon / totalRev) * 100 : 0;
+    const economiaMensal = globalEcon / 12;
 
-            {/* PÁGINA 2: DASHBOARD */}
-            <Page size="A4" style={styles.page}>
-                <View style={styles.header}>
-                    <Text style={styles.headerTitle}>RESUMO EXECUTIVO</Text>
-                </View>
+    const currentYear = data?.compYear || new Date().getFullYear();
+    const currentMonth = data?.compMonth || MONTHS[new Date().getMonth()];
 
-                <View style={[styles.kpiRow, { flexWrap: 'wrap', gap: 15 }]}>
-                    <View style={[styles.kpiCard, { minWidth: '45%', backgroundColor: colors.primary }]}>
-                        <View style={styles.kpiIconContainer}>
-                            <Svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <Path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                            </Svg>
-                        </View>
-                        <Text style={[styles.kpiLabel, { color: 'rgba(255,255,255,0.6)' }]}>Faturamento Total</Text>
-                        <Text style={[styles.kpiValue, { color: colors.accent }]}>{fmtBRL(totalRev)}</Text>
-                        <Text style={[styles.kpiSub, { color: 'rgba(255,255,255,0.4)' }]}>Período Analisado</Text>
-                    </View>
-
-                    <View style={[styles.kpiCard, { minWidth: '45%' }]}>
-                        <View style={styles.kpiIconContainer}>
-                            <Svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <Path d="M21 21H3V3" /><Path d="M21 3l-6 6-4-4-6 6" />
-                            </Svg>
-                        </View>
-                        <Text style={styles.kpiLabel}>Total Tributos</Text>
-                        <Text style={styles.kpiValue}>{fmtBRL(totalTrib)}</Text>
-                        <Text style={styles.kpiSub}>Carga Tributária</Text>
-                    </View>
-
-                    <View style={[styles.kpiCard, { minWidth: '45%' }]}>
-                        <View style={styles.kpiIconContainer}>
-                            <Svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <Path d="M21.21 15.89A10 10 0 1 1 8 2.83" /><Path d="M22 12A10 10 0 0 0 12 2v10z" />
-                            </Svg>
-                        </View>
-                        <Text style={styles.kpiLabel}>Carga Efetiva</Text>
-                        <Text style={styles.kpiValue}>{fmtPct(cargaEf)}</Text>
-                        <Text style={styles.kpiSub}>Percentual Médio</Text>
-                    </View>
-
-                    <View style={[styles.kpiCard, { minWidth: '45%' }]}>
-                        <View style={styles.kpiIconContainer}>
-                            <Svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <Path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><Path d="M22 4L12 14.01l-3-3" />
-                            </Svg>
-                        </View>
-                        <Text style={styles.kpiLabel}>Economia Gerada</Text>
-                        <Text style={styles.kpiValue}>{fmtBRL(globalEcon)}</Text>
-                        <Text style={styles.kpiSub}>Otimização</Text>
-                    </View>
-                </View>
-
-                {globalEcon > 0 && (
-                    <View style={{ backgroundColor: colors.primary, borderWidth: 1, borderStyle: 'solid', borderColor: colors.accent, padding: 15, borderRadius: 8, marginBottom: 20, flexDirection: 'row', alignItems: 'center' }}>
-                        <View style={{ marginRight: 15 }}>
-                            <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <Path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                            </Svg>
-                        </View>
-                        <View style={{ flex: 1 }}>
-                            <Text style={{ fontSize: 10, fontFamily: FONT_BOLD, color: colors.accent, marginBottom: 4, textTransform: 'uppercase', letterSpacing: 1 }}>Economia Tributária Gerada</Text>
-                            <Text style={{ fontSize: 8, color: '#e2e8f0', lineHeight: 1.4 }}>
-                                Através da nossa inteligência tributária e correta aplicação de benefícios legais{totalEcon > 0 ? ' (Substituição Tributária / Monofásico)' : ''}{totalFatorR > 0 ? ' e otimização do Fator R' : ''}, sua empresa evitou o pagamento indevido de <Text style={[styles.tdBold, { color: colors.white }]}>{fmtBRL(globalEcon)}</Text> neste período.
-                            </Text>
-                        </View>
-                    </View>
-                )}
-
-                <View style={styles.dashboardRow}>
-                    <View style={styles.dashboardCard}>
-                        <View style={styles.dashboardTitleRow}>
-                            <Text style={styles.dashboardTitle}>COMPOSIÇÃO DE RECEITA</Text>
-                        </View>
-
-                        <View style={{ marginTop: 10 }}>
-                            {(data?.revenues || []).map((r: Revenue, i: number) => {
-                                const val = parseNum(r.value);
-                                const pct = totalRev > 0 ? (val / totalRev * 100) : 0;
-                                if (val === 0) return null;
-                                return (
-                                    <View key={i} style={styles.chartRow} wrap={false}>
-                                        <View style={styles.chartLabelRow}>
-                                            <Text style={styles.chartLabel}>{String(r.label || r.type).substring(0, 50)}</Text>
-                                            <Text style={styles.chartPct}>{pct.toFixed(1)}%</Text>
-                                        </View>
-                                        <View style={styles.chartTrack}>
-                                            <View style={[styles.chartFill, { width: `${pct}%`, backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }]} />
-                                        </View>
-                                    </View>
-                                );
-                            })}
-                        </View>
-                    </View>
-
-                    <View style={styles.dashboardCard}>
-                        <View style={styles.dashboardTitleRow}>
-                            <Text style={styles.dashboardTitle}>COMPOSIÇÃO TRIBUTÁRIA</Text>
-                        </View>
-
-                        <View style={{ marginTop: 10 }}>
-                            {taxesList.map((t: TaxResult, i: number) => {
-                                const val = parseNum(t.value);
-                                const pct = totalTrib > 0 ? (val / totalTrib * 100) : 0;
-                                if (val === 0) return null;
-                                return (
-                                    <View key={`tax-${i}`} style={styles.chartRow} wrap={false}>
-                                        <View style={styles.chartLabelRow}>
-                                            <Text style={styles.chartLabel}>{String(t.tax).substring(0, 50)}</Text>
-                                            <Text style={styles.chartPct}>{pct.toFixed(1)}%</Text>
-                                        </View>
-                                        <View style={styles.chartTrack}>
-                                            <View style={[styles.chartFill, { width: `${pct}%`, backgroundColor: CHART_COLORS[(i + 4) % CHART_COLORS.length] }]} />
-                                        </View>
-                                    </View>
-                                );
-                            })}
-                        </View>
-                    </View>
-                </View>
-
-                <View style={styles.footer}>
-                    <Text style={styles.footerText}>{OFFICE.name}</Text>
-                    <Text style={styles.footerText}>Página 1</Text>
-                </View>
-            </Page>
-
-            {/* PÁGINA 2.5: DETALHES DA APURAÇÃO */}
-            <Page size="A4" style={styles.page}>
-                <View style={styles.header}>
-                    <Text style={[styles.headerTitle, { fontSize: 10 }]}>DETALHAMENTO DE TRIBUTOS</Text>
-                </View>
-
-                {/* Vencimento Chip */}
-                <View style={{ flexDirection: 'row', marginBottom: 20 }}>
-                    <View style={{ backgroundColor: 'rgba(201, 162, 39, 0.1)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: colors.accent }}>
-                        <Svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 6 }}>
-                            <Path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z" />
+    // Generate diagonal stripes for SVG pattern (used in hero banner)
+    const renderStripes = () => {
+        const lines = [];
+        for (let i = -100; i < 800; i += 15) {
+            lines.push(<Path key={i} d={`M${i} 0 L${i+200} 200`} stroke="rgba(201, 162, 39, 0.2)" strokeWidth="2" />);
+        }
+        return lines;
+    };
+return (
+        <Document>
+            {/* PAGINA 1: CAPA */}
+            <Page size="A4" style={[styles.page, { padding: 0 }]}>
+                <View style={styles.cover}>
+                    <View style={styles.bgGraphics}>
+                        <Svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
+                            <Path d="M0,0 L100,0 L100,100 L0,100 Z" fill={colors.primary} />
+                            <PdfCircle cx="80" cy="20" r="40" fill="rgba(201,162,39,0.05)" />
+                            <PdfCircle cx="20" cy="90" r="30" fill="rgba(255,255,255,0.02)" />
                         </Svg>
-                        <Text style={{ fontSize: 7, fontFamily: FONT_BOLD, color: colors.accent, textTransform: 'uppercase', letterSpacing: 1 }}>Apuração Competência {String(month)}/{String(data?.compYear || '')}</Text>
                     </View>
-                </View>
-
-                {/* Info Cards (Fator R, RBT12, etc) */}
-                <View style={[styles.dashboardRow, { marginBottom: 15 }]}>
-                    <View style={[styles.kpiCard, { padding: 10, borderLeftWidth: 3, borderLeftColor: colors.accent }]}>
-                        <View style={styles.kpiIconContainer}>
-                            <Svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <Path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><PdfCircle cx="9" cy="7" r="4" /><Path d="M23 21v-2a4 4 0 0 0-3-3.87" /><Path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                            </Svg>
+                    <View style={styles.coverTop}>
+                        <View style={styles.coverBadge}>
+                            <Text style={styles.coverBadgeText}>RELATÓRIO CONFIDENCIAL</Text>
                         </View>
-                        <Text style={styles.kpiLabel}>FATOR R / FOLHA</Text>
-                        <Text style={[styles.kpiValue, { fontSize: 10 }]}>{data?.folha ? fmtBRL(data.folha) : '-'}</Text>
-                        {data?.folha && data?.rbt12 && (
-                            <Text style={styles.kpiSub}>Média Fator R: {((parseNum(data.folha) / parseNum(data.rbt12)) * 100).toFixed(1)}%</Text>
+                        <Text style={styles.coverClientName}>{String(data?.clientName || 'NOME DA EMPRESA').toUpperCase()}</Text>
+                        <Text style={styles.coverTitle}>ANÁLISE E APURAÇÃO TRIBUTÁRIA</Text>
+                    </View>
+                    <View style={styles.coverKpiContainer}>
+                        <View style={styles.coverKpiCard}>
+                            <Text style={styles.coverKpiLabel}>FATURAMENTO BASE</Text>
+                            <Text style={styles.coverKpiValue}>{fmtBRL(totalRev)}</Text>
+                        </View>
+                        <View style={styles.coverKpiCard}>
+                            <Text style={styles.coverKpiLabel}>TRIBUTOS TOTAIS</Text>
+                            <Text style={styles.coverKpiValue}>{fmtBRL(totalTrib)}</Text>
+                        </View>
+                        {globalEcon > 0 && (
+                            <View style={[styles.coverKpiCard, { borderColor: 'rgba(201, 162, 39, 0.3)', backgroundColor: 'rgba(201, 162, 39, 0.05)' }]}>
+                                <Text style={[styles.coverKpiLabel, { color: colors.accent }]}>ECONOMIA GERADA</Text>
+                                <Text style={[styles.coverKpiValue, styles.coverKpiAccent]}>{fmtBRL(globalEcon)}</Text>
+                            </View>
                         )}
                     </View>
-                    <View style={[styles.kpiCard, { padding: 10, borderLeftWidth: 3, borderLeftColor: colors.accent }]}>
-                        <View style={styles.kpiIconContainer}>
-                            <Svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <Path d="M21.21 15.89A10 10 0 1 1 8 2.83" /><Path d="M22 12A10 10 0 0 0 12 2v10z" />
-                            </Svg>
-                        </View>
-                        <Text style={styles.kpiLabel}>RBT12</Text>
-                        <Text style={[styles.kpiValue, { fontSize: 10 }]}>{data?.rbt12 ? fmtBRL(data.rbt12) : '-'}</Text>
-                        <Text style={styles.kpiSub}>Receita Bruta 12m</Text>
-                    </View>
-                    <View style={[styles.kpiCard, { padding: 10, borderLeftWidth: 3, borderLeftColor: colors.accent }]}>
-                        <View style={styles.kpiIconContainer}>
-                            <Svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <Path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><PdfCircle cx="12" cy="7" r="4" />
-                            </Svg>
-                        </View>
-                        <Text style={styles.kpiLabel}>PRÓ-LABORE</Text>
-                        <Text style={[styles.kpiValue, { fontSize: 10 }]}>{data?.proLabore ? fmtBRL(data.proLabore) : '-'}</Text>
+                    <View style={{ position: 'relative', zIndex: 10, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.1)', paddingTop: 20 }}>
+                        <Text style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)', fontFamily: FONT_BOLD, marginBottom: 4 }}>{String(OFFICE.name).toUpperCase()}</Text>
+                        <Text style={{ fontSize: 7, color: 'rgba(255,255,255,0.5)', letterSpacing: 1 }}>COMPETÊNCIA: {String(currentMonth).toUpperCase()} / {String(currentYear)}</Text>
+                        <Text style={{ fontSize: 7, color: 'rgba(255,255,255,0.5)' }}>CNPJ: {String(data?.cnpj || 'N/A')}</Text>
                     </View>
                 </View>
+            </Page>
+
+            {/* PAGINA 2: DETALHAMENTO TRIBUTARIO */}
+            <Page size="A4" style={styles.page}>
+                <View style={styles.pageHeaderBg}>
+                    <View style={styles.pageHeaderLeft}>
+                        <View>
+                            <Text style={styles.pageHeaderTitle}>Detalhamento Tributário</Text>
+                            <Text style={styles.pageHeaderSub}>Competência {currentMonth} / {currentYear} • {OFFICE.name}</Text>
+                        </View>
+                    </View>
+                    <View style={styles.pageHeaderRight}>
+                        <Text style={styles.pageHeaderNumber}>2 / {globalEcon > 0 ? '3' : '2'}</Text>
+                        <Text style={styles.pageHeaderConfidential}>CONFIDENCIAL</Text>
+                    </View>
+                </View>
+
+                <Text style={styles.sectionTitle}>DADOS DA APURAÇÃO</Text>
+
+                <View style={[styles.dashboardRow, { gap: 10 }]}>
+                    <View style={styles.kpiCard}>
+                        <Text style={styles.kpiLabel}>FOLHA DE PAGAMENTO 12M</Text>
+                        <Text style={styles.kpiValue}>{data?.folha ? fmtBRL(data.folha) : '-'}</Text>
+                        <Text style={styles.kpiSub}>Fator R: {fatorRPct.toFixed(2).replace('.',',')}%</Text>
+                    </View>
+                    <View style={styles.kpiCard}>
+                        <Text style={styles.kpiLabel}>RECEITA BRUTA 12M — RBT12</Text>
+                        <Text style={styles.kpiValue}>{data?.rbt12 ? fmtBRL(data.rbt12) : '-'}</Text>
+                        <Text style={styles.kpiSub}>Base de enquadramento</Text>
+                    </View>
+                    <View style={styles.kpiCard}>
+                        <Text style={styles.kpiLabel}>PRÓ-LABORE DO SÓCIO</Text>
+                        <Text style={styles.kpiValue}>{data?.proLabore ? fmtBRL(data.proLabore) : '-'}</Text>
+                        <Text style={styles.kpiSub}>Base de cálculo INSS</Text>
+                    </View>
+                </View>
+
+                <Text style={styles.sectionTitle}>TRIBUTOS A RECOLHER</Text>
 
                 <View style={styles.table}>
                     <View style={styles.tableHeaderBase}>
-                        <Text style={[styles.th, { flex: 4 }]}>TRIBUTO FEDERAL/ESTADUAL</Text>
-                        <Text style={[styles.th, { flex: 1.2, textAlign: 'center' }]}>ALÍQUOTA</Text>
-                        <Text style={[styles.th, { flex: 1.5, textAlign: 'center' }]}>BASE</Text>
+                        <Text style={[styles.th, { flex: 4 }]}>DESCRIÇÃO</Text>
+                        <Text style={[styles.th, { flex: 1.5, textAlign: 'center' }]}>ALÍQUOTA</Text>
+                        <Text style={[styles.th, { flex: 1.5, textAlign: 'center' }]}>BASE DE CÁLCULO</Text>
                         <Text style={[styles.th, { flex: 1.5, textAlign: 'center' }]}>VENCIMENTO</Text>
-                        <Text style={[styles.th, { flex: 2, textAlign: 'right' }]}>VALOR FINAL</Text>
+                        <Text style={[styles.th, { flex: 1.5, textAlign: 'right' }]}>VALOR</Text>
                     </View>
                     {taxesList.map((t: TaxResult, i: number) => {
-                        const badgeText = t.tax.toUpperCase().includes('SIMPLES') || t.tax.toUpperCase().includes('DAS') ? 'SN' :
-                                          t.tax.toUpperCase().includes('DIFAL') || t.tax.toUpperCase().includes('ICMS') ? 'DF' : 'IM';
-
                         const rowBgColor = i % 2 === 0 ? colors.white : '#F9FAFB';
-
                         return (
                             <View key={i} style={[styles.tableRow, { backgroundColor: rowBgColor }]} wrap={false}>
-                                <View style={{ flex: 4, flexDirection: 'row', alignItems: 'center' }}>
-                                    <View style={[styles.badge, { backgroundColor: '#fbf6e5' }]}><Text style={styles.badgeText}>{badgeText}</Text></View>
-                                    <Text style={[styles.td, styles.tdBold, { color: colors.primary }]}>{String(t.tax || '')}</Text>
+                                <Text style={[styles.td, styles.tdBold, { flex: 4 }]}>{String(t.tax || '')}</Text>
+                                <View style={{ flex: 1.5, alignItems: 'center' }}>
+                                    <Text style={[styles.td, { color: colors.white, backgroundColor: colors.primary, paddingVertical: 3, paddingHorizontal: 6, borderRadius: 4, fontFamily: FONT_BOLD }]}>{String(t.rate || '0')}%</Text>
                                 </View>
-                                <Text style={[styles.td, { flex: 1.2, textAlign: 'center', color: colors.accent, fontFamily: FONT_BOLD, backgroundColor: '#fbf6e5', padding: 2, borderRadius: 2 }]}>{String(t.rate || '0')}%</Text>
                                 <Text style={[styles.td, { flex: 1.5, textAlign: 'center', color: colors.slate }]}>{String(t.base || '0,00')}</Text>
-                                <Text style={[styles.td, { flex: 1.5, textAlign: 'center', color: colors.accent, fontFamily: FONT_BOLD, fontSize: 7 }]}>{String(t.dueDate || 'N/A')}</Text>
-                                <Text style={[styles.td, { flex: 2, textAlign: 'right', color: colors.primary, fontSize: 9, fontFamily: 'Times-Bold' }]}>{String(t.value || '0,00')}</Text>
+                                <Text style={[styles.td, { flex: 1.5, textAlign: 'center', color: colors.slate }]}>{String(t.dueDate || 'N/A')}</Text>
+                                <Text style={[styles.td, { flex: 1.5, textAlign: 'right', fontFamily: FONT_BOLD, fontSize: 9 }]}>{String(t.value || '0,00')}</Text>
                             </View>
                         );
                     })}
-                    <View style={[styles.totalRow, { backgroundColor: colors.primary }]}>
-                        <Text style={[styles.totalText, { flex: 1, color: colors.white }]}>TOTAL CONSOLIDADO</Text>
-                        <Text style={[styles.totalText, { textAlign: 'right', fontSize: 12, color: colors.accent }]}>{fmtBRL(totalTrib)}</Text>
+                    <View style={styles.totalRow}>
+                        <Text style={[styles.totalText, { flex: 1 }]}>TOTAL CONSOLIDADO A RECOLHER</Text>
+                        <Text style={[styles.totalText, { textAlign: 'right', fontSize: 14, color: colors.accent }]}>{fmtBRL(totalTrib)}</Text>
                     </View>
                 </View>
 
-                {/* PAGE BREAK TO PÁGINA 3 FOR GLOSSARY AND NOTES */}
-            </Page>
-
-            <Page size="A4" style={styles.page}>
-                <View style={styles.header}>
-                    <Text style={[styles.headerTitle, { fontSize: 10 }]}>NOTAS E GLOSSÁRIO</Text>
+                <Text style={styles.sectionTitle}>INDICADORES DO PERÍODO</Text>
+                <View style={[styles.dashboardRow, { gap: 10 }]}>
+                    <View style={styles.kpiBarCard}>
+                        <Text style={styles.kpiBarValue}>{cargaEfetiva.toFixed(2).replace('.',',')}%</Text>
+                        <View style={styles.kpiBarTrack}>
+                            <View style={[styles.kpiBarFill, { width: `${Math.min(cargaEfetiva, 100)}%` }]} />
+                        </View>
+                        <Text style={styles.kpiBarLabel}>CARGA EFETIVA</Text>
+                        <Text style={styles.kpiBarSubLabel}>Sobre o faturamento</Text>
+                    </View>
+                    <View style={styles.kpiBarCard}>
+                        <Text style={styles.kpiBarValue}>{fatorRPct.toFixed(2).replace('.',',')}%</Text>
+                        <View style={styles.kpiBarTrack}>
+                            <View style={[styles.kpiBarFill, { width: `${Math.min(fatorRPct, 100)}%` }]} />
+                        </View>
+                        <Text style={styles.kpiBarLabel}>FATOR R</Text>
+                        <Text style={styles.kpiBarSubLabel}>Anexo III (mínimo: 28%)</Text>
+                    </View>
+                    <View style={styles.kpiBarCard}>
+                        <Text style={styles.kpiBarValue}>{compDas.toFixed(2).replace('.',',')}%</Text>
+                        <View style={styles.kpiBarTrack}>
+                            <View style={[styles.kpiBarFill, { width: `${Math.min(compDas, 100)}%` }]} />
+                        </View>
+                        <Text style={styles.kpiBarLabel}>COMPOSIÇÃO DAS</Text>
+                        <Text style={styles.kpiBarSubLabel}>DAS s/ total de tributos</Text>
+                    </View>
+                    <View style={styles.kpiBarCard}>
+                        <Text style={styles.kpiBarValue}>{impactoProLabore.toFixed(2).replace('.',',')}%</Text>
+                        <View style={styles.kpiBarTrack}>
+                            <View style={[styles.kpiBarFill, { width: `${Math.min(impactoProLabore, 100)}%`, backgroundColor: '#eab308' }]} />
+                        </View>
+                        <Text style={styles.kpiBarLabel}>IMPACTO PRÓ-LABORE</Text>
+                        <Text style={styles.kpiBarSubLabel}>INSS s/ total de tributos</Text>
+                    </View>
                 </View>
 
-                {/* Renderizar Glossário somente com impostos presentes na apuração */}
-                <View style={styles.sectionTitle}>
-                    <View style={{ width: 12, height: 2, backgroundColor: colors.accent, marginRight: 8 }} />
+
+                <View style={[styles.sectionTitle, { marginTop: 15 }]}>
                     <Text>GLOSSÁRIO TRIBUTÁRIO</Text>
                 </View>
-
-                <View style={styles.glossaryContainer}>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 20 }}>
                     {Object.entries(GLOSSARY_TERMS).map(([term, definition]) => {
-                        // Verifica se este imposto aparece na lista (por nome ou repartição SN)
                         let isPresent = false;
-
-                        // Verifica no nome do imposto
                         if (taxesList.some(t => String(t.tax).toUpperCase().includes(term.toUpperCase()))) {
                             isPresent = true;
                         }
-
-                        // Verifica na repartição do Simples Nacional (se existir)
                         if (!isPresent && taxesList.some(t => {
                             if (!t.repart) return false;
                             return Object.keys(t.repart).some(k => k.toUpperCase().includes(term.toUpperCase()) && Number(t.repart![k]) > 0);
                         })) {
                             isPresent = true;
                         }
-
-                        // Se encontrou ou se for Simples Nacional e o termo for DAS
                         if (isPresent || (data?.regime === 'Simples Nacional' && term === 'DAS' && taxesList.length > 0) || (data?.regime === 'MEI' && term === 'DAS-MEI' && taxesList.length > 0)) {
                             return (
-                                <View key={term} style={styles.glossaryItem} wrap={false}>
-                                    <Text style={styles.glossaryTerm}>{term}</Text>
-                                    <Text style={styles.glossaryDef}>{definition}</Text>
+                                <View key={term} style={{ width: '48%', backgroundColor: colors.white, padding: 8, borderRadius: 4, borderLeftWidth: 2, borderLeftColor: colors.primary }}>
+                                    <Text style={{ fontSize: 7, fontFamily: FONT_BOLD, color: colors.primary, marginBottom: 2 }}>{term}</Text>
+                                    <Text style={{ fontSize: 6, color: colors.slate, lineHeight: 1.4 }}>{definition}</Text>
                                 </View>
                             );
                         }
                         return null;
                     })}
                 </View>
-
-                {/* Se for Simples Nacional, adiciona a nota explicativa de repartição */}
-                {data?.regime === 'Simples Nacional' && (
-                    <View style={{ marginTop: 5, marginBottom: 20 }}>
-                        <Text style={[styles.glossaryDef, { fontStyle: 'italic', fontFamily: FONT_BODY }]}>
-                            <Text style={{ fontFamily: FONT_BOLD, color: colors.primary, fontStyle: 'normal' }}>Nota sobre o Simples Nacional: </Text>
-                            Embora pago em uma guia única (DAS), o valor recolhido é repartido entre os entes federativos e financia diversos impostos federais, estaduais e municipais simultaneamente.
-                        </Text>
-                    </View>
-                )}
-
-                {data.observations ? (
-                    <View style={{ marginTop: 10, padding: 15, borderLeftWidth: 3, borderLeftStyle: 'solid', borderLeftColor: colors.primary, backgroundColor: colors.light, marginBottom: 20 }}>
-                        <Text style={{ fontSize: 8, fontFamily: FONT_BOLD, marginBottom: 5, color: colors.primary }}>NOTAS DO ANALISTA:</Text>
-                        <Text style={{ fontSize: 8, color: colors.slate, lineHeight: 1.5 }}>{String(data.observations)}</Text>
-                    </View>
-                ) : null}
-
-                <View style={styles.footer}>
-                    <Text style={styles.footerText}>{OFFICE.name}</Text>
-                    <Text style={styles.footerText}>Página 2 • Relatório Estritamente Confidencial</Text>
+                <View style={styles.pageFooterBg}>
+                    <Text style={styles.pageFooterText}>{OFFICE.name} • CNPJ {String(data?.cnpj || '00.000.000/0001-00')}</Text>
+                    <Text style={styles.pageFooterText}>Competência {currentMonth} / {currentYear} • Documento Confidencial</Text>
                 </View>
             </Page>
+
+            {/* PAGINA 3: ECONOMIA TRIBUTARIA (Only if > 0) */}
+            {globalEcon > 0 && (
+                <Page size="A4" style={styles.page}>
+                    <View style={styles.pageHeaderBg}>
+                        <View style={styles.pageHeaderLeft}>
+                            <View>
+                                <Text style={styles.pageHeaderTitle}>Análise de Economia Tributária</Text>
+                                <Text style={styles.pageHeaderSub}>Competência {currentMonth} / {currentYear} • {OFFICE.name}</Text>
+                            </View>
+                        </View>
+                        <View style={styles.pageHeaderRight}>
+                            <Text style={styles.pageHeaderNumber}>3 / 3</Text>
+                            <Text style={styles.pageHeaderConfidential}>CONFIDENCIAL</Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.heroBanner}>
+                        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0.5 }}>
+                            <Svg viewBox="0 0 500 200" width="100%" height="100%">
+                                <G>{renderStripes()}</G>
+                            </Svg>
+                        </View>
+                        <View style={{ position: 'relative', zIndex: 10 }}>
+                            <Text style={styles.heroTitle}>ECONOMIA TRIBUTÁRIA GERADA NESTE PERÍODO</Text>
+                            <Text style={styles.heroValue}>{fmtBRL(globalEcon)}</Text>
+                            <Text style={styles.heroSub}>
+                                Resultado direto da correta aplicação {totalFatorR > 0 ? 'do Fator R — regime Anexo III do Simples Nacional' : 'dos benefícios legais vigentes'}.
+                            </Text>
+
+                            <View style={styles.heroBadgeBox}>
+                                <Text style={styles.heroBadgeValue}>100%</Text>
+                                <Text style={styles.heroBadgeLabel}>LEGAL</Text>
+                                <Text style={styles.heroBadgeSub}>Dentro das normas do Simples Nacional</Text>
+                            </View>
+                        </View>
+                    </View>
+
+                    <Text style={styles.sectionTitle}>O QUE REPRESENTA ESSA ECONOMIA?</Text>
+
+                    <View style={[styles.dashboardRow, { gap: 10 }]}>
+                        <View style={styles.kpiCard}>
+                            <Text style={styles.kpiBarLabel}>SALÁRIOS MÍNIMOS</Text>
+                            <Text style={[styles.kpiBarValue, { marginVertical: 8, textAlign: 'center' }]}>{economiaSalarios.toFixed(1).replace('.',',')}x</Text>
+                            <Text style={styles.kpiBarSubLabel}>Poder gerado em contratação</Text>
+                        </View>
+                        <View style={styles.kpiCard}>
+                            <Text style={styles.kpiBarLabel}>% DO FATURAMENTO</Text>
+                            <Text style={[styles.kpiBarValue, { marginVertical: 8, textAlign: 'center' }]}>{economiaFaturamento.toFixed(2).replace('.',',')}%</Text>
+                            <Text style={styles.kpiBarSubLabel}>Percentual preservado</Text>
+                        </View>
+                        <View style={styles.kpiCard}>
+                            <Text style={styles.kpiBarLabel}>MÉDIA MENSAL</Text>
+                            <Text style={[styles.kpiBarValue, { marginVertical: 8, textAlign: 'center', fontSize: 13 }]}>{fmtBRL(economiaMensal)}</Text>
+                            <Text style={styles.kpiBarSubLabel}>Anualizado por mês</Text>
+                        </View>
+                        <View style={styles.kpiCard}>
+                            <Text style={styles.kpiBarLabel}>DIFERENÇA DE REGIME</Text>
+                            <Text style={[styles.kpiBarValue, { marginVertical: 8, textAlign: 'center', fontSize: 13 }]}>{fmtBRL(globalEcon)}</Text>
+                            <Text style={styles.kpiBarSubLabel}>{totalFatorR > 0 ? 'Anexo III vs Anexo V' : 'Carga Padrão vs Reduzida'}</Text>
+                        </View>
+                    </View>
+
+                    <Text style={styles.sectionTitle}>COMO ESSA ECONOMIA FOI GERADA</Text>
+
+                    <View>
+                        <View style={styles.stepCard}>
+                            <View style={[styles.stepNumberBox, { backgroundColor: colors.primary }]}>
+                                <Text style={styles.stepNumberText}>01</Text>
+                            </View>
+                            <View style={styles.stepContent}>
+                                <Text style={styles.stepTitle}>Fator R Ativo e Monitorado</Text>
+                                <Text style={styles.stepText}>
+                                    Sua folha de pagamento dos últimos 12 meses totaliza {fmtBRL(parseNum(data?.folha))}, representando {fatorRPct.toFixed(2).replace('.',',')}% da Receita Bruta acumulada (RBT12: {fmtBRL(parseNum(data?.rbt12))}). Por superar o mínimo de 28%, sua empresa é automaticamente enquadrada no Anexo III.
+                                </Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.stepCard}>
+                            <View style={[styles.stepNumberBox, { backgroundColor: colors.primary }]}>
+                                <Text style={styles.stepNumberText}>02</Text>
+                            </View>
+                            <View style={styles.stepContent}>
+                                <Text style={styles.stepTitle}>Alíquota Efetiva Reduzida</Text>
+                                <Text style={styles.stepText}>
+                                    O enquadramento no Anexo III resultou em alíquota efetiva de {cargaEfetiva.toFixed(2).replace('.',',')}%. Sem o Fator R, o Anexo V seria aplicado com carga substancialmente maior, gerando o diferencial de {fmtBRL(globalEcon)} que sua empresa não precisou pagar.
+                                </Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.stepCard}>
+                            <View style={[styles.stepNumberBox, { backgroundColor: colors.primary }]}>
+                                <Text style={styles.stepNumberText}>03</Text>
+                            </View>
+                            <View style={styles.stepContent}>
+                                <Text style={styles.stepTitle}>Planejamento 100% Legal e Seguro</Text>
+                                <Text style={styles.stepText}>
+                                    Toda a economia é resultado da aplicação técnica correta das regras do Simples Nacional. Não há qualquer risco fiscal, autuação ou questionamento — apenas a legislação vigente trabalhando a favor da sua empresa.
+                                </Text>
+                            </View>
+                        </View>
+                    </View>
+
+                    <View style={{ marginTop: 10, padding: 10, backgroundColor: '#eef2e6', borderRadius: 4, borderWidth: 1, borderColor: '#d1dbbd' }}>
+                        <Text style={{ fontSize: 7, color: colors.primary }}>
+                            <Text style={{ fontFamily: FONT_BOLD }}>Nota: </Text>
+                            Informações baseadas nos dados fornecidos e nas regras do Simples Nacional vigentes. Consulte seu contador para decisões estratégicas.
+                        </Text>
+                    </View>
+
+                    <View style={styles.pageFooterBg}>
+                        <Text style={styles.pageFooterText}>{OFFICE.name} • CNPJ {String(data?.cnpj || '00.000.000/0001-00')}</Text>
+                        <Text style={styles.pageFooterText}>Competência {currentMonth} / {currentYear} • Documento Confidencial</Text>
+                    </View>
+                </Page>
+            )}
         </Document>
     );
 };
