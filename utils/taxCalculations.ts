@@ -41,30 +41,30 @@ export const COLORS_CHART = ['#0f2318','#c9a227','#3b82f6','#8b5cf6','#ef4444','
 
 // --- Formatting Helpers ---
 
-export const fmtBRL = (v: any) => new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(parseFloat(v)||0);
-export const fmtPct = (v: any) => (parseFloat(v)||0).toFixed(2).replace('.',',')+' %';
+export const fmtBRL = (v: unknown) => new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(parseFloat(String(v))||0);
+export const fmtPct = (v: unknown) => (parseFloat(String(v))||0).toFixed(2).replace('.',',')+' %';
 export const fmtCNPJ = (v: string) => {
     const d=v.replace(/\D/g,'').slice(0,14);
     return d.replace(/(\d{2})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1/$2').replace(/(\d{4})(\d)/,'$1-$2');
 };
-export const parseNum = (v: any): number => {
+export const parseNum = (v: unknown): number => {
     if(typeof v==='number') return v;
     if(!v) return 0;
     return parseFloat(String(v).replace(/\./g,'').replace(',','.'))||0;
 };
 export const parseBRL = (v: string): string => {
-    let d=v.replace(/\D/g,'');
+    const d=v.replace(/\D/g,'');
     if(d==='') return '';
     return (parseInt(d,10)/100).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
 };
-export const fmtDisp = (n: any): string => {
+export const fmtDisp = (n: unknown): string => {
     if(!n && n!==0) return '';
     const num = typeof n === 'number' ? n : parseNum(n);
     return num.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 };
-export const inputBRL = (raw: any): string => {
+export const inputBRL = (raw: unknown): string => {
     if(!raw && raw!==0) return '';
-    let digits=String(raw).replace(/\D/g,'');
+    const digits=String(raw).replace(/\D/g,'');
     if(!digits) return '';
     return (parseInt(digits,10)/100).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
 };
@@ -139,7 +139,7 @@ export const SN_REPARTITIONS: Record<string, (fi: number) => Record<string, numb
     },
 };
 
-export const calcSN = (rbt12: number, valor: number, anexo: string, opts: any = {}) => {
+export const calcSN = (rbt12: number, valor: number, anexo: string, opts: Record<string, unknown> = {}) => {
     const tbl = SN_TABLES[anexo];
     if(!tbl || rbt12<=0) return {rate:0,rateBef:0,nominal:0,deduction:0,faixa:0,totalValue:0,repart:{} as Record<string, number>};
     const faixa = tbl.find(f=>rbt12<=f.limit) || tbl[tbl.length-1];
@@ -200,7 +200,7 @@ export const getDueDate = (m: string | number, y: string | number, tax: string) 
     
     const lastUtil=(month: number, year: number)=>{
         const last=new Date(year,month,0).getDate();
-        let d=new Date(year,month-1,last);
+        const d=new Date(year,month-1,last);
         while(d.getDay()===0||d.getDay()===6) d.setDate(d.getDate()-1);
         return d.getDate();
     };
@@ -216,25 +216,74 @@ export const getDueDate = (m: string | number, y: string | number, tax: string) 
     return `${p(dia)}/${p(nm)}/${ny}`;
 };
 
-export const autoCalc = (data: any) => {
+export interface TaxResult {
+    id: number;
+    tax: string;
+    base: string;
+    rate: string;
+    value: string;
+    dueDate: string;
+    obs?: string;
+    savedValue?: number;
+    repart?: Record<string, number>;
+    rateBef?: number;
+    isManual?: boolean;
+}
+
+export interface Revenue {
+    id: number;
+    type: string;
+    anexo?: string;
+    label?: string;
+    value: string;
+    isST?: boolean;
+    isMono?: boolean;
+    isISSRetido?: boolean;
+    presIRPJ?: number;
+    presCSLL?: number;
+}
+
+export interface ClientData {
+    clientName: string;
+    cnpj: string;
+    compMonth: string;
+    compYear: string;
+    regime: string;
+    setor: string;
+    cnae?: string;
+    proLabore: string;
+    folha: string;
+    folhaMensal: string;
+    rbt12: string;
+    inssPago: string;
+    installment: string;
+    installmentInfo: string;
+    difal: string;
+    otherTaxes: string;
+    observations: string;
+    internalNotes: string;
+    revenues: Revenue[];
+}
+
+export const autoCalc = (data: ClientData): TaxResult[] => {
     const proLabore  = parseNum(data.proLabore);
     const rbt12      = parseNum(data.rbt12);
     const folha12    = parseNum(data.folha);
     const folhaMen   = parseNum(data.folhaMensal);
     const revenues   = data.revenues || [];
-    let out: any[]=[], id=1;
+    const out: TaxResult[]=[], idObj = { id: 1 };
 
-    revenues.forEach((rev: any) => {
+    revenues.forEach((rev: Revenue) => {
         const val = parseNum(rev.value);
         if(val<=0) return;
 
         const add = (name: string, rate: number, base: number, obs="") => {
-            out.push({id:id++,tax:name,base:fmtDisp(base),rate:rate.toFixed(2).replace('.',','),
+            out.push({id:idObj.id++,tax:name,base:fmtDisp(base),rate:rate.toFixed(2).replace('.',','),
                       value:fmtDisp(base*(rate/100)),dueDate:getDueDate(data.compMonth,data.compYear,name),obs});
         };
 
         if(data.regime==='MEI') {
-            out.push({id:id++,tax:'DAS-MEI',base:'-',rate:'-',value:'70,60',
+            out.push({id:idObj.id++,tax:'DAS-MEI',base:'-',rate:'-',value:'70,60',
                       dueDate:getDueDate(data.compMonth,data.compYear,'DAS-MEI'),
                       obs:'DAS-MEI fixo — atualize se necessário'});
 
@@ -246,7 +295,7 @@ export const autoCalc = (data: any) => {
             if(anx==='Anexo V') anx=getAnexoEfetivo('Anexo V',fR);
 
             const res = calcSN(rbt12,val,anx,{isST:rev.isST,isMono:rev.isMono,isISSRetido:rev.isISSRetido});
-            let tags=[];
+            const tags=[];
             if(rev.isST) tags.push('ICMS ST');
             if(rev.isMono) tags.push('Monofásico');
             if(rev.isISSRetido) tags.push('ISS Retido');
@@ -263,7 +312,7 @@ export const autoCalc = (data: any) => {
             const econ = ((res.rateBef-res.rate)/100)*val;
             const obs = `${anx} Fx.${res.faixa} Alíq.Nom. ${res.nominal.toFixed(2).replace('.',',')}%${econ>0?' | Economia: '+fmtBRL(econ):''}`;
 
-            out.push({id:id++,tax:nm,base:fmtDisp(val),
+            out.push({id:idObj.id++,tax:nm,base:fmtDisp(val),
                       rate:res.rate.toFixed(4).replace('.',','),
                       value:fmtDisp(res.totalValue),
                       dueDate:getDueDate(data.compMonth,data.compYear,'DAS'),
@@ -293,35 +342,37 @@ export const autoCalc = (data: any) => {
         const inssV = parseNum(data.inssPago)||(proLabore*0.11);
         const irrfV = calcIRRFProLabore(proLabore,inssV);
 
-        out.push({id:id++,tax:"INSS sobre Pró-Labore (Sócio)",base:fmtDisp(proLabore),
+        out.push({id:idObj.id++,tax:"INSS sobre Pró-Labore (Sócio)",base:fmtDisp(proLabore),
                   rate:data.inssPago?"FIXO":"11,00",value:fmtDisp(inssV),
                   dueDate:getDueDate(data.compMonth,data.compYear,'INSS (retido)'),
                   obs:"Contribuição previdenciária do sócio (PF)"});
 
-        if(irrfV>0) out.push({id:id++,tax:"IRRF sobre Pró-Labore",base:fmtDisp(proLabore-inssV),
+        if(irrfV>0) out.push({id:idObj.id++,tax:"IRRF sobre Pró-Labore",base:fmtDisp(proLabore-inssV),
                   rate:"VAR",value:fmtDisp(irrfV),
                   dueDate:getDueDate(data.compMonth,data.compYear,'DAS'),
                   obs:"Imposto de Renda Retido na Fonte — tabela progressiva"});
 
         if(data.regime==='Lucro Presumido'||data.regime==='Lucro Real') {
-            out.push({id:id++,tax:"INSS Patronal (Empresa)",base:fmtDisp(proLabore),rate:"20,00",value:fmtDisp(proLabore*0.20),dueDate:getDueDate(data.compMonth,data.compYear,'CPP (Patronal)'),obs:"Contribuição Previdenciária Patronal"});
-            out.push({id:id++,tax:"RAT/FAP",base:fmtDisp(proLabore),rate:"1,00",value:fmtDisp(proLabore*0.01),dueDate:getDueDate(data.compMonth,data.compYear,'RAT'),obs:"Riscos Ambientais do Trabalho"});
-            out.push({id:id++,tax:"Contribuições a Terceiros",base:fmtDisp(proLabore),rate:"5,80",value:fmtDisp(proLabore*0.058),dueDate:getDueDate(data.compMonth,data.compYear,'Terceiros'),obs:"Sistema S (SESC, SENAC, SEBRAE, etc.)"});
+            out.push({id:idObj.id++,tax:"INSS Patronal (Empresa)",base:fmtDisp(proLabore),rate:"20,00",value:fmtDisp(proLabore*0.20),dueDate:getDueDate(data.compMonth,data.compYear,'CPP (Patronal)'),obs:"Contribuição Previdenciária Patronal"});
+            out.push({id:idObj.id++,tax:"RAT/FAP",base:fmtDisp(proLabore),rate:"1,00",value:fmtDisp(proLabore*0.01),dueDate:getDueDate(data.compMonth,data.compYear,'RAT'),obs:"Riscos Ambientais do Trabalho"});
+            out.push({id:idObj.id++,tax:"Contribuições a Terceiros",base:fmtDisp(proLabore),rate:"5,80",value:fmtDisp(proLabore*0.058),dueDate:getDueDate(data.compMonth,data.compYear,'Terceiros'),obs:"Sistema S (SESC, SENAC, SEBRAE, etc.)"});
         }
     }
 
     if(folhaMen>0 && (data.regime==='Lucro Presumido'||data.regime==='Lucro Real')) {
-        out.push({id:id++,tax:"INSS Patronal sobre Folha",base:fmtDisp(folhaMen),rate:"20,00",value:fmtDisp(folhaMen*0.20),dueDate:getDueDate(data.compMonth,data.compYear,'CPP (Patronal)'),obs:"Contribuição Previdenciária Patronal sobre folha de pagamento"});
-        out.push({id:id++,tax:"FGTS sobre Folha de Pagamento",base:fmtDisp(folhaMen),rate:"8,00",value:fmtDisp(folhaMen*0.08),dueDate:getDueDate(data.compMonth,data.compYear,'FGTS'),obs:"Fundo de Garantia do Tempo de Serviço"});
+        out.push({id:idObj.id++,tax:"INSS Patronal sobre Folha",base:fmtDisp(folhaMen),rate:"20,00",value:fmtDisp(folhaMen*0.20),dueDate:getDueDate(data.compMonth,data.compYear,'CPP (Patronal)'),obs:"Contribuição Previdenciária Patronal sobre folha de pagamento"});
+        out.push({id:idObj.id++,tax:"FGTS sobre Folha de Pagamento",base:fmtDisp(folhaMen),rate:"8,00",value:fmtDisp(folhaMen*0.08),dueDate:getDueDate(data.compMonth,data.compYear,'FGTS'),obs:"Fundo de Garantia do Tempo de Serviço"});
     }
 
     const extras=[
-        {field:'installment', tax:'Parcela de Parcelamento', obs:'Pagamento de parcela de débitos fiscais parcelados'},
-        {field:'difal',       tax:'DIFAL / Antecipação ICMS', obs:'Diferencial de alíquota'},
-        {field:'otherTaxes',  tax:'Outros Tributos / Taxas', obs:'Lançamento manual'},
+        {field:'installment' as keyof ClientData, tax:'Parcela de Parcelamento', obs:'Pagamento de parcela de débitos fiscais parcelados'},
+        {field:'difal' as keyof ClientData,       tax:'DIFAL / Antecipação ICMS', obs:'Diferencial de alíquota'},
+        {field:'otherTaxes' as keyof ClientData,  tax:'Outros Tributos / Taxas', obs:'Lançamento manual'},
     ];
     extras.forEach(({field,tax,obs})=>{
-        const v=parseNum(data[field]);
+        const valData = data[field];
+        if (typeof valData !== 'string') return;
+        const v=parseNum(valData);
         if(v>0) {
             let taxName = tax;
             let obsText = obs;
@@ -329,7 +380,7 @@ export const autoCalc = (data: any) => {
                 taxName = `Parcela de Parcelamento (${data.installmentInfo})`;
                 obsText = `${obs} — ${data.installmentInfo}`;
             }
-            out.push({id:id++,tax:taxName,base:'-',rate:'-',value:fmtDisp(v),
+            out.push({id:idObj.id++,tax:taxName,base:'-',rate:'-',value:fmtDisp(v),
                       dueDate:getDueDate(data.compMonth,data.compYear,tax),obs:obsText});
         }
     });
@@ -337,9 +388,9 @@ export const autoCalc = (data: any) => {
     return out;
 };
 
-export const genWppSummary = (data: any, taxes: any[]) => {
-    const totalRev = (data.revenues || []).reduce((s: number, r: any) => s + parseNum(r.value), 0);
-    const totalTrib = taxes.reduce((s: number, t: any) => s + parseNum(t.value), 0);
+export const genWppSummary = (data: ClientData, taxes: TaxResult[]) => {
+    const totalRev = (data.revenues || []).reduce((s: number, r: Revenue) => s + parseNum(r.value), 0);
+    const totalTrib = taxes.reduce((s: number, t: TaxResult) => s + parseNum(t.value), 0);
     const cargaEf = totalRev > 0 ? (totalTrib / totalRev) * 100 : 0;
     const mo = MONTHS[parseInt(data.compMonth) - 1];
 

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { 
-    Page, Text, View, Document, StyleSheet, Svg, Path, G 
+    Page, Text, View, Document, StyleSheet, Svg, Path
 } from '@react-pdf/renderer';
 import { 
     fmtBRL, 
@@ -230,12 +230,14 @@ const LogoIcon = ({ size = 40, color = colors.accent }) => (
     </Svg>
 );
 
-export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
+import { ClientData, TaxResult, Revenue } from '../utils/taxCalculations';
+
+export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResult[] }) => {
     const taxesList = taxes || [];
-    const totalRev = (data?.revenues || []).reduce((s: number, r: any) => s + (parseNum(r.value)), 0);
-    const totalTrib = taxesList.reduce((s: number, t: any) => s + (parseNum(t.value)), 0);
+    const totalRev = (data?.revenues || []).reduce((s: number, r: Revenue) => s + (parseNum(r.value)), 0);
+    const totalTrib = taxesList.reduce((s: number, t: TaxResult) => s + (parseNum(t.value)), 0);
     const cargaEf = totalRev > 0 ? (totalTrib / totalRev) * 100 : 0;
-    const totalEcon = taxesList.reduce((s: number, t: any) => s + (t.savedValue || 0), 0);
+    const totalEcon = taxesList.reduce((s: number, t: TaxResult) => s + (t.savedValue || 0), 0);
     
     const monthIdx = parseInt(data?.compMonth || '1') - 1;
     const month = MONTHS[monthIdx >= 0 && monthIdx < 12 ? monthIdx : 0] || 'Mês';
@@ -317,7 +319,7 @@ export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
                         <Text style={[styles.th, { flex: 1, textAlign: 'right' }]}>Alíquota</Text>
                         <Text style={[styles.th, { flex: 2, textAlign: 'right' }]}>Valor Devido</Text>
                     </View>
-                    {taxesList.map((t, i) => (
+                    {taxesList.map((t: TaxResult, i: number) => (
                         <View key={i} style={styles.tableRow} wrap={false}>
                             <Text style={[styles.td, styles.tdBold, { flex: 3 }]}>{String(t.tax || '')}</Text>
                             <Text style={[styles.td, { flex: 1.2, textAlign: 'right', color: colors.slate }]}>{String(t.base || '0,00')}</Text>
@@ -325,7 +327,7 @@ export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
                             <Text style={[styles.td, styles.tdBold, { flex: 2, textAlign: 'right' }]}>{String(t.value || '0,00')}</Text>
                         </View>
                     ))}
-                    <View style={[styles.tableRow, { backgroundColor: colors.primary, color: colors.white, borderWidth: 0, marginTop: 10, borderRadius: 4 }]}>
+                    <View style={[styles.tableRow, { backgroundColor: colors.primary, color: colors.white, borderBottomWidth: 0, marginTop: 10, borderRadius: 4 }]}>
                         <Text style={[styles.tdBold, { flex: 4.2 }]}>TOTAL CONSOLIDADO</Text>
                         <Text style={[styles.tdBold, { flex: 3, textAlign: 'right', fontSize: 12, color: colors.accent }]}>{fmtBRL(totalTrib)}</Text>
                     </View>
