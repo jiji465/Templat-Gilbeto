@@ -592,44 +592,56 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
     };
 return (
         <Document>
-            {/* PAGINA 1: CAPA */}
-            <Page size="A4" style={[styles.page, { padding: 0 }]}>
-                <View style={styles.cover}>
-                    <View style={styles.bgGraphics}>
-                        <Svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
-                            <Path d="M0,0 L100,0 L100,100 L0,100 Z" fill={colors.primary} />
-                            <PdfCircle cx="80" cy="20" r="40" fill="rgba(201,162,39,0.05)" />
-                            <PdfCircle cx="20" cy="90" r="30" fill="rgba(255,255,255,0.02)" />
-                        </Svg>
+            {/* PÁGINA 1: CAPA PREMIUM */}
+            <Page size="A4" style={styles.cover}>
+                {/* Geometric Background */}
+                <View style={styles.bgGraphics}>
+                    <Svg width="100%" height="100%" viewBox="0 0 595 842">
+                        <Path d="M-100 -100 L200 -100 L-100 200 Z" fill={colors.accent} opacity={0.03} />
+                        <Path d="M695 942 L395 942 L695 642 Z" fill={colors.accent} opacity={0.03} />
+                        <G opacity={0.05}>
+                            <PdfCircle cx="500" cy="150" r="120" stroke={colors.accent} strokeWidth="1" fill="none" />
+                            <PdfCircle cx="500" cy="150" r="80" stroke={colors.accent} strokeWidth="0.5" fill="none" />
+                            <PdfCircle cx="100" cy="700" r="150" stroke={colors.accent} strokeWidth="1" fill="none" />
+                            <PdfCircle cx="100" cy="700" r="100" stroke={colors.accent} strokeWidth="0.5" fill="none" />
+                        </G>
+                    </Svg>
+                </View>
+
+                <View style={styles.coverTop}>
+                    <View style={{ marginBottom: 40 }}>
+                        <LogoIcon size={80} />
                     </View>
-                    <View style={styles.coverTop}>
-                        <View style={styles.coverBadge}>
-                            <Text style={styles.coverBadgeText}>RELATÓRIO CONFIDENCIAL</Text>
-                        </View>
-                        <Text style={styles.coverClientName}>{String(data?.clientName || 'NOME DA EMPRESA').toUpperCase()}</Text>
-                        <Text style={styles.coverTitle}>ANÁLISE E APURAÇÃO TRIBUTÁRIA</Text>
+
+                    <View style={styles.coverBadge}>
+                        <Text style={styles.coverBadgeText}>{String(data?.regime || 'Regime')} • {String(month)}/{String(data?.compYear || '')}</Text>
                     </View>
-                    <View style={styles.coverKpiContainer}>
-                        <View style={styles.coverKpiCard}>
-                            <Text style={styles.coverKpiLabel}>FATURAMENTO BASE</Text>
-                            <Text style={styles.coverKpiValue}>{fmtBRL(totalRev)}</Text>
-                        </View>
-                        <View style={styles.coverKpiCard}>
-                            <Text style={styles.coverKpiLabel}>TRIBUTOS TOTAIS</Text>
-                            <Text style={styles.coverKpiValue}>{fmtBRL(totalTrib)}</Text>
-                        </View>
-                        {globalEcon > 0 && (
-                            <View style={[styles.coverKpiCard, { borderColor: 'rgba(201, 162, 39, 0.3)', backgroundColor: 'rgba(201, 162, 39, 0.05)' }]}>
-                                <Text style={[styles.coverKpiLabel, { color: colors.accent }]}>ECONOMIA GERADA</Text>
-                                <Text style={[styles.coverKpiValue, styles.coverKpiAccent]}>{fmtBRL(globalEcon)}</Text>
-                            </View>
-                        )}
+
+                    <Text style={styles.coverClientName}>{String(data?.clientName || 'CLIENTE')}</Text>
+                    <Text style={styles.coverTitle}>Relatório Estratégico de Performance Tributária</Text>
+                </View>
+
+                <View style={styles.coverKpiContainer}>
+                    <View style={styles.coverKpiCard}>
+                        <Text style={styles.coverKpiLabel}>Faturamento Total</Text>
+                        <Text style={styles.coverKpiValue}>{fmtBRL(totalRev)}</Text>
                     </View>
-                    <View style={{ position: 'relative', zIndex: 10, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.1)', paddingTop: 20 }}>
-                        <Text style={{ fontSize: 9, color: 'rgba(255,255,255,0.8)', fontFamily: FONT_BOLD, marginBottom: 4 }}>{String(OFFICE.name).toUpperCase()}</Text>
-                        <Text style={{ fontSize: 7, color: 'rgba(255,255,255,0.5)', letterSpacing: 1 }}>COMPETÊNCIA: {String(currentMonth).toUpperCase()} / {String(currentYear)}</Text>
-                        <Text style={{ fontSize: 7, color: 'rgba(255,255,255,0.5)' }}>CNPJ: {String(data?.cnpj || 'N/A')}</Text>
+                    <View style={styles.coverKpiCard}>
+                        <Text style={styles.coverKpiLabel}>Total Tributos</Text>
+                        <Text style={styles.coverKpiValue}>{fmtBRL(totalTrib)}</Text>
                     </View>
+                    <View style={styles.coverKpiCard}>
+                        <Text style={styles.coverKpiLabel}>Carga Efetiva</Text>
+                        <Text style={styles.coverKpiValue}>{fmtPct(cargaEf)}</Text>
+                    </View>
+                    <View style={styles.coverKpiCard}>
+                        <Text style={[styles.coverKpiLabel, { color: colors.accent }]}>Economia Gerada</Text>
+                        <Text style={[styles.coverKpiValue, styles.coverKpiAccent]}>{fmtBRL(globalEcon)}</Text>
+                    </View>
+                </View>
+
+                <View style={{ alignItems: 'center', position: 'relative', zIndex: 10 }}>
+                    <Text style={{ color: 'rgba(255,255,255,0.3)', fontSize: 7, letterSpacing: 2, textTransform: 'uppercase' }}>{OFFICE.name}</Text>
                 </View>
             </Page>
 
@@ -648,29 +660,29 @@ return (
                     </View>
                 </View>
 
-                <Text style={styles.sectionTitle}>DADOS DA APURAÇÃO</Text>
+                <Text wrap={false} style={styles.sectionTitle}>DADOS DA APURAÇÃO</Text>
 
-                <View style={[styles.dashboardRow, { gap: 10 }]}>
-                    <View style={styles.kpiCard}>
+                <View wrap={false} style={[styles.dashboardRow, { gap: 10 }]}>
+                    <View wrap={false} style={styles.kpiCard}>
                         <Text style={styles.kpiLabel}>FOLHA DE PAGAMENTO 12M</Text>
                         <Text style={styles.kpiValue}>{data?.folha ? fmtBRL(data.folha) : '-'}</Text>
                         <Text style={styles.kpiSub}>Fator R: {fatorRPct.toFixed(2).replace('.',',')}%</Text>
                     </View>
-                    <View style={styles.kpiCard}>
+                    <View wrap={false} style={styles.kpiCard}>
                         <Text style={styles.kpiLabel}>RECEITA BRUTA 12M — RBT12</Text>
                         <Text style={styles.kpiValue}>{data?.rbt12 ? fmtBRL(data.rbt12) : '-'}</Text>
                         <Text style={styles.kpiSub}>Base de enquadramento</Text>
                     </View>
-                    <View style={styles.kpiCard}>
+                    <View wrap={false} style={styles.kpiCard}>
                         <Text style={styles.kpiLabel}>PRÓ-LABORE DO SÓCIO</Text>
                         <Text style={styles.kpiValue}>{data?.proLabore ? fmtBRL(data.proLabore) : '-'}</Text>
                         <Text style={styles.kpiSub}>Base de cálculo INSS</Text>
                     </View>
                 </View>
 
-                <Text style={styles.sectionTitle}>TRIBUTOS A RECOLHER</Text>
+                <Text wrap={false} style={styles.sectionTitle}>TRIBUTOS A RECOLHER</Text>
 
-                <View style={styles.table}>
+                <View wrap={false} style={styles.table}>
                     <View style={styles.tableHeaderBase}>
                         <Text style={[styles.th, { flex: 4 }]}>DESCRIÇÃO</Text>
                         <Text style={[styles.th, { flex: 1.5, textAlign: 'center' }]}>ALÍQUOTA</Text>
@@ -681,7 +693,7 @@ return (
                     {taxesList.map((t: TaxResult, i: number) => {
                         const rowBgColor = i % 2 === 0 ? colors.white : '#F9FAFB';
                         return (
-                            <View key={i} style={[styles.tableRow, { backgroundColor: rowBgColor }]} wrap={false}>
+                            <View key={i} wrap={false} style={[styles.tableRow, { backgroundColor: rowBgColor }]}>
                                 <Text style={[styles.td, styles.tdBold, { flex: 4 }]}>{String(t.tax || '')}</Text>
                                 <View style={{ flex: 1.5, alignItems: 'center' }}>
                                     <Text style={[styles.td, { color: colors.white, backgroundColor: colors.primary, paddingVertical: 3, paddingHorizontal: 6, borderRadius: 4, fontFamily: FONT_BOLD }]}>{String(t.rate || '0')}%</Text>
@@ -692,14 +704,14 @@ return (
                             </View>
                         );
                     })}
-                    <View style={styles.totalRow}>
+                    <View wrap={false} style={styles.totalRow}>
                         <Text style={[styles.totalText, { flex: 1 }]}>TOTAL CONSOLIDADO A RECOLHER</Text>
                         <Text style={[styles.totalText, { textAlign: 'right', fontSize: 14, color: colors.accent }]}>{fmtBRL(totalTrib)}</Text>
                     </View>
                 </View>
 
-                <Text style={styles.sectionTitle}>INDICADORES DO PERÍODO</Text>
-                <View style={[styles.dashboardRow, { gap: 10 }]}>
+                <Text wrap={false} style={styles.sectionTitle}>INDICADORES DO PERÍODO</Text>
+                <View wrap={false} style={[styles.dashboardRow, { gap: 10 }]}>
                     <View style={styles.kpiBarCard}>
                         <Text style={styles.kpiBarValue}>{cargaEfetiva.toFixed(2).replace('.',',')}%</Text>
                         <View style={styles.kpiBarTrack}>
@@ -752,7 +764,7 @@ return (
                         }
                         if (isPresent || (data?.regime === 'Simples Nacional' && term === 'DAS' && taxesList.length > 0) || (data?.regime === 'MEI' && term === 'DAS-MEI' && taxesList.length > 0)) {
                             return (
-                                <View key={term} style={{ width: '48%', backgroundColor: colors.white, padding: 8, borderRadius: 4, borderLeftWidth: 2, borderLeftColor: colors.primary }}>
+                                <View key={term} wrap={false} style={{ width: '48%', backgroundColor: colors.white, padding: 8, borderRadius: 4, borderLeftWidth: 2, borderLeftColor: colors.primary }}>
                                     <Text style={{ fontSize: 7, fontFamily: FONT_BOLD, color: colors.primary, marginBottom: 2 }}>{term}</Text>
                                     <Text style={{ fontSize: 6, color: colors.slate, lineHeight: 1.4 }}>{definition}</Text>
                                 </View>
@@ -783,7 +795,7 @@ return (
                         </View>
                     </View>
 
-                    <View style={styles.heroBanner}>
+                    <View wrap={false} style={styles.heroBanner}>
                         <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0.5 }}>
                             <Svg viewBox="0 0 500 200" width="100%" height="100%">
                                 <G>{renderStripes()}</G>
@@ -804,32 +816,32 @@ return (
                         </View>
                     </View>
 
-                    <Text style={styles.sectionTitle}>O QUE REPRESENTA ESSA ECONOMIA?</Text>
+                    <Text wrap={false} style={styles.sectionTitle}>O QUE REPRESENTA ESSA ECONOMIA?</Text>
 
-                    <View style={[styles.dashboardRow, { gap: 10 }]}>
-                        <View style={styles.kpiCard}>
+                    <View wrap={false} style={[styles.dashboardRow, { gap: 10 }]}>
+                        <View wrap={false} style={styles.kpiCard}>
                             <Text style={styles.kpiBarLabel}>SALÁRIOS MÍNIMOS</Text>
                             <Text style={[styles.kpiBarValue, { marginVertical: 8, textAlign: 'center' }]}>{economiaSalarios.toFixed(1).replace('.',',')}x</Text>
                             <Text style={styles.kpiBarSubLabel}>Poder gerado em contratação</Text>
                         </View>
-                        <View style={styles.kpiCard}>
+                        <View wrap={false} style={styles.kpiCard}>
                             <Text style={styles.kpiBarLabel}>% DO FATURAMENTO</Text>
                             <Text style={[styles.kpiBarValue, { marginVertical: 8, textAlign: 'center' }]}>{economiaFaturamento.toFixed(2).replace('.',',')}%</Text>
                             <Text style={styles.kpiBarSubLabel}>Percentual preservado</Text>
                         </View>
-                        <View style={styles.kpiCard}>
+                        <View wrap={false} style={styles.kpiCard}>
                             <Text style={styles.kpiBarLabel}>MÉDIA MENSAL</Text>
                             <Text style={[styles.kpiBarValue, { marginVertical: 8, textAlign: 'center', fontSize: 13 }]}>{fmtBRL(economiaMensal)}</Text>
                             <Text style={styles.kpiBarSubLabel}>Anualizado por mês</Text>
                         </View>
-                        <View style={styles.kpiCard}>
+                        <View wrap={false} style={styles.kpiCard}>
                             <Text style={styles.kpiBarLabel}>DIFERENÇA DE REGIME</Text>
                             <Text style={[styles.kpiBarValue, { marginVertical: 8, textAlign: 'center', fontSize: 13 }]}>{fmtBRL(globalEcon)}</Text>
                             <Text style={styles.kpiBarSubLabel}>{totalFatorR > 0 ? 'Anexo III vs Anexo V' : 'Carga Padrão vs Reduzida'}</Text>
                         </View>
                     </View>
 
-                    <Text style={styles.sectionTitle}>COMO ESSA ECONOMIA FOI GERADA</Text>
+                    <Text wrap={false} style={styles.sectionTitle}>COMO ESSA ECONOMIA FOI GERADA</Text>
 
                     <View>
                         <View style={styles.stepCard}>
