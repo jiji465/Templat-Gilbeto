@@ -52,11 +52,6 @@ export const fmtCNPJ = (v: string) => {
     const d=v.replace(/\D/g,'').slice(0,14);
     return d.replace(/(\d{2})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1/$2').replace(/(\d{4})(\d)/,'$1-$2');
 };
-export const parseBRL = (v: string): string => {
-    const d=v.replace(/\D/g,'');
-    if(d==='') return '';
-    return (parseInt(d,10)/100).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
-};
 export const fmtDisp = (n: unknown): string => {
     if(!n && n!==0) return '';
     const num = typeof n === 'number' ? n : parseNum(n);
