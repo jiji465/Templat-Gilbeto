@@ -35,8 +35,11 @@ const PDFViewer = dynamic(
     { ssr: false }
 );
 
+import { useMemo } from 'react';
+
 export default function Home() {
     const [clientData, setClientData] = useState<ClientData | null>(null);
+    const [pdfData, setPdfData] = useState<ClientData | null>(null);
     const [taxes, setTaxes] = useState<TaxResult[]>([]);
     const [copied, setCopied] = useState(false);
     const [isClient, setIsClient] = useState(false);
@@ -51,17 +54,25 @@ export default function Home() {
                 if (saved) {
                     const parsed = JSON.parse(saved);
                     setClientData(parsed.clientData || INIT_DATA);
+                    setPdfData(parsed.clientData || INIT_DATA);
                     setTaxes(parsed.taxes || []);
                 } else {
                     setClientData(INIT_DATA);
+                    setPdfData(INIT_DATA);
                 }
             } catch {
                 setClientData(INIT_DATA);
+                setPdfData(INIT_DATA);
             }
             setIsClient(true);
         }, 0);
         return () => clearTimeout(timer);
     }, []);
+
+    const pdfDocument = useMemo(() => {
+        if (!pdfData) return <RelatorioPDF data={INIT_DATA} taxes={[]} />;
+        return <RelatorioPDF data={pdfData} taxes={taxes} />;
+    }, [pdfData, taxes]);
 
     useEffect(() => {
         if (!clientData) return;
@@ -84,6 +95,7 @@ export default function Home() {
     const handleCalc = () => {
         const result = autoCalc(clientData);
         setTaxes(result);
+        setPdfData(clientData);
         setCalcId(prev => prev + 1);
     };
 
@@ -164,8 +176,8 @@ export default function Home() {
                         {isClient && (
                             <PDFDownloadLink 
                                 key={`pdf-${calcId}-${taxes.length}`}
-                                document={<RelatorioPDF data={clientData} taxes={taxes} />} 
-                                fileName={`Relatorio_${(clientData.clientName || 'cliente').replace(/\s+/g, '_')}.pdf`}
+                                document={pdfDocument}
+                                fileName={`Relatorio_${(pdfData?.clientName || 'cliente').replace(/\s+/g, '_')}.pdf`}
                             >
                                 {({ loading }) => (
                                     <button className="bg-primary text-accent px-6 py-2.5 rounded-xl font-black text-[10px] hover:bg-slate-900 transition-all shadow-xl uppercase flex items-center gap-2 border border-accent/30 group">
@@ -183,7 +195,7 @@ export default function Home() {
                 <div className="max-w-[1400px] mx-auto p-6 mt-4">
                     <div className="bg-white rounded-3xl overflow-hidden border border-border glass-shadow h-[800px]">
                         <PDFViewer width="100%" height="100%" className="border-none">
-                            <RelatorioPDF data={clientData} taxes={taxes} />
+                            {pdfDocument}
                         </PDFViewer>
                     </div>
                 </div>
