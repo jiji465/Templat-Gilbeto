@@ -28,6 +28,8 @@ export const SETORES = [
     { label: "📋 Outro (personalizado)",   value: "outro" },
 ];
 
+export const SETORES_MAP = new Map(SETORES.map(s => [s.value, s]));
+
 export const REGIME_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
     "Simples Nacional": { bg: "bg-emerald-100", text: "text-emerald-800", dot: "#166534" },
     "Lucro Presumido":  { bg: "bg-blue-100",    text: "text-blue-800",    dot: "#1e40af" },
