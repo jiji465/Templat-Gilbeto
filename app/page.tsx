@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { 
     Shield, RotateCcw, Printer, Plus, Trash2, 
     Zap, Briefcase, Calculator, DollarSign, FileText, Receipt,
-    Info, MessageSquare, Copy, Check, TrendingUp
+    Info, MessageSquare, Check, TrendingUp
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { 
@@ -19,7 +19,10 @@ import {
     MONTHS,
     OFFICE,
     COLORS_CHART,
-    genWppSummary
+    genWppSummary,
+    ClientData,
+    TaxResult,
+    Revenue
 } from '../utils/taxCalculations';
 import { RelatorioPDF } from '../components/RelatorioPDF';
 
@@ -29,27 +32,30 @@ const PDFDownloadLink = dynamic(
 );
 
 export default function Home() {
-    const [clientData, setClientData] = useState<any>(null);
-    const [taxes, setTaxes] = useState<any[]>([]);
+    const [clientData, setClientData] = useState<ClientData | null>(null);
+    const [taxes, setTaxes] = useState<TaxResult[]>([]);
     const [copied, setCopied] = useState(false);
     const [isClient, setIsClient] = useState(false);
     const [calcId, setCalcId] = useState(0);
 
     useEffect(() => {
-        setIsClient(true);
         const STORAGE_KEY = 'fiscal_pro_v3';
-        try {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                setClientData(parsed.clientData || INIT_DATA);
-                setTaxes(parsed.taxes || []);
-            } else {
+        const timer = setTimeout(() => {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    setClientData(parsed.clientData || INIT_DATA);
+                    setTaxes(parsed.taxes || []);
+                } else {
+                    setClientData(INIT_DATA);
+                }
+            } catch {
                 setClientData(INIT_DATA);
             }
-        } catch (e) {
-            setClientData(INIT_DATA);
-        }
+            setIsClient(true);
+        }, 0);
+        return () => clearTimeout(timer);
     }, []);
 
     useEffect(() => {
@@ -68,7 +74,7 @@ export default function Home() {
         </div>
     );
 
-    const upd = (k: string, v: any) => setClientData((p: any) => ({ ...p, [k]: v }));
+    const upd = (k: keyof ClientData, v: unknown) => setClientData((p: ClientData | null) => p ? ({ ...p, [k]: v } as ClientData) : null);
 
     const handleCalc = () => {
         const result = autoCalc(clientData);
@@ -77,10 +83,10 @@ export default function Home() {
     };
 
     const addRev = () => upd('revenues', [...(clientData.revenues || []), { id: Date.now(), type: 'Serviços', anexo: 'Anexo III', label: '', value: '', isST: false, isMono: false, isISSRetido: false }]);
-    const rmRev = (id: number) => upd('revenues', clientData.revenues.filter((r: any) => r.id !== id));
+    const rmRev = (id: number) => upd('revenues', clientData.revenues.filter((r: Revenue) => r.id !== id));
     
-    const updRev = (id: number, field: string, val: any) => {
-        const newRevs = clientData.revenues.map((r: any) => {
+    const updRev = (id: number, field: string, val: unknown) => {
+        const newRevs = clientData.revenues.map((r: Revenue) => {
             if (r.id !== id) return r;
             return { ...r, [field]: val };
         });
@@ -89,7 +95,7 @@ export default function Home() {
 
     const addTax = () => setTaxes([...taxes, { id: Date.now(), tax: 'Novo Tributo', base: '0,00', rate: '0,00', value: '0,00', dueDate: '', obs: '', isManual: true }]);
     const rmTax = (id: number) => setTaxes(taxes.filter(t => t.id !== id));
-    const updTax = (id: number, field: string, val: any) => setTaxes(taxes.map(t => t.id === id ? { ...t, [field]: val } : t));
+    const updTax = (id: number, field: string, val: unknown) => setTaxes(taxes.map(t => t.id === id ? { ...t, [field]: val } : t));
 
     const clearData = () => {
         if (confirm('Limpar todos os dados?')) {
@@ -106,10 +112,10 @@ export default function Home() {
         setTimeout(() => setCopied(false), 2000);
     };
 
-    const totalRev = (clientData.revenues || []).reduce((s: number, r: any) => s + parseNum(r.value), 0);
-    const totalTrib = taxes.reduce((s: number, t: any) => s + parseNum(t.value), 0);
+    const totalRev = (clientData.revenues || []).reduce((s: number, r: Revenue) => s + parseNum(r.value), 0);
+    const totalTrib = taxes.reduce((s: number, t: TaxResult) => s + parseNum(t.value), 0);
     const cargaEf = totalRev > 0 ? (totalTrib / totalRev) * 100 : 0;
-    const totalEcon = taxes.reduce((s: number, t: any) => s + (t.savedValue || 0), 0);
+    const totalEcon = taxes.reduce((s: number, t: TaxResult) => s + (t.savedValue || 0), 0);
 
     return (
         <main className="min-h-screen bg-background text-foreground pb-12">
@@ -207,7 +213,7 @@ export default function Home() {
                                             upd('setor', s.value);
                                             if(s.regime) upd('regime', s.regime);
                                             if(s.anexo) {
-                                                const newRevs = clientData.revenues.map((r: any) => ({ ...r, type: s.tipo, anexo: s.anexo }));
+                                                const newRevs = clientData.revenues.map((r: Revenue) => ({ ...r, type: s.tipo, anexo: s.anexo }));
                                                 upd('revenues', newRevs);
                                             }
                                         }
@@ -230,7 +236,7 @@ export default function Home() {
                             </button>
                         </div>
                         <div className="grid grid-cols-1 gap-4">
-                            {clientData.revenues.map((rev: any, idx: number) => (
+                            {clientData.revenues.map((rev: Revenue, idx: number) => (
                                 <div key={rev.id} className="p-6 border border-slate-100 rounded-2xl bg-slate-50/50 hover:bg-white hover:border-accent/30 transition-all group">
                                     <div className="flex justify-between items-center mb-5">
                                         <div className="flex items-center gap-3">
@@ -409,7 +415,7 @@ export default function Home() {
                             <TrendingUp className="w-4 h-4 text-accent" /> Share de Faturamento
                         </h3>
                         <div className="space-y-6">
-                            {(clientData.revenues || []).map((r: any, i: number) => {
+                            {(clientData.revenues || []).map((r: Revenue, i: number) => {
                                 const val = parseNum(r.value);
                                 const pct = totalRev > 0 ? (val / totalRev * 100) : 0;
                                 if(val === 0) return null;
