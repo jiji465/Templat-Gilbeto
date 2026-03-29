@@ -28,13 +28,6 @@ export const SETORES = [
     { label: "📋 Outro (personalizado)",   value: "outro" },
 ];
 
-export const REGIME_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
-    "Simples Nacional": { bg: "bg-emerald-100", text: "text-emerald-800", dot: "#166534" },
-    "Lucro Presumido":  { bg: "bg-blue-100",    text: "text-blue-800",    dot: "#1e40af" },
-    "Lucro Real":       { bg: "bg-violet-100",  text: "text-violet-800",  dot: "#5b21b6" },
-    "MEI":              { bg: "bg-amber-100",   text: "text-amber-800",   dot: "#854d0e" },
-};
-
 export const MONTHS = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
 
 export const COLORS_CHART = ['#0f2318','#c9a227','#3b82f6','#8b5cf6','#ef4444','#f97316','#14b8a6','#64748b'];
