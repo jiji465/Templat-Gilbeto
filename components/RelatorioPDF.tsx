@@ -439,6 +439,8 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
     const totalTrib = taxesList.reduce((s: number, t: TaxResult) => s + (parseNum(t.value)), 0);
     const cargaEf = totalRev > 0 ? (totalTrib / totalRev) * 100 : 0;
     const totalEcon = taxesList.reduce((s: number, t: TaxResult) => s + (t.savedValue || 0), 0);
+    const totalFatorR = taxesList.reduce((s: number, t: TaxResult) => s + (t.fatorREcon || 0), 0);
+    const globalEcon = totalEcon + totalFatorR;
     
     const monthIdx = parseInt(data?.compMonth || '1') - 1;
     const month = MONTHS[monthIdx >= 0 && monthIdx < 12 ? monthIdx : 0] || 'Mês';
@@ -489,7 +491,7 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
                     </View>
                     <View style={styles.coverKpiCard}>
                         <Text style={[styles.coverKpiLabel, { color: colors.accent }]}>Economia Gerada</Text>
-                        <Text style={[styles.coverKpiValue, styles.coverKpiAccent]}>{fmtBRL(totalEcon)}</Text>
+                        <Text style={[styles.coverKpiValue, styles.coverKpiAccent]}>{fmtBRL(globalEcon)}</Text>
                     </View>
                 </View>
 
@@ -545,12 +547,12 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
                             </Svg>
                         </View>
                         <Text style={styles.kpiLabel}>Economia Gerada</Text>
-                        <Text style={styles.kpiValue}>{fmtBRL(totalEcon)}</Text>
+                        <Text style={styles.kpiValue}>{fmtBRL(globalEcon)}</Text>
                         <Text style={styles.kpiSub}>Otimização</Text>
                     </View>
                 </View>
 
-                {totalEcon > 0 && (
+                {globalEcon > 0 && (
                     <View style={{ backgroundColor: colors.primary, borderWidth: 1, borderStyle: 'solid', borderColor: colors.accent, padding: 15, borderRadius: 8, marginBottom: 20, flexDirection: 'row', alignItems: 'center' }}>
                         <View style={{ marginRight: 15 }}>
                             <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -560,7 +562,7 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
                         <View style={{ flex: 1 }}>
                             <Text style={{ fontSize: 10, fontFamily: FONT_BOLD, color: colors.accent, marginBottom: 4, textTransform: 'uppercase', letterSpacing: 1 }}>Economia Tributária Gerada</Text>
                             <Text style={{ fontSize: 8, color: '#e2e8f0', lineHeight: 1.4 }}>
-                                Através da nossa inteligência tributária e correta aplicação de benefícios legais (Substituição Tributária e Monofásico), sua empresa evitou o pagamento indevido de <Text style={[styles.tdBold, { color: colors.white }]}>{fmtBRL(totalEcon)}</Text> neste período.
+                                Através da nossa inteligência tributária e correta aplicação de benefícios legais{totalEcon > 0 ? ' (Substituição Tributária / Monofásico)' : ''}{totalFatorR > 0 ? ' e otimização do Fator R' : ''}, sua empresa evitou o pagamento indevido de <Text style={[styles.tdBold, { color: colors.white }]}>{fmtBRL(globalEcon)}</Text> neste período.
                             </Text>
                         </View>
                     </View>
@@ -643,15 +645,33 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
                 {/* Info Cards (Fator R, RBT12, etc) */}
                 <View style={[styles.dashboardRow, { marginBottom: 15 }]}>
                     <View style={[styles.kpiCard, { padding: 10, borderLeftWidth: 3, borderLeftColor: colors.accent }]}>
+                        <View style={styles.kpiIconContainer}>
+                            <Svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <Path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><PdfCircle cx="9" cy="7" r="4" /><Path d="M23 21v-2a4 4 0 0 0-3-3.87" /><Path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                            </Svg>
+                        </View>
                         <Text style={styles.kpiLabel}>FATOR R / FOLHA</Text>
                         <Text style={[styles.kpiValue, { fontSize: 10 }]}>{data?.folhaMensal ? fmtBRL(data.folhaMensal) : '-'}</Text>
+                        {data?.folha && data?.rbt12 && (
+                            <Text style={styles.kpiSub}>Média Fator R: {((parseNum(data.folha) / parseNum(data.rbt12)) * 100).toFixed(1)}%</Text>
+                        )}
                     </View>
                     <View style={[styles.kpiCard, { padding: 10, borderLeftWidth: 3, borderLeftColor: colors.accent }]}>
+                        <View style={styles.kpiIconContainer}>
+                            <Svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <Path d="M21.21 15.89A10 10 0 1 1 8 2.83" /><Path d="M22 12A10 10 0 0 0 12 2v10z" />
+                            </Svg>
+                        </View>
                         <Text style={styles.kpiLabel}>RBT12</Text>
                         <Text style={[styles.kpiValue, { fontSize: 10 }]}>{data?.rbt12 ? fmtBRL(data.rbt12) : '-'}</Text>
                         <Text style={styles.kpiSub}>Receita Bruta 12m</Text>
                     </View>
                     <View style={[styles.kpiCard, { padding: 10, borderLeftWidth: 3, borderLeftColor: colors.accent }]}>
+                        <View style={styles.kpiIconContainer}>
+                            <Svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <Path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><PdfCircle cx="12" cy="7" r="4" />
+                            </Svg>
+                        </View>
                         <Text style={styles.kpiLabel}>PRÓ-LABORE</Text>
                         <Text style={[styles.kpiValue, { fontSize: 10 }]}>{data?.proLabore ? fmtBRL(data.proLabore) : '-'}</Text>
                     </View>
