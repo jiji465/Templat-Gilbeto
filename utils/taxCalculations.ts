@@ -41,16 +41,16 @@ export const COLORS_CHART = ['#0f2318','#c9a227','#3b82f6','#8b5cf6','#ef4444','
 
 // --- Formatting Helpers ---
 
-export const fmtBRL = (v: unknown) => new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(parseFloat(String(v))||0);
-export const fmtPct = (v: unknown) => (parseFloat(String(v))||0).toFixed(2).replace('.',',')+' %';
-export const fmtCNPJ = (v: string) => {
-    const d=v.replace(/\D/g,'').slice(0,14);
-    return d.replace(/(\d{2})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1/$2').replace(/(\d{4})(\d)/,'$1-$2');
-};
 export const parseNum = (v: unknown): number => {
     if(typeof v==='number') return v;
     if(!v) return 0;
     return parseFloat(String(v).replace(/\./g,'').replace(',','.'))||0;
+};
+export const fmtBRL = (v: unknown) => new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(parseNum(v));
+export const fmtPct = (v: unknown) => (parseNum(v)).toFixed(2).replace('.',',')+' %';
+export const fmtCNPJ = (v: string) => {
+    const d=v.replace(/\D/g,'').slice(0,14);
+    return d.replace(/(\d{2})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1/$2').replace(/(\d{4})(\d)/,'$1-$2');
 };
 export const parseBRL = (v: string): string => {
     const d=v.replace(/\D/g,'');
@@ -225,6 +225,7 @@ export interface TaxResult {
     dueDate: string;
     obs?: string;
     savedValue?: number;
+    fatorREcon?: number;
     repart?: Record<string, number>;
     rateBef?: number;
     isManual?: boolean;
@@ -292,19 +293,32 @@ export const autoCalc = (data: ClientData): TaxResult[] => {
             let anx = rev.anexo||'Anexo III';
             if(rev.type==='Comércio')  anx='Anexo I';
             if(rev.type==='Indústria') anx='Anexo II';
-            if(anx==='Anexo V') anx=getAnexoEfetivo('Anexo V',fR);
+
+            let fatorREcon = 0;
+            const originalAnx = anx;
+            if(anx==='Anexo V') {
+                anx = getAnexoEfetivo('Anexo V',fR);
+                if (anx === 'Anexo III') {
+                    // Calculate what the tax WOULD HAVE BEEN under Anexo V
+                    const resAnx5 = calcSN(rbt12,val,'Anexo V',{isST:rev.isST,isMono:rev.isMono,isISSRetido:rev.isISSRetido});
+                    const resAnx3 = calcSN(rbt12,val,'Anexo III',{isST:rev.isST,isMono:rev.isMono,isISSRetido:rev.isISSRetido});
+                    fatorREcon = resAnx5.totalValue - resAnx3.totalValue;
+                }
+            }
 
             const res = calcSN(rbt12,val,anx,{isST:rev.isST,isMono:rev.isMono,isISSRetido:rev.isISSRetido});
             const tags=[];
             if(rev.isST) tags.push('ICMS ST');
             if(rev.isMono) tags.push('Monofásico');
             if(rev.isISSRetido) tags.push('ISS Retido');
+            if(originalAnx === 'Anexo V' && anx === 'Anexo III') tags.push('Fator R Ativo');
 
             let nm = rev.label ? `${rev.type} (${rev.label})` : rev.type;
             if (tags.length) {
                 if (rev.isST && rev.isMono) nm = `${rev.type} (Com ICMS-ST + Monofásico)`;
                 else if (rev.isST) nm = `${rev.type} (Com ICMS-ST)`;
                 else if (rev.isMono) nm = `${rev.type} (Monofásico)`;
+                if (tags.includes('Fator R Ativo')) nm += ' [Fator R]';
             } else {
                 nm = `${rev.type} (Tributação Normal)`;
             }
@@ -316,7 +330,7 @@ export const autoCalc = (data: ClientData): TaxResult[] => {
                       rate:res.rate.toFixed(4).replace('.',','),
                       value:fmtDisp(res.totalValue),
                       dueDate:getDueDate(data.compMonth,data.compYear,'DAS'),
-                      obs, savedValue:econ, repart:res.repart, rateBef:res.rateBef});
+                      obs, savedValue:econ, fatorREcon, repart:res.repart, rateBef:res.rateBef});
 
         } else {
             const presIRPJ = rev.presIRPJ!==undefined ? rev.presIRPJ : (PRES_IRPJ[rev.type]||0.32);
