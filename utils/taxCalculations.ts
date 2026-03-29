@@ -41,16 +41,16 @@ export const COLORS_CHART = ['#0f2318','#c9a227','#3b82f6','#8b5cf6','#ef4444','
 
 // --- Formatting Helpers ---
 
-export const fmtBRL = (v: unknown) => new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(parseFloat(String(v))||0);
-export const fmtPct = (v: unknown) => (parseFloat(String(v))||0).toFixed(2).replace('.',',')+' %';
-export const fmtCNPJ = (v: string) => {
-    const d=v.replace(/\D/g,'').slice(0,14);
-    return d.replace(/(\d{2})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1/$2').replace(/(\d{4})(\d)/,'$1-$2');
-};
 export const parseNum = (v: unknown): number => {
     if(typeof v==='number') return v;
     if(!v) return 0;
     return parseFloat(String(v).replace(/\./g,'').replace(',','.'))||0;
+};
+export const fmtBRL = (v: unknown) => new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(parseNum(v));
+export const fmtPct = (v: unknown) => (parseNum(v)).toFixed(2).replace('.',',')+' %';
+export const fmtCNPJ = (v: string) => {
+    const d=v.replace(/\D/g,'').slice(0,14);
+    return d.replace(/(\d{2})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1/$2').replace(/(\d{4})(\d)/,'$1-$2');
 };
 export const parseBRL = (v: string): string => {
     const d=v.replace(/\D/g,'');
