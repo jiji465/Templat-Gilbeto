@@ -651,7 +651,7 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
                             </Svg>
                         </View>
                         <Text style={styles.kpiLabel}>FATOR R / FOLHA</Text>
-                        <Text style={[styles.kpiValue, { fontSize: 10 }]}>{data?.folhaMensal ? fmtBRL(data.folhaMensal) : '-'}</Text>
+                        <Text style={[styles.kpiValue, { fontSize: 10 }]}>{data?.folha ? fmtBRL(data.folha) : '-'}</Text>
                         {data?.folha && data?.rbt12 && (
                             <Text style={styles.kpiSub}>Média Fator R: {((parseNum(data.folha) / parseNum(data.rbt12)) * 100).toFixed(1)}%</Text>
                         )}
