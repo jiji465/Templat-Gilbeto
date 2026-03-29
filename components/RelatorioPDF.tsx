@@ -584,14 +584,7 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
     const currentMonth = data?.compMonth || MONTHS[new Date().getMonth()];
 
     // Generate diagonal stripes for SVG pattern (used in hero banner)
-    const renderStripes = () => {
-        const lines = [];
-        for (let i = -100; i < 800; i += 15) {
-            lines.push(<Path key={i} d={`M${i} 0 L${i+200} 200`} stroke="rgba(201, 162, 39, 0.2)" strokeWidth="2" />);
-        }
-        return lines;
-    };
-return (
+    return (
         <Document>
             {/* PÁGINA 1: CAPA PREMIUM */}
             <Page size="A4" style={styles.cover}>
@@ -794,11 +787,7 @@ return (
                     </View>
 
                     <View wrap={false} style={styles.heroBanner}>
-                        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0.5 }}>
-                            <Svg viewBox="0 0 500 200" width="100%" height="100%">
-                                <G>{renderStripes()}</G>
-                            </Svg>
-                        </View>
+
                         <View style={{ position: 'relative', zIndex: 10 }}>
                             <Text style={styles.heroTitle}>ECONOMIA TRIBUTÁRIA GERADA NESTE PERÍODO</Text>
                             <Text style={styles.heroValue}>{fmtBRL(globalEcon)}</Text>
@@ -809,7 +798,7 @@ return (
                             <View style={styles.heroBadgeBox}>
                                 <Text style={styles.heroBadgeValue}>100%</Text>
                                 <Text style={styles.heroBadgeLabel}>LEGAL</Text>
-                                <Text style={styles.heroBadgeSub}>Dentro das normas do Simples Nacional</Text>
+                                <Text style={styles.heroBadgeSub}>Dentro das normas {data?.regime === 'Simples Nacional' ? 'do Simples Nacional' : 'legais vigentes'}</Text>
                             </View>
                         </View>
                     </View>
@@ -842,29 +831,59 @@ return (
                     <Text wrap={false} style={styles.sectionTitle}>COMO ESSA ECONOMIA FOI GERADA</Text>
 
                     <View>
-                        <View style={styles.stepCard}>
-                            <View style={[styles.stepNumberBox, { backgroundColor: colors.primary }]}>
-                                <Text style={styles.stepNumberText}>01</Text>
-                            </View>
-                            <View style={styles.stepContent}>
-                                <Text style={styles.stepTitle}>Fator R Ativo e Monitorado</Text>
-                                <Text style={styles.stepText}>
-                                    Sua folha de pagamento dos últimos 12 meses totaliza {fmtBRL(parseNum(data?.folha))}, representando {fatorRPct.toFixed(2).replace('.',',')}% da Receita Bruta acumulada (RBT12: {fmtBRL(parseNum(data?.rbt12))}). Por superar o mínimo de 28%, sua empresa é automaticamente enquadrada no Anexo III.
-                                </Text>
-                            </View>
-                        </View>
+                        {totalFatorR > 0 ? (
+                            <>
+                                <View style={styles.stepCard}>
+                                    <View style={[styles.stepNumberBox, { backgroundColor: colors.primary }]}>
+                                        <Text style={styles.stepNumberText}>01</Text>
+                                    </View>
+                                    <View style={styles.stepContent}>
+                                        <Text style={styles.stepTitle}>Fator R Ativo e Monitorado</Text>
+                                        <Text style={styles.stepText}>
+                                            Sua folha de pagamento dos últimos 12 meses totaliza {fmtBRL(parseNum(data?.folha))}, representando {fatorRPct.toFixed(2).replace('.',',')}% da Receita Bruta acumulada (RBT12: {fmtBRL(parseNum(data?.rbt12))}). Por superar o mínimo de 28%, sua empresa é automaticamente enquadrada no Anexo III.
+                                        </Text>
+                                    </View>
+                                </View>
 
-                        <View style={styles.stepCard}>
-                            <View style={[styles.stepNumberBox, { backgroundColor: colors.primary }]}>
-                                <Text style={styles.stepNumberText}>02</Text>
-                            </View>
-                            <View style={styles.stepContent}>
-                                <Text style={styles.stepTitle}>Alíquota Efetiva Reduzida</Text>
-                                <Text style={styles.stepText}>
-                                    O enquadramento no Anexo III resultou em alíquota efetiva de {cargaEfetiva.toFixed(2).replace('.',',')}%. Sem o Fator R, o Anexo V seria aplicado com carga substancialmente maior, gerando o diferencial de {fmtBRL(globalEcon)} que sua empresa não precisou pagar.
-                                </Text>
-                            </View>
-                        </View>
+                                <View style={styles.stepCard}>
+                                    <View style={[styles.stepNumberBox, { backgroundColor: colors.primary }]}>
+                                        <Text style={styles.stepNumberText}>02</Text>
+                                    </View>
+                                    <View style={styles.stepContent}>
+                                        <Text style={styles.stepTitle}>Alíquota Efetiva Reduzida</Text>
+                                        <Text style={styles.stepText}>
+                                            O enquadramento no Anexo III resultou em alíquota efetiva de {cargaEfetiva.toFixed(2).replace('.',',')}%. Sem o Fator R, o Anexo V seria aplicado com carga substancialmente maior, gerando o diferencial de {fmtBRL(globalEcon)} que sua empresa não precisou pagar.
+                                        </Text>
+                                    </View>
+                                </View>
+                            </>
+                        ) : (
+                            <>
+                                <View style={styles.stepCard}>
+                                    <View style={[styles.stepNumberBox, { backgroundColor: colors.primary }]}>
+                                        <Text style={styles.stepNumberText}>01</Text>
+                                    </View>
+                                    <View style={styles.stepContent}>
+                                        <Text style={styles.stepTitle}>Otimização de Benefícios</Text>
+                                        <Text style={styles.stepText}>
+                                            Identificamos oportunidades de otimização através de benefícios legais cabíveis a sua operação, reduzindo a base de cálculo de forma consistente e estratégica para o seu regime ({data?.regime || 'vigente'}).
+                                        </Text>
+                                    </View>
+                                </View>
+
+                                <View style={styles.stepCard}>
+                                    <View style={[styles.stepNumberBox, { backgroundColor: colors.primary }]}>
+                                        <Text style={styles.stepNumberText}>02</Text>
+                                    </View>
+                                    <View style={styles.stepContent}>
+                                        <Text style={styles.stepTitle}>Redução Efetiva de Carga Tributária</Text>
+                                        <Text style={styles.stepText}>
+                                            A aplicação dessas regras diminuiu a sua alíquota efetiva final para {cargaEfetiva.toFixed(2).replace('.',',')}%. Este processo reflete o cumprimento preciso da legislação tributária e evitou o pagamento indevido de {fmtBRL(globalEcon)}.
+                                        </Text>
+                                    </View>
+                                </View>
+                            </>
+                        )}
 
                         <View style={styles.stepCard}>
                             <View style={[styles.stepNumberBox, { backgroundColor: colors.primary }]}>
@@ -873,7 +892,7 @@ return (
                             <View style={styles.stepContent}>
                                 <Text style={styles.stepTitle}>Planejamento 100% Legal e Seguro</Text>
                                 <Text style={styles.stepText}>
-                                    Toda a economia é resultado da aplicação técnica correta das regras do Simples Nacional. Não há qualquer risco fiscal, autuação ou questionamento — apenas a legislação vigente trabalhando a favor da sua empresa.
+                                    Toda a economia é resultado da aplicação técnica correta das regras tributárias. Não há qualquer risco fiscal, autuação ou questionamento — apenas a legislação vigente trabalhando a favor da sua empresa.
                                 </Text>
                             </View>
                         </View>
@@ -882,7 +901,7 @@ return (
                     <View style={{ marginTop: 10, padding: 10, backgroundColor: '#eef2e6', borderRadius: 4, borderWidth: 1, borderColor: '#d1dbbd' }}>
                         <Text style={{ fontSize: 7, color: colors.primary }}>
                             <Text style={{ fontFamily: FONT_BOLD }}>Nota: </Text>
-                            Informações baseadas nos dados fornecidos e nas regras do Simples Nacional vigentes. Consulte seu contador para decisões estratégicas.
+                            Informações baseadas nos dados fornecidos e nas regras {data?.regime === 'Simples Nacional' ? 'do Simples Nacional vigentes' : 'tributárias vigentes'}. Consulte seu contador para decisões estratégicas.
                         </Text>
                     </View>
 
