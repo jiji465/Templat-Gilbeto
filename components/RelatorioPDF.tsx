@@ -19,12 +19,11 @@ const FONT_BOLD = 'Helvetica-Bold';
 const colors = {
     primary: '#0F2318',
     accent: '#c9a227',
-    slate: '#475569',
-    light: '#f8fafc',
+    slate: '#6B7280',
+    light: '#F9FAFB',
     white: '#FFFFFF',
-    border: '#e2e8f0',
-    red: '#ef4444',
-    green: '#10b981'
+    border: '#E5E7EB',
+    muted: '#9CA3AF'
 };
 
 const styles = StyleSheet.create({
@@ -139,7 +138,7 @@ const styles = StyleSheet.create({
     kpiLabel: {
         fontSize: 6,
         fontFamily: FONT_BOLD,
-        color: '#94a3b8',
+        color: colors.muted,
         textTransform: 'uppercase',
         letterSpacing: 0.5,
         marginBottom: 4,
@@ -147,11 +146,12 @@ const styles = StyleSheet.create({
     kpiValue: {
         fontSize: 14,
         fontFamily: FONT_BOLD,
+        color: colors.primary,
         marginBottom: 2,
     },
     kpiSub: {
         fontSize: 6,
-        color: '#cbd5e1',
+        color: colors.muted,
     },
 
     // CHARTS SECTION
@@ -212,9 +212,9 @@ const styles = StyleSheet.create({
     legendLabel: {
         fontSize: 6,
         fontFamily: FONT_BOLD,
-        color: '#94a3b8',
+        color: colors.muted,
         textTransform: 'uppercase',
-        width: 80,
+        flex: 1,
     },
     legendValue: {
         fontSize: 9,
@@ -330,6 +330,7 @@ const styles = StyleSheet.create({
         fontFamily: FONT_BOLD,
         color: colors.slate,
         textTransform: 'uppercase',
+        flex: 1,
     },
     chartPct: {
         fontSize: 8,
@@ -372,7 +373,7 @@ const styles = StyleSheet.create({
     }
 });
 
-const CHART_COLORS = ['#0f2318','#c9a227','#3b82f6','#8b5cf6','#ef4444','#f97316','#14b8a6','#64748b'];
+const CHART_COLORS = ['#0F2318', '#1c422d', '#c9a227', '#d5b651', '#285e40', '#e0c97b', '#357d54', '#ecdca5'];
 
 const GLOSSARY_TERMS: Record<string, string> = {
     'DAS': 'Documento de Arrecadação do Simples Nacional. Guia única que unifica o pagamento de diversos impostos (IRPJ, CSLL, PIS, COFINS, IPI, ICMS, ISS e CPP) para empresas optantes pelo Simples Nacional.',
@@ -482,23 +483,23 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
                 <View style={styles.kpiRow}>
                     <View style={styles.kpiCard}>
                         <View style={styles.kpiIconContainer}>
-                            <Svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={colors.slate} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <Svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <Path d="M22 12h-4l-3 9L9 3l-3 9H2" />
                             </Svg>
                         </View>
                         <Text style={styles.kpiLabel}>Faturamento Total</Text>
-                        <Text style={[styles.kpiValue, { color: colors.primary }]}>{fmtBRL(totalRev)}</Text>
+                        <Text style={styles.kpiValue}>{fmtBRL(totalRev)}</Text>
                         <Text style={styles.kpiSub}>Período Analisado</Text>
                     </View>
 
                     <View style={styles.kpiCard}>
                         <View style={styles.kpiIconContainer}>
-                            <Svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={colors.red} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <Svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <Path d="M21 21H3V3" /><Path d="M21 3l-6 6-4-4-6 6" />
                             </Svg>
                         </View>
                         <Text style={styles.kpiLabel}>Total Tributos</Text>
-                        <Text style={[styles.kpiValue, { color: colors.red }]}>{fmtBRL(totalTrib)}</Text>
+                        <Text style={styles.kpiValue}>{fmtBRL(totalTrib)}</Text>
                         <Text style={styles.kpiSub}>Carga Tributária</Text>
                     </View>
 
@@ -509,18 +510,18 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
                             </Svg>
                         </View>
                         <Text style={styles.kpiLabel}>Carga Efetiva</Text>
-                        <Text style={[styles.kpiValue, { color: colors.accent }]}>{fmtPct(cargaEf)}</Text>
+                        <Text style={styles.kpiValue}>{fmtPct(cargaEf)}</Text>
                         <Text style={styles.kpiSub}>Percentual Médio</Text>
                     </View>
 
                     <View style={styles.kpiCard}>
                         <View style={styles.kpiIconContainer}>
-                            <Svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={colors.green} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <Svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <Path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><Path d="M22 4L12 14.01l-3-3" />
                             </Svg>
                         </View>
                         <Text style={styles.kpiLabel}>Economia Gerada</Text>
-                        <Text style={[styles.kpiValue, { color: colors.green }]}>{fmtBRL(totalEcon)}</Text>
+                        <Text style={styles.kpiValue}>{fmtBRL(totalEcon)}</Text>
                         <Text style={styles.kpiSub}>Otimização</Text>
                     </View>
                 </View>
@@ -562,7 +563,7 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
                                         <View key={`rev-${i}`} style={styles.legendItem}>
                                             <View style={styles.legendLabelRow}>
                                                 <View style={[styles.legendDot, { backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }]} />
-                                                <Text style={styles.legendLabel}>{String(r.label || r.type).substring(0, 15)}</Text>
+                                                <Text style={styles.legendLabel}>{String(r.label || r.type).length > 20 ? String(r.label || r.type).substring(0, 18) + '...' : String(r.label || r.type)}</Text>
                                             </View>
                                             <Text style={styles.legendValue}>{pct.toFixed(0)}%</Text>
                                         </View>
@@ -593,7 +594,7 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
                                         <View key={`tax-${i}`} style={styles.legendItem}>
                                             <View style={styles.legendLabelRow}>
                                                 <View style={[styles.legendDot, { backgroundColor: CHART_COLORS[(i + 4) % CHART_COLORS.length] }]} />
-                                                <Text style={styles.legendLabel}>{String(t.tax).substring(0, 15)}</Text>
+                                                <Text style={styles.legendLabel}>{String(t.tax).length > 20 ? String(t.tax).substring(0, 18) + '...' : String(t.tax)}</Text>
                                             </View>
                                             <Text style={styles.legendValue}>{pct.toFixed(0)}%</Text>
                                         </View>
@@ -622,27 +623,27 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
 
                 {/* Info Cards (Fator R, RBT12, etc) */}
                 <View style={[styles.dashboardRow, { marginBottom: 15 }]}>
-                    <View style={[styles.kpiCard, { padding: 10, backgroundColor: '#f0fdf4', borderColor: '#bbf7d0' }]}>
-                        <Text style={[styles.kpiLabel, { color: '#4ade80' }]}>FATOR R / FOLHA</Text>
-                        <Text style={[styles.kpiValue, { color: '#166534', fontSize: 10 }]}>{data?.folhaMensal ? fmtBRL(data.folhaMensal) : '-'}</Text>
+                    <View style={[styles.kpiCard, { padding: 10, borderLeftWidth: 3, borderLeftColor: colors.accent }]}>
+                        <Text style={styles.kpiLabel}>FATOR R / FOLHA</Text>
+                        <Text style={[styles.kpiValue, { fontSize: 10 }]}>{data?.folhaMensal ? fmtBRL(data.folhaMensal) : '-'}</Text>
                     </View>
-                    <View style={[styles.kpiCard, { padding: 10 }]}>
+                    <View style={[styles.kpiCard, { padding: 10, borderLeftWidth: 3, borderLeftColor: colors.accent }]}>
                         <Text style={styles.kpiLabel}>RBT12</Text>
-                        <Text style={[styles.kpiValue, { color: colors.primary, fontSize: 10 }]}>{data?.rbt12 ? fmtBRL(data.rbt12) : '-'}</Text>
+                        <Text style={[styles.kpiValue, { fontSize: 10 }]}>{data?.rbt12 ? fmtBRL(data.rbt12) : '-'}</Text>
                         <Text style={styles.kpiSub}>Receita Bruta 12m</Text>
                     </View>
-                    <View style={[styles.kpiCard, { padding: 10, backgroundColor: '#fefce8', borderColor: '#fef08a' }]}>
-                        <Text style={[styles.kpiLabel, { color: colors.accent }]}>PRÓ-LABORE</Text>
-                        <Text style={[styles.kpiValue, { color: '#854d0e', fontSize: 10 }]}>{data?.proLabore ? fmtBRL(data.proLabore) : '-'}</Text>
+                    <View style={[styles.kpiCard, { padding: 10, borderLeftWidth: 3, borderLeftColor: colors.accent }]}>
+                        <Text style={styles.kpiLabel}>PRÓ-LABORE</Text>
+                        <Text style={[styles.kpiValue, { fontSize: 10 }]}>{data?.proLabore ? fmtBRL(data.proLabore) : '-'}</Text>
                     </View>
                 </View>
 
                 <View style={styles.table}>
                     <View style={styles.tableHeaderBase}>
-                        <Text style={[styles.th, { flex: 3 }]}>TRIBUTO FEDERAL/ESTADUAL</Text>
+                        <Text style={[styles.th, { flex: 4 }]}>TRIBUTO FEDERAL/ESTADUAL</Text>
                         <Text style={[styles.th, { flex: 1.2, textAlign: 'center' }]}>ALÍQUOTA</Text>
                         <Text style={[styles.th, { flex: 1.5, textAlign: 'center' }]}>BASE</Text>
-                        <Text style={[styles.th, { flex: 1.2, textAlign: 'center' }]}>VENCIMENTO</Text>
+                        <Text style={[styles.th, { flex: 1.5, textAlign: 'center' }]}>VENCIMENTO</Text>
                         <Text style={[styles.th, { flex: 2, textAlign: 'right' }]}>VALOR FINAL</Text>
                     </View>
                     {taxesList.map((t: TaxResult, i: number) => {
@@ -651,13 +652,13 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
 
                         return (
                             <View key={i} style={styles.tableRow} wrap={false}>
-                                <View style={{ flex: 3, flexDirection: 'row', alignItems: 'center' }}>
-                                    <View style={[styles.badge, { backgroundColor: '#fefce8' }]}><Text style={[styles.badgeText, { color: '#854d0e' }]}>{badgeText}</Text></View>
+                                <View style={{ flex: 4, flexDirection: 'row', alignItems: 'center' }}>
+                                    <View style={[styles.badge, { backgroundColor: '#fbf6e5' }]}><Text style={styles.badgeText}>{badgeText}</Text></View>
                                     <Text style={[styles.td, styles.tdBold, { color: colors.primary }]}>{String(t.tax || '')}</Text>
                                 </View>
-                                <Text style={[styles.td, { flex: 1.2, textAlign: 'center', color: '#854d0e', fontFamily: FONT_BOLD, backgroundColor: '#fefce8', padding: 2, borderRadius: 2 }]}>{String(t.rate || '0')}%</Text>
+                                <Text style={[styles.td, { flex: 1.2, textAlign: 'center', color: colors.accent, fontFamily: FONT_BOLD, backgroundColor: '#fbf6e5', padding: 2, borderRadius: 2 }]}>{String(t.rate || '0')}%</Text>
                                 <Text style={[styles.td, { flex: 1.5, textAlign: 'center', color: colors.slate }]}>{String(t.base || '0,00')}</Text>
-                                <Text style={[styles.td, { flex: 1.2, textAlign: 'center', color: '#854d0e', fontFamily: FONT_BOLD, fontSize: 7 }]}>{String(t.dueDate || 'N/A')}</Text>
+                                <Text style={[styles.td, { flex: 1.5, textAlign: 'center', color: colors.accent, fontFamily: FONT_BOLD, fontSize: 7 }]}>{String(t.dueDate || 'N/A')}</Text>
                                 <Text style={[styles.td, styles.tdBold, { flex: 2, textAlign: 'right', color: colors.primary, fontSize: 9 }]}>{String(t.value || '0,00')}</Text>
                             </View>
                         );
