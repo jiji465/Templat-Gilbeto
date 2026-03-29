@@ -530,7 +530,8 @@ const GLOSSARY_TERMS: Record<string, string> = {
     'IRRF': 'Imposto de Renda Retido na Fonte. Imposto retido do trabalhador, prestador de serviço ou sócio, e repassado pela empresa ao governo.',
     'FGTS': 'Fundo de Garantia do Tempo de Serviço. Depósito mensal feito pela empresa correspondente a uma porcentagem do salário do funcionário.',
     'RAT/FAP': 'Riscos Ambientais do Trabalho / Fator Acidentário de Prevenção. Contribuição patronal para custear acidentes de trabalho e doenças ocupacionais.',
-    'Terceiros': 'Contribuição destinada a outras entidades e fundos (Sistema S: SENAI, SESI, SENAC, SESC, SEBRAE, etc.).'
+    'Terceiros': 'Contribuição destinada a outras entidades e fundos (Sistema S: SENAI, SESI, SENAC, SESC, SEBRAE, etc.).',
+    'DIFAL': 'Diferencial de Alíquota. Imposto estadual correspondente à diferença entre a alíquota interna e a interestadual do ICMS em operações entre estados.',
 };
 
 const LogoIcon = ({ size = 40, color = colors.accent }) => (
@@ -756,12 +757,9 @@ return (
                         if (taxesList.some(t => String(t.tax).toUpperCase().includes(term.toUpperCase()))) {
                             isPresent = true;
                         }
-                        if (!isPresent && taxesList.some(t => {
-                            if (!t.repart) return false;
-                            return Object.keys(t.repart).some(k => k.toUpperCase().includes(term.toUpperCase()) && Number(t.repart![k]) > 0);
-                        })) {
-                            isPresent = true;
-                        }
+                        // We no longer extract terms from the "repart" (Simples Nacional breakdown)
+                        // because we only want to explain the top-level taxes calculated (e.g. DAS, INSS, DIFAL)
+                        // If it's Lucro Presumido, the explicit taxes (IRPJ, CSLL, etc) will be in taxesList directly.
                         if (isPresent || (data?.regime === 'Simples Nacional' && term === 'DAS' && taxesList.length > 0) || (data?.regime === 'MEI' && term === 'DAS-MEI' && taxesList.length > 0)) {
                             return (
                                 <View key={term} wrap={false} style={{ width: '48%', backgroundColor: colors.white, padding: 8, borderRadius: 4, borderLeftWidth: 2, borderLeftColor: colors.primary }}>
