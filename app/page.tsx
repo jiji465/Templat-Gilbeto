@@ -130,9 +130,16 @@ export default function Home() {
     };
 
     const totalRev = (clientData.revenues || []).reduce((s: number, r: Revenue) => s + parseNum(r.value), 0);
-    const totalTrib = taxes.reduce((s: number, t: TaxResult) => s + parseNum(t.value), 0);
+
+    let totalTrib = 0;
+    let totalEcon = 0;
+    for (let i = 0; i < taxes.length; i++) {
+        const t = taxes[i];
+        totalTrib += parseNum(t.value);
+        totalEcon += t.savedValue || 0;
+    }
+
     const cargaEf = totalRev > 0 ? (totalTrib / totalRev) * 100 : 0;
-    const totalEcon = taxes.reduce((s: number, t: TaxResult) => s + (t.savedValue || 0), 0);
 
     return (
         <main className="min-h-screen bg-background text-foreground pb-12">
