@@ -448,7 +448,6 @@ export const INIT_DATA = {
     difal: '0,00',
     otherTaxes: '0,00',
     observations: '',
-    internalNotes: '',
     revenues: [
         { id: 1, type: 'Comércio', anexo: 'Anexo I', label: 'Tributação Normal', value: '69.210,06', isST: false, isMono: false, isISSRetido: false },
         { id: 2, type: 'Comércio', anexo: 'Anexo I', label: 'Produtos com ICMS-ST', value: '6.438,10', isST: true, isMono: false, isISSRetido: false },
