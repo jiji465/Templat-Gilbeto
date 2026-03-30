@@ -2,14 +2,15 @@
 
 import React from 'react';
 import { 
-    Page, Text, View, Document, StyleSheet, Svg, Path, G, Circle as PdfCircle
+    Page, Text, View, Document, StyleSheet, Svg, Path, G
 } from '@react-pdf/renderer';
 import { 
     fmtBRL, 
     fmtPct, 
     MONTHS, 
     OFFICE, 
-    parseNum
+    parseNum,
+    VERSION
 } from '../utils/taxCalculations';
 
 // Integrated Fonts & Styles
@@ -19,11 +20,10 @@ const FONT_BOLD = 'Helvetica-Bold';
 const colors = {
     primary: '#0F2318',
     accent: '#c9a227',
-    slate: '#6B7280',
-    light: '#F9FAFB',
+    slate: '#475569',
+    light: '#f8fafc',
     white: '#FFFFFF',
-    border: '#E5E7EB',
-    muted: '#9CA3AF'
+    border: '#e2e8f0'
 };
 
 const styles = StyleSheet.create({
@@ -37,89 +37,61 @@ const styles = StyleSheet.create({
     cover: {
         backgroundColor: colors.primary,
         height: '100%',
-        padding: 40,
+        padding: 60,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
+        alignItems: 'center',
     },
     coverTop: {
-        flex: 1,
-        justifyContent: 'center',
         alignItems: 'center',
-        position: 'relative',
-        zIndex: 10,
+        marginTop: 100,
     },
-    coverBadge: {
-        backgroundColor: 'rgba(201, 162, 39, 0.1)',
-        borderWidth: 1,
-        borderColor: colors.accent,
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 20,
-        marginBottom: 30,
-    },
-    coverBadgeText: {
+    coverClientLabel: {
+        fontSize: 10,
         color: colors.accent,
-        fontSize: 9,
-        fontFamily: FONT_BOLD,
-        letterSpacing: 2,
+        letterSpacing: 4,
         textTransform: 'uppercase',
+        marginBottom: 10,
+        fontWeight: 700,
     },
     coverClientName: {
-        fontSize: 32,
-        fontFamily: 'Times-Bold',
+        fontSize: 24,
+        fontFamily: FONT_BOLD,
         color: colors.white,
         textAlign: 'center',
-        marginBottom: 15,
+        marginBottom: 40,
+        textTransform: 'uppercase',
         letterSpacing: 1,
     },
     coverTitle: {
-        fontSize: 12,
-        color: 'rgba(255,255,255,0.6)',
-        textAlign: 'center',
-        letterSpacing: 4,
-        textTransform: 'uppercase',
-    },
-    coverKpiContainer: {
-        flexDirection: 'row',
-        gap: 10,
-        width: '100%',
-        marginBottom: 20,
-        position: 'relative',
-        zIndex: 10,
-    },
-    coverKpiCard: {
-        flex: 1,
-        backgroundColor: 'rgba(255,255,255,0.03)',
-        borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.1)',
-        padding: 15,
-        borderRadius: 8,
-    },
-    coverKpiLabel: {
-        fontSize: 6,
-        fontFamily: FONT_BOLD,
-        color: 'rgba(255,255,255,0.5)',
-        textTransform: 'uppercase',
-        letterSpacing: 1,
-        marginBottom: 4,
-    },
-    coverKpiValue: {
-        fontSize: 14,
+        fontSize: 42,
         fontFamily: FONT_BOLD,
         color: colors.white,
+        textAlign: 'center',
+        marginVertical: 20,
+        letterSpacing: -1,
     },
-    coverKpiAccent: {
-        color: colors.accent,
+    coverLine: {
+        width: 80,
+        height: 2,
+        backgroundColor: colors.accent,
+        marginVertical: 40,
     },
-    bgGraphics: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 0,
-        overflow: 'hidden',
+    coverFooter: {
+        width: '100%',
+        borderTopWidth: 1,
+        borderTopStyle: 'solid',
+        borderTopColor: 'rgba(255,255,255,0.1)',
+        paddingTop: 30,
+        alignItems: 'center',
+    },
+    coverVersion: {
+        fontSize: 7,
+        color: 'rgba(255,255,255,0.4)',
+        letterSpacing: 2,
+        textTransform: 'uppercase',
+        marginTop: 10,
     },
 
     // CONTENT HEADER
@@ -127,123 +99,61 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 20,
+        marginBottom: 30,
         borderBottomWidth: 1,
         borderBottomStyle: 'solid',
-        borderBottomColor: colors.border,
+        borderBottomColor: colors.light,
         paddingBottom: 15,
     },
-    headerTitle: {
-        fontSize: 16,
+    headerBrand: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    headerLogo: {
+        width: 24,
+        height: 24,
+        backgroundColor: colors.primary,
+        borderRadius: 4,
+        marginRight: 8,
+    },
+    headerOffice: {
+        fontSize: 10,
         fontFamily: FONT_BOLD,
         color: colors.primary,
-        textTransform: 'uppercase',
     },
 
     // KPI SECTION
     kpiRow: {
         flexDirection: 'row',
-        gap: 10,
-        marginBottom: 25,
+        gap: 15,
+        marginBottom: 20,
     },
     kpiCard: {
         flex: 1,
-        padding: 15,
-        borderRadius: 8,
+        padding: 20,
+        borderRadius: 12,
         backgroundColor: colors.light,
-        borderWidth: 1,
+        borderTopWidth: 1, borderBottomWidth: 1, borderLeftWidth: 1, borderRightWidth: 1,
         borderStyle: 'solid',
         borderColor: colors.border,
     },
-    kpiIconContainer: {
-        marginBottom: 10,
+    kpiCardDark: {
+        backgroundColor: colors.primary,
     },
     kpiLabel: {
-        fontSize: 6,
-        fontFamily: FONT_BOLD,
-        color: colors.muted,
+        fontSize: 7,
+        fontWeight: 700,
+        color: colors.slate,
         textTransform: 'uppercase',
-        letterSpacing: 0.5,
-        marginBottom: 4,
+        letterSpacing: 1,
+        marginBottom: 8,
     },
     kpiValue: {
-        fontSize: 14,
+        fontSize: 20,
         fontFamily: FONT_BOLD,
-        color: colors.primary,
-        marginBottom: 2,
     },
-    kpiSub: {
-        fontSize: 6,
-        color: colors.muted,
-    },
-
-    // CHARTS SECTION
-    dashboardRow: {
-        flexDirection: 'row',
-        gap: 15,
-        marginBottom: 25,
-    },
-    dashboardCard: {
-        flex: 1,
-        backgroundColor: colors.light,
-        borderRadius: 8,
-        borderWidth: 1,
-        borderStyle: 'solid',
-        borderColor: colors.border,
-        padding: 15,
-    },
-    dashboardTitleRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        borderBottomWidth: 1,
-        borderBottomColor: colors.border,
-        paddingBottom: 5,
-        marginBottom: 10,
-    },
-    dashboardTitle: {
-        fontSize: 9,
-        fontFamily: FONT_BOLD,
-        color: colors.primary,
-        textTransform: 'uppercase',
-    },
-
-    // CHART DETAILS
-    donutContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginTop: 10,
-    },
-    donutLegend: {
-        marginLeft: 15,
-        flex: 1,
-    },
-    legendItem: {
-        marginBottom: 6,
-    },
-    legendLabelRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 2,
-    },
-    legendDot: {
-        width: 4,
-        height: 4,
-        borderRadius: 2,
-        marginRight: 4,
-    },
-    legendLabel: {
-        fontSize: 6,
-        fontFamily: FONT_BOLD,
-        color: colors.muted,
-        textTransform: 'uppercase',
-        flex: 1,
-    },
-    legendValue: {
-        fontSize: 9,
-        fontFamily: FONT_BOLD,
-        color: colors.primary,
-        marginLeft: 8,
+    kpiAccent: {
+        color: colors.accent,
     },
 
     // TABLES
@@ -263,23 +173,24 @@ const styles = StyleSheet.create({
     },
     tableHeaderBase: {
         flexDirection: 'row',
-        backgroundColor: colors.primary,
-        borderTopLeftRadius: 8,
-        borderTopRightRadius: 8,
-        padding: 10,
+        backgroundColor: colors.light,
+        borderBottomWidth: 1,
+        borderBottomStyle: 'solid',
+        borderBottomColor: colors.primary,
+        padding: 8,
     },
     tableRow: {
         flexDirection: 'row',
         borderBottomWidth: 1,
         borderBottomStyle: 'solid',
-        borderBottomColor: colors.border,
-        padding: 12,
+        borderBottomColor: '#f1f5f9',
+        padding: 8,
         alignItems: 'center',
     },
     th: {
-        fontSize: 6,
-        fontFamily: FONT_BOLD,
-        color: colors.white,
+        fontSize: 7,
+        fontWeight: 700,
+        color: colors.slate,
         textTransform: 'uppercase',
     },
     td: {
@@ -287,31 +198,6 @@ const styles = StyleSheet.create({
     },
     tdBold: {
         fontFamily: FONT_BOLD,
-    },
-    badge: {
-        backgroundColor: '#e0e7ff',
-        paddingHorizontal: 4,
-        paddingVertical: 2,
-        borderRadius: 4,
-        marginRight: 6,
-    },
-    badgeText: {
-        fontSize: 6,
-        fontFamily: FONT_BOLD,
-        color: colors.accent,
-    },
-    totalRow: {
-        flexDirection: 'row',
-        backgroundColor: colors.accent,
-        borderBottomLeftRadius: 8,
-        borderBottomRightRadius: 8,
-        padding: 12,
-        alignItems: 'center',
-    },
-    totalText: {
-        color: colors.white,
-        fontFamily: FONT_BOLD,
-        fontSize: 8,
     },
 
     // FOOTER
@@ -332,94 +218,25 @@ const styles = StyleSheet.create({
         color: colors.slate,
         textTransform: 'uppercase',
         letterSpacing: 1,
-    },
-
-    // CHARTS
-    chartContainer: {
-        marginTop: 15,
-        marginBottom: 20,
-    },
-    chartRow: {
-        marginBottom: 8,
-    },
-    chartLabelRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'flex-end',
-        marginBottom: 4,
-    },
-    chartLabel: {
-        fontSize: 7,
-        fontFamily: FONT_BOLD,
-        color: colors.slate,
-        textTransform: 'uppercase',
-        flex: 1,
-    },
-    chartPct: {
-        fontSize: 8,
-        fontFamily: FONT_BOLD,
-        color: colors.primary,
-    },
-    chartTrack: {
-        width: '100%',
-        height: 8,
-        backgroundColor: colors.light,
-        borderRadius: 4,
-        overflow: 'hidden',
-    },
-    chartFill: {
-        height: '100%',
-        borderRadius: 4,
-    },
-
-    // GLOSSARY
-    glossaryContainer: {
-        marginTop: 15,
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-    },
-    glossaryItem: {
-        width: '48%',
-        marginBottom: 15,
-        padding: 10,
-        backgroundColor: colors.light,
-        borderLeftWidth: 3,
-        borderLeftColor: colors.accent,
-        borderRadius: 4,
-    },
-    glossaryTerm: {
-        fontSize: 8,
-        fontFamily: FONT_BOLD,
-        color: colors.primary,
-        marginBottom: 4,
-        textTransform: 'uppercase',
-    },
-    glossaryDef: {
-        fontSize: 7,
-        color: colors.slate,
-        lineHeight: 1.4,
     }
 });
 
-const CHART_COLORS = ['#0F2318', '#1c422d', '#c9a227', '#d5b651', '#285e40', '#e0c97b', '#357d54', '#ecdca5'];
 
 const GLOSSARY_TERMS: Record<string, string> = {
     'DAS': 'Documento de Arrecadação do Simples Nacional. Guia única que unifica o pagamento de diversos impostos (IRPJ, CSLL, PIS, COFINS, IPI, ICMS, ISS e CPP) para empresas optantes pelo Simples Nacional.',
     'DAS-MEI': 'Documento de Arrecadação do Simples Nacional do Microempreendedor Individual. Guia de valor fixo mensal que inclui a contribuição previdenciária e impostos (ICMS/ISS).',
-    'IRPJ': 'Imposto de Renda da Pessoa Jurídica. Tributo federal cobrado sobre o lucro, real ou presumido, da empresa.',
+    'IRPJ': 'Imposto de Renda da Pessoa Jurídica. Tributo federal cobrado sobre o lucro da empresa.',
     'CSLL': 'Contribuição Social sobre o Lucro Líquido. Tributo federal destinado ao financiamento da seguridade social.',
-    'PIS': 'Programa de Integração Social. Contribuição federal para financiar o pagamento do seguro-desemprego e abono salarial.',
-    'COFINS': 'Contribuição para o Financiamento da Seguridade Social. Tributo federal cobrado sobre o faturamento para financiar a saúde, previdência e assistência social.',
-    'IPI': 'Imposto sobre Produtos Industrializados. Tributo federal que incide sobre produtos transformados por indústrias.',
-    'ICMS': 'Imposto sobre Circulação de Mercadorias e Serviços. Tributo estadual cobrado sobre produtos comercializados e serviços de transporte interestadual/intermunicipal e comunicação.',
-    'ISS': 'Imposto Sobre Serviços. Tributo municipal cobrado sobre a prestação de serviços.',
-    'CPP': 'Contribuição Previdenciária Patronal. Imposto federal pago pelas empresas para financiar a Previdência Social.',
-    'INSS': 'Instituto Nacional do Seguro Social. Contribuição descontada da folha ou do pró-labore e recolhida para a Previdência Social.',
-    'IRRF': 'Imposto de Renda Retido na Fonte. Imposto retido do trabalhador, prestador de serviço ou sócio, e repassado pela empresa ao governo.',
-    'FGTS': 'Fundo de Garantia do Tempo de Serviço. Depósito mensal feito pela empresa correspondente a uma porcentagem do salário do funcionário.',
-    'RAT/FAP': 'Riscos Ambientais do Trabalho / Fator Acidentário de Prevenção. Contribuição patronal para custear acidentes de trabalho e doenças ocupacionais.',
-    'Terceiros': 'Contribuição destinada a outras entidades e fundos (Sistema S: SENAI, SESI, SENAC, SESC, SEBRAE, etc.).'
+    'PIS': 'Programa de Integração Social. Contribuição federal para financiar pagamento de seguro-desemprego e abono salarial.',
+    'COFINS': 'Contribuição para o Financiamento da Seguridade Social. Tributo federal cobrado sobre faturamento.',
+    'IPI': 'Imposto sobre Produtos Industrializados.',
+    'ICMS': 'Imposto sobre Circulação de Mercadorias e Serviços.',
+    'ISS': 'Imposto Sobre Serviços. Tributo municipal sobre prestação de serviços.',
+    'CPP': 'Contribuição Previdenciária Patronal.',
+    'INSS': 'Instituto Nacional do Seguro Social. Contribuição recolhida para a Previdência Social.',
+    'DIFAL': 'Diferencial de Alíquota. Imposto estadual correspondente à diferença entre a alíquota interna e a interestadual do ICMS.',
+    'PARCELAMENTO': 'Acordo para pagamento de dívidas fiscais em parcelas mensais.',
+    'TERCEIROS': 'Contribuição destinada a outras entidades e fundos.'
 };
 
 const LogoIcon = ({ size = 40, color = colors.accent }) => (
@@ -431,16 +248,22 @@ const LogoIcon = ({ size = 40, color = colors.accent }) => (
     </Svg>
 );
 
-import { ClientData, TaxResult, Revenue } from '../utils/taxCalculations';
-
-export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResult[] }) => {
+export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
     const taxesList = taxes || [];
-    const totalRev = (data?.revenues || []).reduce((s: number, r: Revenue) => s + (parseNum(r.value)), 0);
-    const totalTrib = taxesList.reduce((s: number, t: TaxResult) => s + (parseNum(t.value)), 0);
-    const cargaEf = totalRev > 0 ? (totalTrib / totalRev) * 100 : 0;
-    const totalEcon = taxesList.reduce((s: number, t: TaxResult) => s + (t.savedValue || 0), 0);
-    const totalFatorR = taxesList.reduce((s: number, t: TaxResult) => s + (t.fatorREcon || 0), 0);
-    const globalEcon = totalEcon + totalFatorR;
+    const totalRev = (data?.revenues || []).reduce((s: number, r: any) => s + (parseNum(r.value)), 0);
+    const totalTrib = taxesList.reduce((s: number, t: any) => s + (parseNum(t.value)), 0);
+        const totalTribEfetivo = taxesList.filter((t: any) => !String(t.tax).toUpperCase().includes('PARCELAMENTO')).reduce((s: number, t: any) => s + (parseNum(t.value)), 0);
+    const cargaEf = totalRev > 0 ? (totalTribEfetivo / totalRev) * 100 : 0;
+
+    const sefazHistory = data?.sefazHistory || [];
+    const entradas = sefazHistory.reduce((acc: number, item: any) => acc + parseNum(item.entradas), 0);
+    const saidas = sefazHistory.reduce((acc: number, item: any) => acc + parseNum(item.saidas), 0);
+    const hasSefaz = sefazHistory.length > 0 && (entradas > 0 || saidas > 0);
+    const propSefaz = entradas > 0 ? (saidas / entradas) * 100 : (saidas > 0 ? 999 : 0);
+    const isSefazRisk = entradas > 0 && propSefaz < 100;
+
+    const totalEcon = taxesList.reduce((s: number, t: any) => s + (t.savedValue || 0), 0);
+    const totalFatorREcon = taxesList.reduce((s: number, t: any) => s + (t.fatorREcon || 0), 0);
     
     const monthIdx = parseInt(data?.compMonth || '1') - 1;
     const month = MONTHS[monthIdx >= 0 && monthIdx < 12 ? monthIdx : 0] || 'Mês';
@@ -449,305 +272,189 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
         <Document title={`Relatorio_${data.clientName}`}>
             {/* PÁGINA 1: CAPA PREMIUM */}
             <Page size="A4" style={styles.cover}>
-                {/* Geometric Background */}
-                <View style={styles.bgGraphics}>
-                    <Svg width="100%" height="100%" viewBox="0 0 595 842">
-                        <Path d="M-100 -100 L200 -100 L-100 200 Z" fill={colors.accent} opacity={0.03} />
-                        <Path d="M695 942 L395 942 L695 642 Z" fill={colors.accent} opacity={0.03} />
-                        <G opacity={0.05}>
-                            <PdfCircle cx="500" cy="150" r="120" stroke={colors.accent} strokeWidth="1" fill="none" />
-                            <PdfCircle cx="500" cy="150" r="80" stroke={colors.accent} strokeWidth="0.5" fill="none" />
-                            <PdfCircle cx="100" cy="700" r="150" stroke={colors.accent} strokeWidth="1" fill="none" />
-                            <PdfCircle cx="100" cy="700" r="100" stroke={colors.accent} strokeWidth="0.5" fill="none" />
-                        </G>
-                    </Svg>
-                </View>
-
                 <View style={styles.coverTop}>
-                    <View style={{ marginBottom: 40 }}>
-                        <LogoIcon size={80} />
+                    <LogoIcon size={100} />
+                    <View style={{ marginTop: 40, alignItems: 'center' }}>
+                        <Text style={styles.coverClientLabel}>APURAÇÃO FISCAL</Text>
+                        <Text style={styles.coverClientName}>{String(data?.clientName || 'CLIENTE')}</Text>
                     </View>
+                    <View style={{ alignItems: 'center' }}>
 
-                    <View style={styles.coverBadge}>
-                        <Text style={styles.coverBadgeText}>{String(data?.regime || 'Regime')} • {String(month)}/{String(data?.compYear || '')}</Text>
                     </View>
-
-                    <Text style={styles.coverClientName}>{String(data?.clientName || 'CLIENTE')}</Text>
-                    <Text style={styles.coverTitle}>Relatório Estratégico de Performance Tributária</Text>
+                    <View style={styles.coverLine} />
+                    <Text style={{ color: colors.white, fontSize: 12, letterSpacing: 2, textTransform: 'uppercase' }}>
+                        Competência {String(month)} / {String(data?.compYear || '')}
+                    </Text>
                 </View>
 
-                <View style={styles.coverKpiContainer}>
-                    <View style={styles.coverKpiCard}>
-                        <Text style={styles.coverKpiLabel}>Faturamento Total</Text>
-                        <Text style={styles.coverKpiValue}>{fmtBRL(totalRev)}</Text>
-                    </View>
-                    <View style={styles.coverKpiCard}>
-                        <Text style={styles.coverKpiLabel}>Total Tributos</Text>
-                        <Text style={styles.coverKpiValue}>{fmtBRL(totalTrib)}</Text>
-                    </View>
-                    <View style={styles.coverKpiCard}>
-                        <Text style={styles.coverKpiLabel}>Carga Efetiva</Text>
-                        <Text style={styles.coverKpiValue}>{fmtPct(cargaEf)}</Text>
-                    </View>
-                    <View style={styles.coverKpiCard}>
-                        <Text style={[styles.coverKpiLabel, { color: colors.accent }]}>Economia Gerada</Text>
-                        <Text style={[styles.coverKpiValue, styles.coverKpiAccent]}>{fmtBRL(globalEcon)}</Text>
-                    </View>
-                </View>
+                <View style={styles.coverFooter}>
+                    <Text style={{ color: colors.accent, fontSize: 12, fontFamily: FONT_BOLD, letterSpacing: 2 }}>{OFFICE.name}</Text>
 
-                <View style={{ alignItems: 'center', position: 'relative', zIndex: 10 }}>
-                    <Text style={{ color: 'rgba(255,255,255,0.3)', fontSize: 7, letterSpacing: 2, textTransform: 'uppercase' }}>{OFFICE.name}</Text>
                 </View>
             </Page>
 
             {/* PÁGINA 2: DASHBOARD */}
             <Page size="A4" style={styles.page}>
                 <View style={styles.header}>
-                    <Text style={styles.headerTitle}>RESUMO EXECUTIVO</Text>
+                    <View style={styles.headerBrand}>
+                        <LogoIcon size={24} />
+                        <View style={{ marginLeft: 10 }}>
+                            <Text style={styles.headerOffice}>{String(OFFICE.name || '')}</Text>
+                        </View>
+                    </View>
+                    <Text style={styles.kpiLabel}>{String(data?.regime || '')}</Text>
                 </View>
 
-                <View style={[styles.kpiRow, { flexWrap: 'wrap', gap: 15 }]}>
-                    <View style={[styles.kpiCard, { minWidth: '45%', backgroundColor: colors.primary }]}>
-                        <View style={styles.kpiIconContainer}>
-                            <Svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <Path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                            </Svg>
-                        </View>
-                        <Text style={[styles.kpiLabel, { color: 'rgba(255,255,255,0.6)' }]}>Faturamento Total</Text>
-                        <Text style={[styles.kpiValue, { color: colors.accent }]}>{fmtBRL(totalRev)}</Text>
-                        <Text style={[styles.kpiSub, { color: 'rgba(255,255,255,0.4)' }]}>Período Analisado</Text>
-                    </View>
+                <Text style={{ fontSize: 24, fontFamily: FONT_BOLD, marginBottom: 5 }}>Resumo Consolidado</Text>
+                <Text style={{ fontSize: 9, color: colors.slate, marginBottom: 30 }}>Demonstrativo analítico de apuração tributária para o período de {month}.</Text>
 
-                    <View style={[styles.kpiCard, { minWidth: '45%' }]}>
-                        <View style={styles.kpiIconContainer}>
-                            <Svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <Path d="M21 21H3V3" /><Path d="M21 3l-6 6-4-4-6 6" />
-                            </Svg>
-                        </View>
-                        <Text style={styles.kpiLabel}>Total Tributos</Text>
-                        <Text style={styles.kpiValue}>{fmtBRL(totalTrib)}</Text>
-                        <Text style={styles.kpiSub}>Carga Tributária</Text>
+                <View style={styles.kpiRow}>
+                    <View style={styles.kpiCard}>
+                        <Text style={styles.kpiLabel}>Receita Bruta</Text>
+                        <Text style={styles.kpiValue}>{fmtBRL(totalRev)}</Text>
                     </View>
-
-                    <View style={[styles.kpiCard, { minWidth: '45%' }]}>
-                        <View style={styles.kpiIconContainer}>
-                            <Svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <Path d="M21.21 15.89A10 10 0 1 1 8 2.83" /><Path d="M22 12A10 10 0 0 0 12 2v10z" />
-                            </Svg>
-                        </View>
-                        <Text style={styles.kpiLabel}>Carga Efetiva</Text>
+                    <View style={[styles.kpiCard, styles.kpiCardDark]}>
+                        <Text style={[styles.kpiLabel, { color: 'rgba(255,255,255,0.6)' }]}>Total em Impostos</Text>
+                        <Text style={[styles.kpiValue, styles.kpiAccent]}>{fmtBRL(totalTrib)}</Text>
+                    </View>
+                    <View style={styles.kpiCard}>
+                        <Text style={styles.kpiLabel}>Alíquota Efetiva</Text>
                         <Text style={styles.kpiValue}>{fmtPct(cargaEf)}</Text>
-                        <Text style={styles.kpiSub}>Percentual Médio</Text>
-                    </View>
-
-                    <View style={[styles.kpiCard, { minWidth: '45%' }]}>
-                        <View style={styles.kpiIconContainer}>
-                            <Svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <Path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><Path d="M22 4L12 14.01l-3-3" />
-                            </Svg>
-                        </View>
-                        <Text style={styles.kpiLabel}>Economia Gerada</Text>
-                        <Text style={styles.kpiValue}>{fmtBRL(globalEcon)}</Text>
-                        <Text style={styles.kpiSub}>Otimização</Text>
                     </View>
                 </View>
 
-                {globalEcon > 0 && (
-                    <View style={{ backgroundColor: colors.primary, borderWidth: 1, borderStyle: 'solid', borderColor: colors.accent, padding: 15, borderRadius: 8, marginBottom: 20, flexDirection: 'row', alignItems: 'center' }}>
-                        <View style={{ marginRight: 15 }}>
-                            <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <Path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                            </Svg>
-                        </View>
-                        <View style={{ flex: 1 }}>
-                            <Text style={{ fontSize: 10, fontFamily: FONT_BOLD, color: colors.accent, marginBottom: 4, textTransform: 'uppercase', letterSpacing: 1 }}>Economia Tributária Gerada</Text>
-                            <Text style={{ fontSize: 8, color: '#e2e8f0', lineHeight: 1.4 }}>
-                                Através da nossa inteligência tributária e correta aplicação de benefícios legais{totalEcon > 0 ? ' (Substituição Tributária / Monofásico)' : ''}{totalFatorR > 0 ? ' e otimização do Fator R' : ''}, sua empresa evitou o pagamento indevido de <Text style={[styles.tdBold, { color: colors.white }]}>{fmtBRL(globalEcon)}</Text> neste período.
-                            </Text>
-                        </View>
+                {totalEcon > 0 && (
+                    <View style={{ backgroundColor: '#fffdf5', borderTopWidth: 1, borderBottomWidth: 1, borderLeftWidth: 1, borderRightWidth: 1, borderStyle: 'solid', borderColor: colors.accent, padding: 15, borderRadius: 10, marginBottom: 20 }}>
+                        <Text style={{ fontSize: 9, fontFamily: FONT_BOLD, color: colors.accent, marginBottom: 4 }}>Diferencial Estratégico:</Text>
+                        <Text style={{ fontSize: 8, color: colors.primary, lineHeight: 1.4 }}>
+                            Através da aplicação correta de benefícios de Substituição Tributária (ICMS-ST) e Regime Monofásico (PIS/COFINS), conseguimos uma economia real de <Text style={styles.tdBold}>{fmtBRL(totalEcon)}</Text> neste período.
+                        </Text>
                     </View>
                 )}
 
-                <View style={styles.dashboardRow}>
-                    <View style={styles.dashboardCard}>
-                        <View style={styles.dashboardTitleRow}>
-                            <Text style={styles.dashboardTitle}>COMPOSIÇÃO DE RECEITA</Text>
-                        </View>
 
-                        <View style={{ marginTop: 10 }}>
-                            {(data?.revenues || []).map((r: Revenue, i: number) => {
-                                const val = parseNum(r.value);
-                                const pct = totalRev > 0 ? (val / totalRev * 100) : 0;
-                                if (val === 0) return null;
-                                return (
-                                    <View key={i} style={styles.chartRow} wrap={false}>
-                                        <View style={styles.chartLabelRow}>
-                                            <Text style={styles.chartLabel}>{String(r.label || r.type).substring(0, 50)}</Text>
-                                            <Text style={styles.chartPct}>{pct.toFixed(1)}%</Text>
+                {hasSefaz && (
+                    <View wrap={false} style={{ marginBottom: 20 }}>
+                        <View style={styles.sectionTitle}>
+                            <View style={{ width: 12, height: 2, backgroundColor: colors.accent, marginRight: 8 }} />
+                            <Text>Monitoramento SEFAZ (Malha Fiscal)</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', gap: 10 }}>
+                            <View style={[styles.kpiCard, { flex: 1, backgroundColor: isSefazRisk ? '#fef2f2' : '#f0fdf4', borderColor: isSefazRisk ? '#fecaca' : '#bbf7d0', borderTopWidth: 1, borderBottomWidth: 1, borderLeftWidth: 1, borderRightWidth: 1, borderStyle: 'solid' }]}>
+                                <Text style={{ fontSize: 7, fontFamily: FONT_BOLD, color: colors.slate, textTransform: 'uppercase', marginBottom: 4 }}>Entradas vs Saídas</Text>
+                                <Text style={{ fontSize: 16, fontFamily: FONT_BOLD, color: isSefazRisk ? '#ef4444' : '#22c55e', marginBottom: 4 }}>{propSefaz.toFixed(1).replace('.',',')}%</Text>
+                                <Text style={{ fontSize: 7, color: colors.slate, lineHeight: 1.4 }}>
+                                    Entradas: {fmtBRL(entradas)} / Saídas: {fmtBRL(saidas)}
+                                </Text>
+                            </View>
+                            <View style={{ flex: 2, justifyContent: 'center', paddingLeft: 10 }}>
+                                <Text style={{ fontSize: 8, fontFamily: FONT_BOLD, color: isSefazRisk ? '#ef4444' : colors.primary, marginBottom: 4 }}>
+                                    {isSefazRisk ? 'ATENÇÃO: Risco de Malha Fiscal Identificado' : 'Proporção Regular Identificada'}
+                                </Text>
+                                <Text style={{ fontSize: 7, color: colors.slate, lineHeight: 1.4 }}>
+                                    A SEFAZ cruza continuamente o volume de notas fiscais de venda com as compras. O controle avalia os últimos 12 meses, verificando o percentual de faturamento em relação ao que foi comprado. A fórmula dos servidores do fisco é: (Total Saídas / Total Entradas) × 100. Valores abaixo de 100% indicam que as compras superaram as vendas no período, alertando o fisco para indícios de omissão de receitas e risco de malha fiscal. {isSefazRisk ? 'Recomendamos revisão imediata.' : 'Sua operação apresenta coerência neste indicador.'}
+                                </Text>
+                            </View>
+                        </View>
+                        {sefazHistory.length > 0 && (
+                            <View style={{ marginTop: 15, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 8, overflow: 'hidden' }}>
+                                <View style={{ flexDirection: 'row', backgroundColor: '#f8fafc', padding: 6, borderBottomWidth: 1, borderColor: '#e2e8f0' }}>
+                                    <Text style={{ flex: 1, fontSize: 7, fontFamily: FONT_BOLD, color: colors.slate, textAlign: 'center' }}>Período</Text>
+                                    <Text style={{ flex: 1, fontSize: 7, fontFamily: FONT_BOLD, color: colors.slate, textAlign: 'right' }}>Entradas (Compras)</Text>
+                                    <Text style={{ flex: 1, fontSize: 7, fontFamily: FONT_BOLD, color: colors.slate, textAlign: 'right' }}>Saídas (Faturamento)</Text>
+                                    <Text style={{ flex: 1, fontSize: 7, fontFamily: FONT_BOLD, color: colors.slate, textAlign: 'right' }}>Proporção</Text>
+                                </View>
+                                {sefazHistory.map((item: any, i: number) => {
+                                    const mEntradas = parseNum(item.entradas);
+                                    const mSaidas = parseNum(item.saidas);
+                                    const mProp = mEntradas > 0 ? (mSaidas / mEntradas) * 100 : (mSaidas > 0 ? 999 : 0);
+                                    const mRisk = mEntradas > 0 && mProp < 100;
+
+                                    if (mEntradas === 0 && mSaidas === 0) return null;
+
+                                    return (
+                                        <View key={i} style={{ flexDirection: 'row', padding: 6, borderBottomWidth: i === sefazHistory.length - 1 ? 0 : 1, borderColor: '#f1f5f9' }}>
+                                            <Text style={{ flex: 1, fontSize: 7, color: colors.slate, textAlign: 'center' }}>{item.month}</Text>
+                                            <Text style={{ flex: 1, fontSize: 7, color: colors.slate, textAlign: 'right' }}>{fmtBRL(mEntradas)}</Text>
+                                            <Text style={{ flex: 1, fontSize: 7, color: colors.slate, textAlign: 'right' }}>{fmtBRL(mSaidas)}</Text>
+                                            <Text style={{ flex: 1, fontSize: 7, fontFamily: FONT_BOLD, color: mRisk ? '#ef4444' : '#22c55e', textAlign: 'right' }}>
+                                                {mProp.toFixed(1).replace('.',',')}%
+                                            </Text>
                                         </View>
-                                        <View style={styles.chartTrack}>
-                                            <View style={[styles.chartFill, { width: `${pct}%`, backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }]} />
-                                        </View>
-                                    </View>
-                                );
-                            })}
-                        </View>
-                    </View>
-
-                    <View style={styles.dashboardCard}>
-                        <View style={styles.dashboardTitleRow}>
-                            <Text style={styles.dashboardTitle}>COMPOSIÇÃO TRIBUTÁRIA</Text>
-                        </View>
-
-                        <View style={{ marginTop: 10 }}>
-                            {taxesList.map((t: TaxResult, i: number) => {
-                                const val = parseNum(t.value);
-                                const pct = totalTrib > 0 ? (val / totalTrib * 100) : 0;
-                                if (val === 0) return null;
-                                return (
-                                    <View key={`tax-${i}`} style={styles.chartRow} wrap={false}>
-                                        <View style={styles.chartLabelRow}>
-                                            <Text style={styles.chartLabel}>{String(t.tax).substring(0, 50)}</Text>
-                                            <Text style={styles.chartPct}>{pct.toFixed(1)}%</Text>
-                                        </View>
-                                        <View style={styles.chartTrack}>
-                                            <View style={[styles.chartFill, { width: `${pct}%`, backgroundColor: CHART_COLORS[(i + 4) % CHART_COLORS.length] }]} />
-                                        </View>
-                                    </View>
-                                );
-                            })}
-                        </View>
-                    </View>
-                </View>
-
-                <View style={styles.footer}>
-                    <Text style={styles.footerText}>{OFFICE.name}</Text>
-                    <Text style={styles.footerText}>Página 1</Text>
-                </View>
-            </Page>
-
-            {/* PÁGINA 2.5: DETALHES DA APURAÇÃO */}
-            <Page size="A4" style={styles.page}>
-                <View style={styles.header}>
-                    <Text style={[styles.headerTitle, { fontSize: 10 }]}>DETALHAMENTO DE TRIBUTOS</Text>
-                </View>
-
-                {/* Vencimento Chip */}
-                <View style={{ flexDirection: 'row', marginBottom: 20 }}>
-                    <View style={{ backgroundColor: 'rgba(201, 162, 39, 0.1)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: colors.accent }}>
-                        <Svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 6 }}>
-                            <Path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z" />
-                        </Svg>
-                        <Text style={{ fontSize: 7, fontFamily: FONT_BOLD, color: colors.accent, textTransform: 'uppercase', letterSpacing: 1 }}>Apuração Competência {String(month)}/{String(data?.compYear || '')}</Text>
-                    </View>
-                </View>
-
-                {/* Info Cards (Fator R, RBT12, etc) */}
-                <View style={[styles.dashboardRow, { marginBottom: 15 }]}>
-                    <View style={[styles.kpiCard, { padding: 10, borderLeftWidth: 3, borderLeftColor: colors.accent }]}>
-                        <View style={styles.kpiIconContainer}>
-                            <Svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <Path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><PdfCircle cx="9" cy="7" r="4" /><Path d="M23 21v-2a4 4 0 0 0-3-3.87" /><Path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                            </Svg>
-                        </View>
-                        <Text style={styles.kpiLabel}>FATOR R / FOLHA</Text>
-                        <Text style={[styles.kpiValue, { fontSize: 10 }]}>{data?.folha ? fmtBRL(data.folha) : '-'}</Text>
-                        {data?.folha && data?.rbt12 && (
-                            <Text style={styles.kpiSub}>Média Fator R: {((parseNum(data.folha) / parseNum(data.rbt12)) * 100).toFixed(1)}%</Text>
+                                    );
+                                })}
+                            </View>
                         )}
                     </View>
-                    <View style={[styles.kpiCard, { padding: 10, borderLeftWidth: 3, borderLeftColor: colors.accent }]}>
-                        <View style={styles.kpiIconContainer}>
-                            <Svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <Path d="M21.21 15.89A10 10 0 1 1 8 2.83" /><Path d="M22 12A10 10 0 0 0 12 2v10z" />
-                            </Svg>
-                        </View>
-                        <Text style={styles.kpiLabel}>RBT12</Text>
-                        <Text style={[styles.kpiValue, { fontSize: 10 }]}>{data?.rbt12 ? fmtBRL(data.rbt12) : '-'}</Text>
-                        <Text style={styles.kpiSub}>Receita Bruta 12m</Text>
-                    </View>
-                    <View style={[styles.kpiCard, { padding: 10, borderLeftWidth: 3, borderLeftColor: colors.accent }]}>
-                        <View style={styles.kpiIconContainer}>
-                            <Svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke={colors.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <Path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><PdfCircle cx="12" cy="7" r="4" />
-                            </Svg>
-                        </View>
-                        <Text style={styles.kpiLabel}>PRÓ-LABORE</Text>
-                        <Text style={[styles.kpiValue, { fontSize: 10 }]}>{data?.proLabore ? fmtBRL(data.proLabore) : '-'}</Text>
-                    </View>
+                )}
+
+                <View style={styles.sectionTitle}>
+                    <View style={{ width: 12, height: 2, backgroundColor: colors.accent, marginRight: 8 }} />
+                    <Text>Detalhes da Apuração</Text>
                 </View>
 
                 <View style={styles.table}>
                     <View style={styles.tableHeaderBase}>
-                        <Text style={[styles.th, { flex: 4 }]}>TRIBUTO FEDERAL/ESTADUAL</Text>
-                        <Text style={[styles.th, { flex: 1.2, textAlign: 'center' }]}>ALÍQUOTA</Text>
-                        <Text style={[styles.th, { flex: 1.5, textAlign: 'center' }]}>BASE</Text>
-                        <Text style={[styles.th, { flex: 1.5, textAlign: 'center' }]}>VENCIMENTO</Text>
-                        <Text style={[styles.th, { flex: 2, textAlign: 'right' }]}>VALOR FINAL</Text>
+                        <Text style={[styles.th, { flex: 3 }]}>Descrição do Tributo</Text>
+                        <Text style={[styles.th, { flex: 1.2, textAlign: 'right' }]}>Base de Cálculo</Text>
+                        <Text style={[styles.th, { flex: 1, textAlign: 'right' }]}>Alíquota</Text>
+                        <Text style={[styles.th, { flex: 2, textAlign: 'right' }]}>Valor Devido</Text>
                     </View>
-                    {taxesList.map((t: TaxResult, i: number) => {
-                        const badgeText = t.tax.toUpperCase().includes('SIMPLES') || t.tax.toUpperCase().includes('DAS') ? 'SN' :
-                                          t.tax.toUpperCase().includes('DIFAL') || t.tax.toUpperCase().includes('ICMS') ? 'DF' : 'IM';
-
-                        const rowBgColor = i % 2 === 0 ? colors.white : '#F9FAFB';
-
-                        return (
-                            <View key={i} style={[styles.tableRow, { backgroundColor: rowBgColor }]} wrap={false}>
-                                <View style={{ flex: 4, flexDirection: 'row', alignItems: 'center' }}>
-                                    <View style={[styles.badge, { backgroundColor: '#fbf6e5' }]}><Text style={styles.badgeText}>{badgeText}</Text></View>
-                                    <Text style={[styles.td, styles.tdBold, { color: colors.primary }]}>{String(t.tax || '')}</Text>
-                                </View>
-                                <Text style={[styles.td, { flex: 1.2, textAlign: 'center', color: colors.accent, fontFamily: FONT_BOLD, backgroundColor: '#fbf6e5', padding: 2, borderRadius: 2 }]}>{String(t.rate || '0')}%</Text>
-                                <Text style={[styles.td, { flex: 1.5, textAlign: 'center', color: colors.slate }]}>{String(t.base || '0,00')}</Text>
-                                <Text style={[styles.td, { flex: 1.5, textAlign: 'center', color: colors.accent, fontFamily: FONT_BOLD, fontSize: 7 }]}>{String(t.dueDate || 'N/A')}</Text>
-                                <Text style={[styles.td, { flex: 2, textAlign: 'right', color: colors.primary, fontSize: 9, fontFamily: 'Times-Bold' }]}>{String(t.value || '0,00')}</Text>
-                            </View>
-                        );
-                    })}
-                    <View style={[styles.totalRow, { backgroundColor: colors.primary }]}>
-                        <Text style={[styles.totalText, { flex: 1, color: colors.white }]}>TOTAL CONSOLIDADO</Text>
-                        <Text style={[styles.totalText, { textAlign: 'right', fontSize: 12, color: colors.accent }]}>{fmtBRL(totalTrib)}</Text>
+                    {taxesList.map((t, i) => (
+                        <View key={i} style={styles.tableRow} wrap={false}>
+                            <Text style={[styles.td, styles.tdBold, { flex: 3 }]}>{String(t.tax || '')}</Text>
+                            <Text style={[styles.td, { flex: 1.2, textAlign: 'right', color: colors.slate }]}>{String(t.base || '0,00')}</Text>
+                            <Text style={[styles.td, { flex: 1, textAlign: 'right', color: colors.slate }]}>{String(t.rate || '0')}%</Text>
+                            <Text style={[styles.td, styles.tdBold, { flex: 2, textAlign: 'right' }]}>{String(t.value || '0,00')}</Text>
+                        </View>
+                    ))}
+                    <View style={[styles.tableRow, { backgroundColor: colors.primary, color: colors.white, borderTopWidth: 0, borderBottomWidth: 0, borderLeftWidth: 0, borderRightWidth: 0, marginTop: 10, borderRadius: 4 }]}>
+                        <Text style={[styles.tdBold, { flex: 4.2 }]}>TOTAL CONSOLIDADO</Text>
+                        <Text style={[styles.tdBold, { flex: 3, textAlign: 'right', fontSize: 12, color: colors.accent }]}>{fmtBRL(totalTrib)}</Text>
                     </View>
                 </View>
 
-                {/* PAGE BREAK TO PÁGINA 3 FOR GLOSSARY AND NOTES */}
+                {data.observations ? (
+                    <View style={{ marginTop: 30, padding: 15, borderLeftWidth: 3, borderLeftStyle: 'solid', borderLeftColor: colors.accent, backgroundColor: colors.light }}>
+                        <Text style={{ fontSize: 8, fontFamily: FONT_BOLD, marginBottom: 5 }}>NOTAS DO ANALISTA:</Text>
+                        <Text style={{ fontSize: 8, color: colors.slate, lineHeight: 1.5 }}>{String(data.observations)}</Text>
+                    </View>
+                ) : null}
+
+                <View style={styles.footer}>
+                    <Text style={styles.footerText}>{OFFICE.name}</Text>
+                    <Text style={styles.footerText}>Relatório Estritamente Confidencial</Text>
+                </View>
             </Page>
 
+            {/* GLOSSARY PAGE */}
             <Page size="A4" style={styles.page}>
-                <View style={styles.header}>
-                    <Text style={[styles.headerTitle, { fontSize: 10 }]}>NOTAS E GLOSSÁRIO</Text>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: colors.border, paddingBottom: 15 }}>
+                    <Text style={{ fontSize: 16, fontFamily: FONT_BOLD, color: colors.primary, textTransform: 'uppercase' }}>GLOSSÁRIO TRIBUTÁRIO</Text>
                 </View>
 
-                {/* Renderizar Glossário somente com impostos presentes na apuração */}
-                <View style={styles.sectionTitle}>
-                    <View style={{ width: 12, height: 2, backgroundColor: colors.accent, marginRight: 8 }} />
-                    <Text>GLOSSÁRIO TRIBUTÁRIO</Text>
-                </View>
+                <Text wrap={false} style={{ fontSize: 10, fontFamily: FONT_BOLD, marginBottom: 15, marginTop: 25, textTransform: 'uppercase', letterSpacing: 1.5 }}>
+                    TERMOS APLICADOS NESTE RELATÓRIO
+                </Text>
 
-                <View style={styles.glossaryContainer}>
-                    {Object.entries(GLOSSARY_TERMS).map(([term, definition]) => {
-                        // Verifica se este imposto aparece na lista (por nome ou repartição SN)
-                        let isPresent = false;
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 15, marginTop: 15 }}>
+                    {Object.entries(GLOSSARY_TERMS).map(([term, def]) => {
+                        let show = false;
 
-                        // Verifica no nome do imposto
-                        if (taxesList.some(t => String(t.tax).toUpperCase().includes(term.toUpperCase()))) {
-                            isPresent = true;
+                        // Check if the explicit tax exists in the list
+                        if (taxesList.some((t: any) => String(t.tax).toUpperCase().includes(term.toUpperCase()))) {
+                            show = true;
                         }
 
-                        // Verifica na repartição do Simples Nacional (se existir)
-                        if (!isPresent && taxesList.some(t => {
-                            if (!t.repart) return false;
-                            return Object.keys(t.repart).some(k => k.toUpperCase().includes(term.toUpperCase()) && Number(t.repart![k]) > 0);
-                        })) {
-                            isPresent = true;
-                        }
+                        // Rule: If Simples Nacional, ONLY show DAS (and any explicitly added taxes like INSS/DIFAL that matched above)
+                        if (data?.regime === 'Simples Nacional' && term === 'DAS' && taxesList.length > 0) show = true;
+                        if (data?.regime === 'MEI' && term === 'DAS-MEI' && taxesList.length > 0) show = true;
 
-                        // Se encontrou ou se for Simples Nacional e o termo for DAS
-                        if (isPresent || (data?.regime === 'Simples Nacional' && term === 'DAS' && taxesList.length > 0) || (data?.regime === 'MEI' && term === 'DAS-MEI' && taxesList.length > 0)) {
+                        if (show) {
                             return (
-                                <View key={term} style={styles.glossaryItem} wrap={false}>
-                                    <Text style={styles.glossaryTerm}>{term}</Text>
-                                    <Text style={styles.glossaryDef}>{definition}</Text>
+                                <View key={term} wrap={false} style={{ width: '47%', padding: 12, backgroundColor: colors.white, borderLeftWidth: 3, borderLeftStyle: 'solid', borderLeftColor: colors.primary, borderRadius: 4, marginBottom: 10 }}>
+                                    <Text style={{ fontSize: 9, fontFamily: FONT_BOLD, color: colors.primary, marginBottom: 4 }}>{term}</Text>
+                                    <Text style={{ fontSize: 7, color: colors.slate, lineHeight: 1.4 }}>{def}</Text>
                                 </View>
                             );
                         }
@@ -755,28 +462,131 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
                     })}
                 </View>
 
-                {/* Se for Simples Nacional, adiciona a nota explicativa de repartição */}
-                {data?.regime === 'Simples Nacional' && (
-                    <View style={{ marginTop: 5, marginBottom: 20 }}>
-                        <Text style={[styles.glossaryDef, { fontStyle: 'italic', fontFamily: FONT_BODY }]}>
-                            <Text style={{ fontFamily: FONT_BOLD, color: colors.primary, fontStyle: 'normal' }}>Nota sobre o Simples Nacional: </Text>
-                            Embora pago em uma guia única (DAS), o valor recolhido é repartido entre os entes federativos e financia diversos impostos federais, estaduais e municipais simultaneamente.
-                        </Text>
-                    </View>
-                )}
-
-                {data.observations ? (
-                    <View style={{ marginTop: 10, padding: 15, borderLeftWidth: 3, borderLeftStyle: 'solid', borderLeftColor: colors.primary, backgroundColor: colors.light, marginBottom: 20 }}>
-                        <Text style={{ fontSize: 8, fontFamily: FONT_BOLD, marginBottom: 5, color: colors.primary }}>NOTAS DO ANALISTA:</Text>
-                        <Text style={{ fontSize: 8, color: colors.slate, lineHeight: 1.5 }}>{String(data.observations)}</Text>
-                    </View>
-                ) : null}
-
-                <View style={styles.footer}>
-                    <Text style={styles.footerText}>{OFFICE.name}</Text>
-                    <Text style={styles.footerText}>Página 2 • Relatório Estritamente Confidencial</Text>
+                <View style={{ position: 'absolute', bottom: 30, left: 40, right: 40, borderTopWidth: 1, borderTopStyle: 'solid', borderTopColor: '#f1f5f9', paddingTop: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <Text style={{ fontSize: 6, color: colors.slate, textTransform: 'uppercase', letterSpacing: 1 }}>{OFFICE.name}</Text>
+                    <Text style={{ fontSize: 6, color: colors.slate, textTransform: 'uppercase', letterSpacing: 1 }}>{String(data?.cnpj || '00.000.000/0001-00')}</Text>
                 </View>
             </Page>
-        </Document>
+
+
+            {totalFatorREcon > 0 && (
+            <Page size="A4" style={[styles.page, { padding: 0 }]}>
+                {/* Header that matches visually */}
+                <View style={{ backgroundColor: colors.primary, padding: 40, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <LogoIcon size={30} />
+                        <View style={{ marginLeft: 15 }}>
+                            <Text style={{ fontSize: 18, fontFamily: FONT_BOLD, color: colors.white, marginBottom: 4 }}>Análise de Economia Tributária</Text>
+                            <Text style={{ fontSize: 10, color: colors.accent }}>Competência {String(month)} / {String(data?.compYear || '')} • {String(data?.clientName || 'CLIENTE')}</Text>
+                        </View>
+                    </View>
+                    <View style={{ alignItems: 'flex-end' }}>
+                        <Text style={{ fontSize: 10, color: colors.accent, fontFamily: FONT_BOLD }}>3 / 3</Text>
+                        <Text style={{ fontSize: 8, color: colors.white, marginTop: 4 }}>CONFIDENCIAL</Text>
+                    </View>
+                </View>
+
+                {/* Banner Economy */}
+                <View style={{ margin: 40, marginTop: 30 }}>
+                    <View style={{ backgroundColor: colors.primary, borderRadius: 8, padding: 25, position: 'relative', overflow: 'hidden' }}>
+                        {/* Fake diagonal lines pattern placeholder */}
+                        <Svg width="100%" height="100%" style={{ position: 'absolute', top: 0, left: 0, opacity: 0.1 }}>
+                             <Path d="M0,0 L1000,1000 M10,0 L1010,1000 M20,0 L1020,1000 M30,0 L1030,1000 M40,0 L1040,1000" stroke={colors.accent} strokeWidth={2} />
+                        </Svg>
+
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', zIndex: 1 }}>
+                            <View>
+                                <Text style={{ fontSize: 10, fontFamily: FONT_BOLD, color: colors.accent, marginBottom: 8, textTransform: 'uppercase' }}>ECONOMIA TRIBUTÁRIA GERADA NESTE PERÍODO</Text>
+                                <Text style={{ fontSize: 42, fontFamily: FONT_BOLD, color: colors.white, marginBottom: 8 }}>{fmtBRL(totalFatorREcon)}</Text>
+                                <Text style={{ fontSize: 10, color: colors.white }}>Resultado direto da correta aplicação do Fator R — regime Anexo III do Simples Nacional.</Text>
+                            </View>
+
+                            <View style={{ backgroundColor: '#ffffff1a', padding: 15, borderRadius: 8, alignItems: 'center', width: 120 }}>
+                                <Text style={{ fontSize: 24, fontFamily: FONT_BOLD, color: colors.accent }}>100%</Text>
+                                <Text style={{ fontSize: 14, fontFamily: FONT_BOLD, color: colors.white, marginTop: 4, marginBottom: 8 }}>LEGAL</Text>
+                                <Text style={{ fontSize: 8, color: colors.white, textAlign: 'center' }}>Dentro das normas do Simples Nacional</Text>
+                            </View>
+                        </View>
+                    </View>
+
+                    <Text style={{ fontSize: 10, fontFamily: FONT_BOLD, color: colors.primary, marginTop: 20, marginBottom: 10, textTransform: 'uppercase', borderBottomWidth: 1, borderBottomColor: '#e2e8f0', paddingBottom: 5 }}>O QUE REPRESENTA ESSA ECONOMIA?</Text>
+
+                    <View style={{ flexDirection: 'row', gap: 10, marginBottom: 20 }}>
+                        <View style={{ flex: 1, backgroundColor: colors.white, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 6, padding: 15, borderTopWidth: 4, borderTopColor: colors.primary, alignItems: 'center' }}>
+                            <Text style={{ fontSize: 8, color: colors.slate, textTransform: 'uppercase', marginBottom: 10 }}>SALÁRIOS MÍNIMOS</Text>
+                            <Text style={{ fontSize: 22, fontFamily: FONT_BOLD, color: colors.primary }}>{(totalFatorREcon / 1412).toFixed(1).replace('.', ',')}×</Text>
+                            <Text style={{ fontSize: 8, color: colors.slate, marginTop: 10 }}>Poder gerado em contratação</Text>
+                        </View>
+                        <View style={{ flex: 1, backgroundColor: colors.white, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 6, padding: 15, borderTopWidth: 4, borderTopColor: colors.primary, alignItems: 'center' }}>
+                            <Text style={{ fontSize: 8, color: colors.slate, textTransform: 'uppercase', marginBottom: 10 }}>% DO FATURAMENTO</Text>
+                            <Text style={{ fontSize: 22, fontFamily: FONT_BOLD, color: colors.primary }}>{(totalRev > 0 ? (totalFatorREcon / totalRev) * 100 : 0).toFixed(2).replace('.', ',')}%</Text>
+                            <Text style={{ fontSize: 8, color: colors.slate, marginTop: 10 }}>Percentual preservado</Text>
+                        </View>
+                        <View style={{ flex: 1, backgroundColor: colors.white, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 6, padding: 15, borderTopWidth: 4, borderTopColor: colors.primary, alignItems: 'center' }}>
+                            <Text style={{ fontSize: 8, color: colors.slate, textTransform: 'uppercase', marginBottom: 10 }}>MÉDIA MENSAL</Text>
+                            <Text style={{ fontSize: 22, fontFamily: FONT_BOLD, color: colors.primary }}>{fmtBRL(totalFatorREcon / 12)}</Text>
+                            <Text style={{ fontSize: 8, color: colors.slate, marginTop: 10 }}>Anualizado por mês</Text>
+                        </View>
+                        <View style={{ flex: 1, backgroundColor: colors.white, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 6, padding: 15, borderTopWidth: 4, borderTopColor: colors.primary, alignItems: 'center' }}>
+                            <Text style={{ fontSize: 8, color: colors.slate, textTransform: 'uppercase', marginBottom: 10 }}>DIFERENÇA DE REGIME</Text>
+                            <Text style={{ fontSize: 22, fontFamily: FONT_BOLD, color: colors.primary }}>{fmtBRL(totalFatorREcon)}</Text>
+                            <Text style={{ fontSize: 8, color: colors.slate, marginTop: 10 }}>Anexo III vs Anexo V</Text>
+                        </View>
+                    </View>
+
+                    <Text style={{ fontSize: 10, fontFamily: FONT_BOLD, color: colors.primary, marginTop: 20, marginBottom: 15, textTransform: 'uppercase', borderBottomWidth: 1, borderBottomColor: '#e2e8f0', paddingBottom: 5 }}>COMO ESSA ECONOMIA FOI GERADA</Text>
+
+                    <View style={{ gap: 10 }}>
+                        <View style={{ flexDirection: 'row', borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 8, overflow: 'hidden' }}>
+                            <View style={{ width: 60, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' }}>
+                                <Text style={{ fontSize: 20, fontFamily: FONT_BOLD, color: colors.accent }}>01</Text>
+                            </View>
+                            <View style={{ flex: 1, padding: 15, backgroundColor: colors.white }}>
+                                <Text style={{ fontSize: 12, fontFamily: FONT_BOLD, color: colors.primary, marginBottom: 5 }}>Fator R Ativo e Monitorado</Text>
+                                <Text style={{ fontSize: 10, color: colors.slate, lineHeight: 1.4 }}>
+                                    Sua folha de pagamento dos últimos 12 meses totaliza {fmtBRL(parseNum(String(data?.folha||'0')))}, representando {data?.rbt12 && parseNum(String(data.rbt12)) > 0 ? ((parseNum(String(data?.folha||'0'))/parseNum(String(data.rbt12)))*100).toFixed(2).replace('.',',') : '0,00'}% da Receita Bruta acumulada (RBT12: {fmtBRL(parseNum(String(data?.rbt12||'0')))}). Por superar o mínimo de 28%, sua empresa é automaticamente enquadrada no Anexo III.
+                                </Text>
+                            </View>
+                        </View>
+
+                        <View style={{ flexDirection: 'row', borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 8, overflow: 'hidden' }}>
+                            <View style={{ width: 60, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' }}>
+                                <Text style={{ fontSize: 20, fontFamily: FONT_BOLD, color: colors.accent }}>02</Text>
+                            </View>
+                            <View style={{ flex: 1, padding: 15, backgroundColor: colors.white }}>
+                                <Text style={{ fontSize: 12, fontFamily: FONT_BOLD, color: colors.primary, marginBottom: 5 }}>Alíquota Efetiva Reduzida</Text>
+                                <Text style={{ fontSize: 10, color: colors.slate, lineHeight: 1.4 }}>
+                                    O enquadramento no Anexo III resultou em alíquota efetiva de {fmtPct(cargaEf)}. Sem o Fator R, o Anexo V seria aplicado com carga substancialmente maior, gerando o diferencial de {fmtBRL(totalFatorREcon)} que sua empresa não precisou pagar.
+                                </Text>
+                            </View>
+                        </View>
+
+                        <View style={{ flexDirection: 'row', borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 8, overflow: 'hidden' }}>
+                            <View style={{ width: 60, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' }}>
+                                <Text style={{ fontSize: 20, fontFamily: FONT_BOLD, color: colors.accent }}>03</Text>
+                            </View>
+                            <View style={{ flex: 1, padding: 15, backgroundColor: colors.white }}>
+                                <Text style={{ fontSize: 12, fontFamily: FONT_BOLD, color: colors.primary, marginBottom: 5 }}>Planejamento 100% Legal e Seguro</Text>
+                                <Text style={{ fontSize: 10, color: colors.slate, lineHeight: 1.4 }}>
+                                    Toda a economia é resultado da aplicação técnica correta das regras do Simples Nacional. Não há qualquer risco fiscal, autuação ou questionamento — apenas a legislação vigente trabalhando a favor da sua empresa.
+                                </Text>
+                            </View>
+                        </View>
+                    </View>
+
+                    <View style={{ marginTop: 25, padding: 12, backgroundColor: '#f8fafc', borderRadius: 6, borderWidth: 1, borderColor: '#cbd5e1', flexDirection: 'row' }}>
+                        <Text style={{ fontSize: 8, fontFamily: FONT_BOLD, color: colors.primary, marginRight: 5 }}>Nota:</Text>
+                        <Text style={{ fontSize: 8, color: colors.slate, flex: 1 }}>Informações baseadas nos dados fornecidos e nas regras do Simples Nacional vigentes. Consulte seu contador para decisões estratégicas.</Text>
+                    </View>
+                </View>
+
+                {/* Footer matching other pages */}
+                <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: colors.primary, padding: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.6)' }}>{OFFICE.name} • CNPJ 00.000.000/0001-00</Text>
+                    <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.6)' }}>Competência {String(month)} / {String(data?.compYear || '')} • Documento Confidencial</Text>
+                </View>
+            </Page>
+            )}
+</Document>
     );
 };

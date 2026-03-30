@@ -257,8 +257,8 @@ export interface ClientData {
     folhaMensal: string;
     rbt12: string;
     inssPago: string;
-    installment: string;
-    installmentInfo: string;
+    installments: { id: number; value: string; info: string }[];
+    sefazHistory: { id: number; month: string; entradas: string; saidas: string }[];
     difal: string;
     otherTaxes: string;
     observations: string;
@@ -378,24 +378,25 @@ export const autoCalc = (data: ClientData): TaxResult[] => {
         out.push({id:idObj.id++,tax:"FGTS sobre Folha de Pagamento",base:fmtDisp(folhaMen),rate:"8,00",value:fmtDisp(folhaMen*0.08),dueDate:getDueDate(data.compMonth,data.compYear,'FGTS'),obs:"Fundo de Garantia do Tempo de Serviço"});
     }
 
-    const extras=[
-        {field:'installment' as keyof ClientData, tax:'Parcela de Parcelamento', obs:'Pagamento de parcela de débitos fiscais parcelados'},
-        {field:'difal' as keyof ClientData,       tax:'DIFAL / Antecipação ICMS', obs:'Diferencial de alíquota'},
-        {field:'otherTaxes' as keyof ClientData,  tax:'Outros Tributos / Taxas', obs:'Lançamento manual'},
-    ];
-    extras.forEach(({field,tax,obs})=>{
-        const valData = data[field];
-        if (typeof valData !== 'string') return;
-        const v=parseNum(valData);
-        if(v>0) {
-            let taxName = tax;
-            let obsText = obs;
-            if(field==='installment' && data.installmentInfo) {
-                taxName = `Parcela de Parcelamento (${data.installmentInfo})`;
-                obsText = `${obs} — ${data.installmentInfo}`;
-            }
+    const difal = parseNum(data.difal || '0');
+    if (difal > 0) {
+        out.push({id:idObj.id++,tax:'DIFAL / Antecipação ICMS',base:'-',rate:'-',value:fmtDisp(difal),
+                  dueDate:getDueDate(data.compMonth,data.compYear,'DIFAL'),obs:'Diferencial de alíquota'});
+    }
+
+    const otherTaxes = parseNum(data.otherTaxes || '0');
+    if (otherTaxes > 0) {
+        out.push({id:idObj.id++,tax:'Outros Tributos / Taxas',base:'-',rate:'-',value:fmtDisp(otherTaxes),
+                  dueDate:getDueDate(data.compMonth,data.compYear,'Outros'),obs:'Lançamento manual'});
+    }
+
+    (data.installments || []).forEach((inst) => {
+        const v = parseNum(inst.value);
+        if (v > 0) {
+            const taxName = `Parcela de Parcelamento (${inst.info || 'Diversos'})`;
+            const obsText = `Pagamento de parcela de débitos fiscais parcelados — ${inst.info || 'Diversos'}`;
             out.push({id:idObj.id++,tax:taxName,base:'-',rate:'-',value:fmtDisp(v),
-                      dueDate:getDueDate(data.compMonth,data.compYear,tax),obs:obsText});
+                      dueDate:getDueDate(data.compMonth,data.compYear,'Parcelamento'),obs:obsText});
         }
     });
 
@@ -443,8 +444,8 @@ export const INIT_DATA = {
     folhaMensal: '0,00',
     rbt12: '1.000.000,00',
     inssPago: '',
-    installment: '0,00',
-    installmentInfo: '',
+    installments: [],
+    sefazHistory: [],
     difal: '0,00',
     otherTaxes: '0,00',
     observations: '',

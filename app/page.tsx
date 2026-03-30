@@ -44,7 +44,7 @@ export default function Home() {
     const [copied, setCopied] = useState(false);
     const [isClient, setIsClient] = useState(false);
     const [calcId, setCalcId] = useState(0);
-    const [showPreview, setShowPreview] = useState(false);
+    const [activeTab, setActiveTab] = useState<'form' | 'preview'>('form');
 
     useEffect(() => {
         const STORAGE_KEY = 'fiscal_pro_v3';
@@ -131,7 +131,8 @@ export default function Home() {
 
     const totalRev = (clientData.revenues || []).reduce((s: number, r: Revenue) => s + parseNum(r.value), 0);
     const totalTrib = taxes.reduce((s: number, t: TaxResult) => s + parseNum(t.value), 0);
-    const cargaEf = totalRev > 0 ? (totalTrib / totalRev) * 100 : 0;
+        const totalTribEfetivo = taxes.filter(t => !String(t.tax).toUpperCase().includes('PARCELAMENTO')).reduce((s, t) => s + (parseNum(t.value)), 0);
+    const cargaEf = totalRev > 0 ? (totalTribEfetivo / totalRev) * 100 : 0;
     const totalEcon = taxes.reduce((s: number, t: TaxResult) => s + (t.savedValue || 0), 0);
 
     return (
@@ -165,43 +166,48 @@ export default function Home() {
 
                         {isClient && (
                             <button
-                                onClick={() => setShowPreview(!showPreview)}
+                                onClick={() => {
+                                    setActiveTab('preview');
+                                    const results = autoCalc(clientData);
+                                    setTaxes(results);
+                                    setPdfData(clientData);
+                                    setCalcId(prev => prev + 1);
+                                }}
                                 className="bg-slate-800 text-white px-5 py-2.5 rounded-xl font-black text-[10px] hover:bg-slate-700 transition-all uppercase flex items-center gap-2 shadow-md"
                             >
                                 <FileText className="w-4 h-4" />
-                                {showPreview ? 'Ocultar Prévia' : 'Ver Prévia'}
+                                Ver Relatório Completo
                             </button>
-                        )}
-
-                        {isClient && (
-                            <PDFDownloadLink 
-                                key={`pdf-${calcId}-${taxes.length}`}
-                                document={pdfDocument}
-                                fileName={`Relatorio_${(pdfData?.clientName || 'cliente').replace(/\s+/g, '_')}.pdf`}
-                            >
-                                {({ loading }) => (
-                                    <button className="bg-primary text-accent px-6 py-2.5 rounded-xl font-black text-[10px] hover:bg-slate-900 transition-all shadow-xl uppercase flex items-center gap-2 border border-accent/30 group">
-                                        <Printer className="w-4 h-4 group-hover:scale-110 transition-transform" /> 
-                                        {loading ? 'Calculando PDF...' : 'Gerar PDF Executivo'}
-                                    </button>
-                                )}
-                            </PDFDownloadLink>
                         )}
                     </div>
                 </div>
             </header>
 
-            {showPreview && isClient && (
-                <div className="max-w-[1400px] mx-auto p-6 mt-4">
-                    <div className="bg-white rounded-3xl overflow-hidden border border-border glass-shadow h-[800px]">
-                        <PDFViewer width="100%" height="100%" className="border-none">
-                            {pdfDocument}
-                        </PDFViewer>
-                    </div>
-                </div>
-            )}
+            <div className="max-w-[1400px] mx-auto p-6 mt-4">
 
-            <div className="max-w-[1400px] mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-8 mt-4">
+                {/* Tabs */}
+                <div className="flex gap-4 mb-8">
+                    <button
+                        onClick={() => setActiveTab('form')}
+                        className={`px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeTab === 'form' ? 'bg-primary text-white shadow-lg' : 'bg-white text-slate-400 border border-slate-200 hover:bg-slate-50'}`}>
+                        <Briefcase className="w-4 h-4" /> 1. Preenchimento de Dados
+                    </button>
+                    <button
+                        onClick={() => {
+                            setActiveTab('preview');
+                            // Auto-calc to ensure preview has data
+                            const results = autoCalc(clientData);
+                            setTaxes(results);
+                            setPdfData(clientData);
+                            setCalcId(prev => prev + 1);
+                        }}
+                        className={`px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeTab === 'preview' ? 'bg-primary text-white shadow-lg' : 'bg-white text-slate-400 border border-slate-200 hover:bg-slate-50'}`}>
+                        <Printer className="w-4 h-4" /> 2. Prévia do Relatório
+                    </button>
+                </div>
+
+                {activeTab === 'form' ? (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 
                 {/* Inputs Column */}
                 <div className="lg:col-span-8 space-y-8">
@@ -364,14 +370,90 @@ export default function Home() {
                                 <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block">DIFAL / Antecipação (R$)</label>
                                 <input className="w-full p-3 bg-white border border-border rounded-xl text-xs font-mono font-bold" value={clientData.difal} onChange={e => upd('difal', inputBRL(e.target.value))} placeholder="0,00" />
                             </div>
-                            <div>
-                                <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block">Valor Parcela (R$)</label>
-                                <input className="w-full p-3 bg-white border border-border rounded-xl text-xs font-mono font-bold" value={clientData.installment} onChange={e => upd('installment', inputBRL(e.target.value))} placeholder="0,00" />
-                            </div>
-                            <div>
-                                <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block">Aviso sobre a Parcela</label>
-                                <input className="w-full p-3 bg-white border border-border rounded-xl text-xs font-bold" value={clientData.installmentInfo} onChange={e => upd('installmentInfo', e.target.value)} placeholder="Ex: Refis PGFN 3/60" />
-                            </div>
+                        </div>
+
+                        <div className="flex justify-between items-center mt-8 mb-4">
+                            <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                                <Plus className="w-3.5 h-3.5" /> Parcelamentos
+                            </h2>
+                            <button onClick={() => upd('installments', [...(clientData.installments || []), { id: Date.now(), value: '0,00', info: '' }])} className="text-[10px] font-black bg-slate-200 text-slate-600 px-3 py-1.5 rounded-lg hover:bg-slate-300 transition-all uppercase flex items-center gap-2">
+                                <Plus className="w-3 h-3" /> Adicionar Parcela
+                            </button>
+                        </div>
+                        <div className="space-y-3">
+                            {(clientData.installments || []).map((item, idx) => (
+                                <div key={item.id} className="grid grid-cols-1 md:grid-cols-12 gap-3 p-4 bg-slate-50 rounded-xl border border-slate-100 items-center">
+                                    <div className="md:col-span-5">
+                                        <label className="text-[9px] font-black text-slate-400 uppercase mb-1 block">Valor Parcela (R$)</label>
+                                        <input className="w-full p-2.5 bg-white border border-border rounded-lg text-xs font-mono font-bold" value={item.value} onChange={e => {
+                                            const newInst = [...clientData.installments];
+                                            newInst[idx].value = inputBRL(e.target.value);
+                                            upd('installments', newInst);
+                                        }} placeholder="0,00" />
+                                    </div>
+                                    <div className="md:col-span-6">
+                                        <label className="text-[9px] font-black text-slate-400 uppercase mb-1 block">Aviso sobre a Parcela</label>
+                                        <input className="w-full p-2.5 bg-white border border-border rounded-lg text-xs font-bold" value={item.info} onChange={e => {
+                                            const newInst = [...clientData.installments];
+                                            newInst[idx].info = e.target.value;
+                                            upd('installments', newInst);
+                                        }} placeholder="Ex: Refis PGFN 3/60" />
+                                    </div>
+                                    <div className="md:col-span-1 flex justify-end">
+                                        <button onClick={() => upd('installments', clientData.installments.filter(h => h.id !== item.id))} className="p-2 text-slate-300 hover:text-red-500 transition-all mt-4">
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="flex justify-between items-center mt-8 mb-4">
+                            <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                                <Plus className="w-3.5 h-3.5" /> Monitoramento SEFAZ (Últimos 12 Meses)
+                            </h2>
+                            <button onClick={() => upd('sefazHistory', [...(clientData.sefazHistory || []), { id: Date.now(), month: '', entradas: '0,00', saidas: '0,00' }])} className="text-[10px] font-black bg-slate-200 text-slate-600 px-3 py-1.5 rounded-lg hover:bg-slate-300 transition-all uppercase flex items-center gap-2">
+                                <Plus className="w-3 h-3" /> Adicionar Mês
+                            </button>
+                        </div>
+                        <div className="space-y-3">
+                            {(clientData.sefazHistory || []).map((item, idx) => (
+                                <div key={item.id} className="grid grid-cols-1 md:grid-cols-12 gap-3 p-4 bg-slate-50 rounded-xl border border-slate-100 items-center relative group">
+                                    <div className="md:col-span-4">
+                                        <label className="text-[9px] font-black text-slate-400 uppercase mb-1 block">Mês/Ano</label>
+                                        <input className="w-full p-2.5 bg-white border border-border rounded-lg text-xs font-bold" value={item.month} onChange={e => {
+                                            const newHist = [...clientData.sefazHistory];
+                                            newHist[idx].month = e.target.value;
+                                            upd('sefazHistory', newHist);
+                                        }} placeholder="Ex: Jan/2026" />
+                                    </div>
+                                    <div className="md:col-span-4">
+                                        <label className="text-[9px] font-black text-slate-400 uppercase mb-1 block">Entradas (Compras)</label>
+                                        <input className="w-full p-2.5 bg-white border border-border rounded-lg text-xs font-mono font-bold" value={item.entradas} onChange={e => {
+                                            const newHist = [...clientData.sefazHistory];
+                                            newHist[idx].entradas = inputBRL(e.target.value);
+                                            upd('sefazHistory', newHist);
+                                        }} placeholder="0,00" />
+                                    </div>
+                                    <div className="md:col-span-3">
+                                        <label className="text-[9px] font-black text-slate-400 uppercase mb-1 block">Saídas (Vendas)</label>
+                                        <input className="w-full p-2.5 bg-white border border-border rounded-lg text-xs font-mono font-bold" value={item.saidas} onChange={e => {
+                                            const newHist = [...clientData.sefazHistory];
+                                            newHist[idx].saidas = inputBRL(e.target.value);
+                                            upd('sefazHistory', newHist);
+                                        }} placeholder="0,00" />
+                                    </div>
+                                    <div className="md:col-span-1 flex justify-end">
+                                        <button onClick={() => upd('sefazHistory', clientData.sefazHistory.filter(h => h.id !== item.id))} className="p-2 text-slate-300 hover:text-red-500 transition-all mt-4">
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                            {(clientData.sefazHistory || []).length === 0 && (
+                                <div className="text-center py-6 border-2 border-dashed border-slate-200 rounded-xl">
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase">Nenhum mês registrado.</p>
+                                </div>
+                            )}
                         </div>
                     </section>
 
@@ -449,7 +531,7 @@ export default function Home() {
 
                             <div className="grid grid-cols-2 gap-8 pt-8 border-t border-white/10">
                                 <div>
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase mb-2">Carga Efetiva</p>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase mb-2">Alíquota Efetiva</p>
                                     <p className="text-2xl font-black text-accent">{fmtPct(cargaEf)}</p>
                                 </div>
                                 {totalEcon > 0 && (
@@ -507,6 +589,36 @@ export default function Home() {
                         </div>
                     </section>
                 </div>
+                </div>
+                ) : (
+                <div className="bg-slate-50 border border-border rounded-3xl p-6 glass-shadow min-h-[800px] flex flex-col">
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-sm font-black text-primary uppercase tracking-[0.2em] flex items-center gap-3">
+                            <FileText className="w-5 h-5 text-accent" /> Visualização do Documento
+                        </h2>
+                        <PDFDownloadLink
+                            key={`pdf-btn-${calcId}`}
+                            document={pdfDocument}
+                            fileName={`Apuracao_Fiscal_${(clientData?.clientName || 'Cliente').replace(/\s+/g, '_')}.pdf`}
+                            className="bg-accent text-primary px-8 py-4 rounded-xl text-xs font-black uppercase flex items-center gap-3 hover:bg-yellow-400 shadow-xl transition-all scale-105"
+                        >
+                            {({ loading }) => (
+                                <>
+                                    <Printer className="w-5 h-5" />
+                                    {loading ? 'Preparando Arquivo...' : 'Baixar PDF'}
+                                </>
+                            )}
+                        </PDFDownloadLink>
+                    </div>
+                    <div className="flex-1 bg-slate-200 rounded-xl overflow-hidden border border-slate-300">
+                        {isClient && (
+                            <PDFViewer width="100%" height="100%" className="border-none">
+                                {pdfDocument}
+                            </PDFViewer>
+                        )}
+                    </div>
+                </div>
+                )}
             </div>
         </main>
     );
