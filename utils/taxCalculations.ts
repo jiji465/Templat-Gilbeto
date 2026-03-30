@@ -265,6 +265,8 @@ export interface ClientData {
     observations: string;
     internalNotes: string;
     revenues: Revenue[];
+    taxesList?: TaxResult[];
+    indicators?: any;
 }
 
 export const autoCalc = (data: ClientData): TaxResult[] => {
