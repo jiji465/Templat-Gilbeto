@@ -272,19 +272,17 @@ export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
     
     const monthIdx = parseInt(data?.compMonth || '1') - 1;
     const month = MONTHS[monthIdx >= 0 && monthIdx < 12 ? monthIdx : 0] || 'Mês';
+    const hasAnexoV = (data?.revenues || []).some((r: any) => String(r.anexo).toUpperCase().includes('V'));
 
     return (
         <Document title={`Relatorio_${data.clientName}`}>
             {/* PÁGINA 1: CAPA PREMIUM */}
-            <Page size="A4" style={styles.cover}>
+            <Page size="A4" style={[styles.cover, { height: 'auto' }]}>
                 <View style={styles.coverTop}>
                     <LogoIcon size={100} />
                     <View style={{ marginTop: 40, alignItems: 'center' }}>
                         <Text style={styles.coverClientLabel}>APURAÇÃO FISCAL</Text>
                         <Text style={styles.coverClientName}>{String(data?.clientName || 'CLIENTE')}</Text>
-                    </View>
-                    <View style={{ alignItems: 'center' }}>
-
                     </View>
                     <View style={styles.coverLine} />
                     <Text style={{ color: colors.white, fontSize: 12, letterSpacing: 2, textTransform: 'uppercase' }}>
@@ -294,7 +292,6 @@ export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
 
                 <View style={styles.coverFooter}>
                     <Text style={{ color: colors.accent, fontSize: 12, fontFamily: FONT_BOLD, letterSpacing: 2 }}>{OFFICE.name}</Text>
-
                 </View>
             </Page>
 
@@ -319,11 +316,13 @@ export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
                     <Text style={{ fontSize: 10, fontFamily: FONT_BOLD, color: colors.primary, marginBottom: 10, textTransform: 'uppercase', borderBottomWidth: 1, borderBottomColor: '#e2e8f0', paddingBottom: 5 }}>DADOS DA APURAÇÃO</Text>
                     
                     <View style={{ flexDirection: 'row', gap: 10, marginBottom: 20 }}>
-                        <View style={{ flex: 1, backgroundColor: colors.white, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 6, padding: 15, borderTopWidth: 4, borderTopColor: colors.primary }}>
-                            <Text style={{ fontSize: 7, color: colors.slate, textTransform: 'uppercase', marginBottom: 5 }}>FOLHA DE PAGAMENTO 12M</Text>
-                            <Text style={{ fontSize: 14, fontFamily: FONT_BOLD, color: colors.primary }}>{fmtBRL(parseNum(String(data?.folha||'0')))}</Text>
-                            <Text style={{ fontSize: 7, color: colors.accent, marginTop: 5 }}>Fator R: {data?.rbt12 && parseNum(String(data.rbt12)) > 0 ? ((parseNum(String(data?.folha||'0'))/parseNum(String(data.rbt12)))*100).toFixed(2).replace('.',',') : '0,00'}%</Text>
-                        </View>
+                        {hasAnexoV && (
+                            <View style={{ flex: 1, backgroundColor: colors.white, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 6, padding: 15, borderTopWidth: 4, borderTopColor: colors.primary }}>
+                                <Text style={{ fontSize: 7, color: colors.slate, textTransform: 'uppercase', marginBottom: 5 }}>FOLHA DE PAGAMENTO 12M</Text>
+                                <Text style={{ fontSize: 14, fontFamily: FONT_BOLD, color: colors.primary }}>{fmtBRL(parseNum(String(data?.folha||'0')))}</Text>
+                                <Text style={{ fontSize: 7, color: colors.accent, marginTop: 5 }}>Fator R: {data?.rbt12 && parseNum(String(data.rbt12)) > 0 ? ((parseNum(String(data?.folha||'0'))/parseNum(String(data.rbt12)))*100).toFixed(2).replace('.',',') : '0,00'}%</Text>
+                            </View>
+                        )}
                         <View style={{ flex: 1, backgroundColor: colors.white, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 6, padding: 15, borderTopWidth: 4, borderTopColor: colors.primary }}>
                             <Text style={{ fontSize: 7, color: colors.slate, textTransform: 'uppercase', marginBottom: 5 }}>RECEITA BRUTA 12M — RBT12</Text>
                             <Text style={{ fontSize: 14, fontFamily: FONT_BOLD, color: colors.primary }}>{fmtBRL(parseNum(String(data?.rbt12||'0')))}</Text>
@@ -375,15 +374,17 @@ export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
                             </View>
                             <Text style={{ fontSize: 6, color: colors.slate, textTransform: 'uppercase' }}>CARGA EFETIVA</Text>
                         </View>
-                        <View style={{ flex: 1, backgroundColor: colors.white, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 6, padding: 15, alignItems: 'center' }}>
-                            <Text style={{ fontSize: 14, fontFamily: FONT_BOLD, color: colors.primary }}>
-                                {data?.rbt12 && parseNum(String(data.rbt12)) > 0 ? ((parseNum(String(data?.folha||'0'))/parseNum(String(data.rbt12)))*100).toFixed(2).replace('.',',') : '0,00'}%
-                            </Text>
-                            <View style={{ width: '100%', height: 4, backgroundColor: '#e2e8f0', borderRadius: 2, marginVertical: 8 }}>
-                                <View style={{ width: `${Math.min(100, data?.rbt12 && parseNum(String(data.rbt12)) > 0 ? ((parseNum(String(data?.folha||'0'))/parseNum(String(data.rbt12)))*100) : 0)}%`, height: '100%', backgroundColor: colors.accent, borderRadius: 2 }} />
+                        {hasAnexoV && (
+                            <View style={{ flex: 1, backgroundColor: colors.white, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 6, padding: 15, alignItems: 'center' }}>
+                                <Text style={{ fontSize: 14, fontFamily: FONT_BOLD, color: colors.primary }}>
+                                    {data?.rbt12 && parseNum(String(data.rbt12)) > 0 ? ((parseNum(String(data?.folha||'0'))/parseNum(String(data.rbt12)))*100).toFixed(2).replace('.',',') : '0,00'}%
+                                </Text>
+                                <View style={{ width: '100%', height: 4, backgroundColor: '#e2e8f0', borderRadius: 2, marginVertical: 8 }}>
+                                    <View style={{ width: `${Math.min(100, data?.rbt12 && parseNum(String(data.rbt12)) > 0 ? ((parseNum(String(data?.folha||'0'))/parseNum(String(data.rbt12)))*100) : 0)}%`, height: '100%', backgroundColor: colors.accent, borderRadius: 2 }} />
+                                </View>
+                                <Text style={{ fontSize: 6, color: colors.slate, textTransform: 'uppercase' }}>FATOR R</Text>
                             </View>
-                            <Text style={{ fontSize: 6, color: colors.slate, textTransform: 'uppercase' }}>FATOR R</Text>
-                        </View>
+                        )}
                         <View style={{ flex: 1, backgroundColor: colors.white, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 6, padding: 15, alignItems: 'center' }}>
                             <Text style={{ fontSize: 14, fontFamily: FONT_BOLD, color: colors.primary }}>
                                 {totalTrib > 0 && data?.regime === 'Simples Nacional' ? ((parseNum(String(taxesList.find((t: any)=>t.tax.includes('DAS'))?.value || '0')) / totalTrib) * 100).toFixed(2).replace('.',',') : '100,00'}%
