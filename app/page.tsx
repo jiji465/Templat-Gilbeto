@@ -192,9 +192,7 @@ export default function Home() {
                             <button
                                 onClick={() => {
                                     setActiveTab('preview');
-                                    const results = autoCalc(clientData);
-                                    setTaxes(results);
-                                    setPdfData(clientData);
+                                    setPdfData({ ...clientData, taxesList: taxes });
                                     setCalcId(prev => prev + 1);
                                 }}
                                 className="bg-slate-800 text-white px-5 py-2.5 rounded-xl font-black text-[10px] hover:bg-slate-700 transition-all uppercase flex items-center gap-2 shadow-md"
@@ -219,10 +217,7 @@ export default function Home() {
                     <button
                         onClick={() => {
                             setActiveTab('preview');
-                            // Auto-calc to ensure preview has data
-                            const results = autoCalc(clientData);
-                            setTaxes(results);
-                            setPdfData(clientData);
+                            setPdfData({ ...clientData, taxesList: taxes });
                             setCalcId(prev => prev + 1);
                         }}
                         className={`px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeTab === 'preview' ? 'bg-primary text-white shadow-lg' : 'bg-white text-slate-400 border border-slate-200 hover:bg-slate-50'}`}>
@@ -516,7 +511,10 @@ export default function Home() {
                                 <Receipt className="w-4 h-4 text-emerald-500" /> Tributos Identificados
                             </h2>
                             <div className="flex gap-3">
-                                <button onClick={handleCalc} className="bg-emerald-600 text-white px-6 py-2.5 rounded-xl text-[10px] font-black uppercase flex items-center gap-2 hover:bg-emerald-700 shadow-xl transition-all scale-105">
+                                <button onClick={() => {
+                                    const results = autoCalc(clientData);
+                                    setTaxes(results);
+                                }} className="bg-emerald-600 text-white px-6 py-2.5 rounded-xl text-[10px] font-black uppercase flex items-center gap-2 hover:bg-emerald-700 shadow-xl transition-all scale-105">
                                     <Zap className="w-4 h-4" /> Executar Apuração
                                 </button>
                                 <button onClick={addTax} className="border-2 border-primary text-primary px-5 py-2 rounded-xl text-[10px] font-black uppercase flex items-center gap-2 hover:bg-primary hover:text-white transition-all">

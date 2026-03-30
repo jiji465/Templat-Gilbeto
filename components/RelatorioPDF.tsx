@@ -404,6 +404,21 @@ export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
                         </View>
                     </View>
 
+                    {totalEcon > 0 && (
+                        <View style={{ marginTop: 25, padding: 15, backgroundColor: '#f0fdf4', borderRadius: 6, borderWidth: 1, borderColor: '#bbf7d0', flexDirection: 'row', alignItems: 'center' }}>
+                            <View style={{ flex: 1 }}>
+                                <Text style={{ fontSize: 10, fontFamily: FONT_BOLD, color: '#166534', marginBottom: 4, textTransform: 'uppercase' }}>ECONOMIA TRIBUTÁRIA GERADA</Text>
+                                <Text style={{ fontSize: 8, color: '#166534', lineHeight: 1.4 }}>
+                                    A aplicação estruturada de benefícios fiscais e normativas (Fator R, Produtos Monofásicos/ICMS-ST e Isenções Legais) resultou em uma economia direta para a empresa neste período.
+                                </Text>
+                            </View>
+                            <View style={{ alignItems: 'flex-end', marginLeft: 15 }}>
+                                <Text style={{ fontSize: 7, color: '#166534', textTransform: 'uppercase', marginBottom: 2 }}>VALOR SALVO</Text>
+                                <Text style={{ fontSize: 16, fontFamily: FONT_BOLD, color: '#166534' }}>{fmtBRL(totalEcon)}</Text>
+                            </View>
+                        </View>
+                    )}
+
                     {data.observations ? (
                         <View style={{ marginTop: 20, padding: 10, backgroundColor: '#f8fafc', borderRadius: 6, borderWidth: 1, borderColor: '#cbd5e1', flexDirection: 'row' }}>
                             <Text style={{ fontSize: 8, fontFamily: FONT_BOLD, color: colors.primary, marginRight: 5 }}>NOTAS DO ANALISTA:</Text>
