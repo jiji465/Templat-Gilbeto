@@ -44,7 +44,7 @@ export default function Home() {
     const [copied, setCopied] = useState(false);
     const [isClient, setIsClient] = useState(false);
     const [calcId, setCalcId] = useState(0);
-    const [showPreview, setShowPreview] = useState(false);
+    const [activeTab, setActiveTab] = useState<'form' | 'preview'>('form');
 
     useEffect(() => {
         const STORAGE_KEY = 'fiscal_pro_v3';
@@ -166,43 +166,48 @@ export default function Home() {
 
                         {isClient && (
                             <button
-                                onClick={() => setShowPreview(!showPreview)}
+                                onClick={() => {
+                                    setActiveTab('preview');
+                                    const results = autoCalc(clientData);
+                                    setTaxes(results);
+                                    setPdfData(clientData);
+                                    setCalcId(prev => prev + 1);
+                                }}
                                 className="bg-slate-800 text-white px-5 py-2.5 rounded-xl font-black text-[10px] hover:bg-slate-700 transition-all uppercase flex items-center gap-2 shadow-md"
                             >
                                 <FileText className="w-4 h-4" />
-                                {showPreview ? 'Ocultar Prévia' : 'Ver Prévia'}
+                                Ver Relatório Completo
                             </button>
-                        )}
-
-                        {isClient && (
-                            <PDFDownloadLink 
-                                key={`pdf-${calcId}-${taxes.length}`}
-                                document={pdfDocument}
-                                fileName={`Relatorio_${(pdfData?.clientName || 'cliente').replace(/\s+/g, '_')}.pdf`}
-                            >
-                                {({ loading }) => (
-                                    <button className="bg-primary text-accent px-6 py-2.5 rounded-xl font-black text-[10px] hover:bg-slate-900 transition-all shadow-xl uppercase flex items-center gap-2 border border-accent/30 group">
-                                        <Printer className="w-4 h-4 group-hover:scale-110 transition-transform" /> 
-                                        {loading ? 'Calculando PDF...' : 'Gerar PDF Executivo'}
-                                    </button>
-                                )}
-                            </PDFDownloadLink>
                         )}
                     </div>
                 </div>
             </header>
 
-            {showPreview && isClient && (
-                <div className="max-w-[1400px] mx-auto p-6 mt-4">
-                    <div className="bg-white rounded-3xl overflow-hidden border border-border glass-shadow h-[800px]">
-                        <PDFViewer width="100%" height="100%" className="border-none">
-                            {pdfDocument}
-                        </PDFViewer>
-                    </div>
-                </div>
-            )}
+            <div className="max-w-[1400px] mx-auto p-6 mt-4">
 
-            <div className="max-w-[1400px] mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-8 mt-4">
+                {/* Tabs */}
+                <div className="flex gap-4 mb-8">
+                    <button
+                        onClick={() => setActiveTab('form')}
+                        className={`px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeTab === 'form' ? 'bg-primary text-white shadow-lg' : 'bg-white text-slate-400 border border-slate-200 hover:bg-slate-50'}`}>
+                        <Briefcase className="w-4 h-4" /> 1. Preenchimento de Dados
+                    </button>
+                    <button
+                        onClick={() => {
+                            setActiveTab('preview');
+                            // Auto-calc to ensure preview has data
+                            const results = autoCalc(clientData);
+                            setTaxes(results);
+                            setPdfData(clientData);
+                            setCalcId(prev => prev + 1);
+                        }}
+                        className={`px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeTab === 'preview' ? 'bg-primary text-white shadow-lg' : 'bg-white text-slate-400 border border-slate-200 hover:bg-slate-50'}`}>
+                        <Printer className="w-4 h-4" /> 2. Prévia do Relatório
+                    </button>
+                </div>
+
+                {activeTab === 'form' ? (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 
                 {/* Inputs Column */}
                 <div className="lg:col-span-8 space-y-8">
@@ -374,6 +379,19 @@ export default function Home() {
                                 <input className="w-full p-3 bg-white border border-border rounded-xl text-xs font-bold" value={clientData.installmentInfo} onChange={e => upd('installmentInfo', e.target.value)} placeholder="Ex: Refis PGFN 3/60" />
                             </div>
                         </div>
+                                            <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-8 mb-4 flex items-center gap-2">
+                            <Plus className="w-3.5 h-3.5" /> Monitoramento SEFAZ (Opcional)
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-5 bg-slate-50 rounded-2xl border border-slate-100">
+                            <div>
+                                <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block">Total Entradas Mês (R$)</label>
+                                <input className="w-full p-3 bg-white border border-border rounded-xl text-xs font-mono font-bold" value={clientData.entradasAno} onChange={e => upd('entradasAno', inputBRL(e.target.value))} placeholder="0,00" />
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block">Total Saídas Mês (R$)</label>
+                                <input className="w-full p-3 bg-white border border-border rounded-xl text-xs font-mono font-bold" value={clientData.saidasAno} onChange={e => upd('saidasAno', inputBRL(e.target.value))} placeholder="0,00" />
+                            </div>
+                        </div>
                     </section>
 
                     {/* Tax Results */}
@@ -508,6 +526,36 @@ export default function Home() {
                         </div>
                     </section>
                 </div>
+                </div>
+                ) : (
+                <div className="bg-slate-50 border border-border rounded-3xl p-6 glass-shadow min-h-[800px] flex flex-col">
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-sm font-black text-primary uppercase tracking-[0.2em] flex items-center gap-3">
+                            <FileText className="w-5 h-5 text-accent" /> Visualização do Documento
+                        </h2>
+                        <PDFDownloadLink
+                            key={`pdf-btn-${calcId}`}
+                            document={pdfDocument}
+                            fileName={`Apuracao_Fiscal_${(clientData?.clientName || 'Cliente').replace(/\s+/g, '_')}.pdf`}
+                            className="bg-accent text-primary px-8 py-4 rounded-xl text-xs font-black uppercase flex items-center gap-3 hover:bg-yellow-400 shadow-xl transition-all scale-105"
+                        >
+                            {({ loading }) => (
+                                <>
+                                    <Printer className="w-5 h-5" />
+                                    {loading ? 'Preparando Arquivo...' : 'Baixar PDF'}
+                                </>
+                            )}
+                        </PDFDownloadLink>
+                    </div>
+                    <div className="flex-1 bg-slate-200 rounded-xl overflow-hidden border border-slate-300">
+                        {isClient && (
+                            <PDFViewer width="100%" height="100%" className="border-none">
+                                {pdfDocument}
+                            </PDFViewer>
+                        )}
+                    </div>
+                </div>
+                )}
             </div>
         </main>
     );

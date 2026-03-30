@@ -259,6 +259,8 @@ export interface ClientData {
     inssPago: string;
     installment: string;
     installmentInfo: string;
+    entradasAno: string;
+    saidasAno: string;
     difal: string;
     otherTaxes: string;
     observations: string;
@@ -445,6 +447,8 @@ export const INIT_DATA = {
     inssPago: '',
     installment: '0,00',
     installmentInfo: '',
+    entradasAno: '',
+    saidasAno: '',
     difal: '0,00',
     otherTaxes: '0,00',
     observations: '',

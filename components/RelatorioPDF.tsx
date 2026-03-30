@@ -254,6 +254,13 @@ export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
     const totalTrib = taxesList.reduce((s: number, t: any) => s + (parseNum(t.value)), 0);
         const totalTribEfetivo = taxesList.filter((t: any) => !String(t.tax).toUpperCase().includes('PARCELAMENTO')).reduce((s: number, t: any) => s + (parseNum(t.value)), 0);
     const cargaEf = totalRev > 0 ? (totalTribEfetivo / totalRev) * 100 : 0;
+
+    const entradas = parseNum(data?.entradasAno || '0');
+    const saidas = parseNum(data?.saidasAno || '0');
+    const hasSefaz = entradas > 0 || saidas > 0;
+    const propSefaz = saidas > 0 ? (entradas / saidas) * 100 : (entradas > 0 ? 999 : 0);
+    const isSefazRisk = propSefaz > 100;
+
     const totalEcon = taxesList.reduce((s: number, t: any) => s + (t.savedValue || 0), 0);
     
     const monthIdx = parseInt(data?.compMonth || '1') - 1;
@@ -266,12 +273,11 @@ export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
                 <View style={styles.coverTop}>
                     <LogoIcon size={100} />
                     <View style={{ marginTop: 40, alignItems: 'center' }}>
-                        <Text style={styles.coverClientLabel}>Relatório Customizado para:</Text>
+                        <Text style={styles.coverClientLabel}>APURAÇÃO FISCAL</Text>
                         <Text style={styles.coverClientName}>{String(data?.clientName || 'CLIENTE')}</Text>
                     </View>
                     <View style={{ alignItems: 'center' }}>
-                        <Text style={styles.coverTitle}>INTELIGÊNCIA</Text>
-                        <Text style={styles.coverTitle}>FISCAL PRO</Text>
+
                     </View>
                     <View style={styles.coverLine} />
                     <Text style={{ color: colors.white, fontSize: 12, letterSpacing: 2, textTransform: 'uppercase' }}>
@@ -281,7 +287,7 @@ export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
 
                 <View style={styles.coverFooter}>
                     <Text style={{ color: colors.accent, fontSize: 12, fontFamily: FONT_BOLD, letterSpacing: 2 }}>{OFFICE.name}</Text>
-                    <Text style={styles.coverVersion}>Documento Estratégico de Performance · v{VERSION}</Text>
+
                 </View>
             </Page>
 
@@ -321,6 +327,33 @@ export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
                         <Text style={{ fontSize: 8, color: colors.primary, lineHeight: 1.4 }}>
                             Através da aplicação correta de benefícios de Substituição Tributária (ICMS-ST) e Regime Monofásico (PIS/COFINS), conseguimos uma economia real de <Text style={styles.tdBold}>{fmtBRL(totalEcon)}</Text> neste período.
                         </Text>
+                    </View>
+                )}
+
+
+                {hasSefaz && (
+                    <View wrap={false} style={{ marginBottom: 20 }}>
+                        <View style={styles.sectionTitle}>
+                            <View style={{ width: 12, height: 2, backgroundColor: colors.accent, marginRight: 8 }} />
+                            <Text>Monitoramento SEFAZ (Malha Fiscal)</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', gap: 10 }}>
+                            <View style={[styles.kpiCard, { flex: 1, backgroundColor: isSefazRisk ? '#fef2f2' : '#f0fdf4', borderColor: isSefazRisk ? '#fecaca' : '#bbf7d0', borderTopWidth: 1, borderBottomWidth: 1, borderLeftWidth: 1, borderRightWidth: 1, borderStyle: 'solid' }]}>
+                                <Text style={{ fontSize: 7, fontFamily: FONT_BOLD, color: colors.slate, textTransform: 'uppercase', marginBottom: 4 }}>Entradas vs Saídas</Text>
+                                <Text style={{ fontSize: 16, fontFamily: FONT_BOLD, color: isSefazRisk ? '#ef4444' : '#22c55e', marginBottom: 4 }}>{propSefaz.toFixed(1).replace('.',',')}%</Text>
+                                <Text style={{ fontSize: 7, color: colors.slate, lineHeight: 1.4 }}>
+                                    Entradas: {fmtBRL(entradas)} / Saídas: {fmtBRL(saidas)}
+                                </Text>
+                            </View>
+                            <View style={{ flex: 2, justifyContent: 'center', paddingLeft: 10 }}>
+                                <Text style={{ fontSize: 8, fontFamily: FONT_BOLD, color: isSefazRisk ? '#ef4444' : colors.primary, marginBottom: 4 }}>
+                                    {isSefazRisk ? 'ATENÇÃO: Risco de Malha Fiscal Identificado' : 'Proporção Regular Identificada'}
+                                </Text>
+                                <Text style={{ fontSize: 7, color: colors.slate, lineHeight: 1.4 }}>
+                                    A SEFAZ cruza continuamente o volume de notas fiscais de venda com as compras. O controle é mensal, avaliando o percentual de faturamento em relação ao que foi comprado. A fórmula dos servidores do fisco é: (Total Saídas / Total Entradas) × 100. Valores abaixo de 100% indicam que as compras superaram as vendas, alertando o fisco para indícios de omissão de receitas e risco de malha fiscal. {isSefazRisk ? 'Recomendamos revisão imediata.' : 'Sua operação apresenta coerência neste indicador.'}
+                                </Text>
+                            </View>
+                        </View>
                     </View>
                 )}
 
