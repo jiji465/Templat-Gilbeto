@@ -221,6 +221,24 @@ const styles = StyleSheet.create({
     }
 });
 
+
+const GLOSSARY_TERMS: Record<string, string> = {
+    'DAS': 'Documento de Arrecadação do Simples Nacional. Guia única que unifica o pagamento de diversos impostos (IRPJ, CSLL, PIS, COFINS, IPI, ICMS, ISS e CPP) para empresas optantes pelo Simples Nacional.',
+    'DAS-MEI': 'Documento de Arrecadação do Simples Nacional do Microempreendedor Individual. Guia de valor fixo mensal que inclui a contribuição previdenciária e impostos (ICMS/ISS).',
+    'IRPJ': 'Imposto de Renda da Pessoa Jurídica. Tributo federal cobrado sobre o lucro da empresa.',
+    'CSLL': 'Contribuição Social sobre o Lucro Líquido. Tributo federal destinado ao financiamento da seguridade social.',
+    'PIS': 'Programa de Integração Social. Contribuição federal para financiar pagamento de seguro-desemprego e abono salarial.',
+    'COFINS': 'Contribuição para o Financiamento da Seguridade Social. Tributo federal cobrado sobre faturamento.',
+    'IPI': 'Imposto sobre Produtos Industrializados.',
+    'ICMS': 'Imposto sobre Circulação de Mercadorias e Serviços.',
+    'ISS': 'Imposto Sobre Serviços. Tributo municipal sobre prestação de serviços.',
+    'CPP': 'Contribuição Previdenciária Patronal.',
+    'INSS': 'Instituto Nacional do Seguro Social. Contribuição recolhida para a Previdência Social.',
+    'DIFAL': 'Diferencial de Alíquota. Imposto estadual correspondente à diferença entre a alíquota interna e a interestadual do ICMS.',
+    'PARCELAMENTO': 'Acordo para pagamento de dívidas fiscais em parcelas mensais.',
+    'TERCEIROS': 'Contribuição destinada a outras entidades e fundos.'
+};
+
 const LogoIcon = ({ size = 40, color = colors.accent }) => (
     <Svg width={size} height={size} viewBox="0 0 100 100">
         <Path d="M20 70 L20 40 L40 40 L40 70 Z" fill={color} />
@@ -234,7 +252,8 @@ export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
     const taxesList = taxes || [];
     const totalRev = (data?.revenues || []).reduce((s: number, r: any) => s + (parseNum(r.value)), 0);
     const totalTrib = taxesList.reduce((s: number, t: any) => s + (parseNum(t.value)), 0);
-    const cargaEf = totalRev > 0 ? (totalTrib / totalRev) * 100 : 0;
+        const totalTribEfetivo = taxesList.filter((t: any) => !String(t.tax).toUpperCase().includes('PARCELAMENTO')).reduce((s: number, t: any) => s + (parseNum(t.value)), 0);
+    const cargaEf = totalRev > 0 ? (totalTribEfetivo / totalRev) * 100 : 0;
     const totalEcon = taxesList.reduce((s: number, t: any) => s + (t.savedValue || 0), 0);
     
     const monthIdx = parseInt(data?.compMonth || '1') - 1;
@@ -291,7 +310,7 @@ export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
                         <Text style={[styles.kpiValue, styles.kpiAccent]}>{fmtBRL(totalTrib)}</Text>
                     </View>
                     <View style={styles.kpiCard}>
-                        <Text style={styles.kpiLabel}>Carga Efetiva</Text>
+                        <Text style={styles.kpiLabel}>Alíquota Efetiva</Text>
                         <Text style={styles.kpiValue}>{fmtPct(cargaEf)}</Text>
                     </View>
                 </View>
@@ -343,6 +362,48 @@ export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
                     <Text style={styles.footerText}>Relatório Estritamente Confidencial</Text>
                 </View>
             </Page>
+
+            {/* GLOSSARY PAGE */}
+            <Page size="A4" style={styles.page}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: colors.border, paddingBottom: 15 }}>
+                    <Text style={{ fontSize: 16, fontFamily: FONT_BOLD, color: colors.primary, textTransform: 'uppercase' }}>GLOSSÁRIO TRIBUTÁRIO</Text>
+                </View>
+
+                <Text wrap={false} style={{ fontSize: 10, fontFamily: FONT_BOLD, marginBottom: 15, marginTop: 25, textTransform: 'uppercase', letterSpacing: 1.5 }}>
+                    TERMOS APLICADOS NESTE RELATÓRIO
+                </Text>
+
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 15, marginTop: 15 }}>
+                    {Object.entries(GLOSSARY_TERMS).map(([term, def]) => {
+                        let show = false;
+
+                        // Check if the explicit tax exists in the list
+                        if (taxesList.some((t: any) => String(t.tax).toUpperCase().includes(term.toUpperCase()))) {
+                            show = true;
+                        }
+
+                        // Rule: If Simples Nacional, ONLY show DAS (and any explicitly added taxes like INSS/DIFAL that matched above)
+                        if (data?.regime === 'Simples Nacional' && term === 'DAS' && taxesList.length > 0) show = true;
+                        if (data?.regime === 'MEI' && term === 'DAS-MEI' && taxesList.length > 0) show = true;
+
+                        if (show) {
+                            return (
+                                <View key={term} wrap={false} style={{ width: '47%', padding: 12, backgroundColor: colors.white, borderLeftWidth: 3, borderLeftStyle: 'solid', borderLeftColor: colors.primary, borderRadius: 4, marginBottom: 10 }}>
+                                    <Text style={{ fontSize: 9, fontFamily: FONT_BOLD, color: colors.primary, marginBottom: 4 }}>{term}</Text>
+                                    <Text style={{ fontSize: 7, color: colors.slate, lineHeight: 1.4 }}>{def}</Text>
+                                </View>
+                            );
+                        }
+                        return null;
+                    })}
+                </View>
+
+                <View style={{ position: 'absolute', bottom: 30, left: 40, right: 40, borderTopWidth: 1, borderTopStyle: 'solid', borderTopColor: '#f1f5f9', paddingTop: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <Text style={{ fontSize: 6, color: colors.slate, textTransform: 'uppercase', letterSpacing: 1 }}>{OFFICE.name}</Text>
+                    <Text style={{ fontSize: 6, color: colors.slate, textTransform: 'uppercase', letterSpacing: 1 }}>{String(data?.cnpj || '00.000.000/0001-00')}</Text>
+                </View>
+            </Page>
+
         </Document>
     );
 };

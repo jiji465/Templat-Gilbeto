@@ -131,7 +131,8 @@ export default function Home() {
 
     const totalRev = (clientData.revenues || []).reduce((s: number, r: Revenue) => s + parseNum(r.value), 0);
     const totalTrib = taxes.reduce((s: number, t: TaxResult) => s + parseNum(t.value), 0);
-    const cargaEf = totalRev > 0 ? (totalTrib / totalRev) * 100 : 0;
+        const totalTribEfetivo = taxes.filter(t => !String(t.tax).toUpperCase().includes('PARCELAMENTO')).reduce((s, t) => s + (parseNum(t.value)), 0);
+    const cargaEf = totalRev > 0 ? (totalTribEfetivo / totalRev) * 100 : 0;
     const totalEcon = taxes.reduce((s: number, t: TaxResult) => s + (t.savedValue || 0), 0);
 
     return (
@@ -449,7 +450,7 @@ export default function Home() {
 
                             <div className="grid grid-cols-2 gap-8 pt-8 border-t border-white/10">
                                 <div>
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase mb-2">Carga Efetiva</p>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase mb-2">Alíquota Efetiva</p>
                                     <p className="text-2xl font-black text-accent">{fmtPct(cargaEf)}</p>
                                 </div>
                                 {totalEcon > 0 && (
