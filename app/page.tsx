@@ -591,7 +591,7 @@ export default function Home() {
                 </div>
                 </div>
                 ) : (
-                <div className="bg-slate-50 border border-border rounded-3xl p-6 glass-shadow min-h-[800px] flex flex-col">
+                <div className="bg-slate-50 border border-border rounded-3xl p-6 glass-shadow flex flex-col min-h-screen">
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-sm font-black text-primary uppercase tracking-[0.2em] flex items-center gap-3">
                             <FileText className="w-5 h-5 text-accent" /> Visualização do Documento
@@ -610,7 +610,7 @@ export default function Home() {
                             )}
                         </PDFDownloadLink>
                     </div>
-                    <div className="flex-1 bg-slate-200 rounded-xl overflow-hidden border border-slate-300">
+                    <div className="bg-slate-200 rounded-xl overflow-hidden border border-slate-300" style={{ height: '800px' }}>
                         {isClient && (
                             <PDFViewer width="100%" height="100%" className="border-none">
                                 {pdfDocument}

@@ -242,8 +242,8 @@ const GLOSSARY_TERMS: Record<string, string> = {
 const LogoIcon = ({ size = 40, color = colors.accent }) => (
     <Svg width={size} height={size} viewBox="0 0 100 100">
         <Path d="M20 70 L20 40 L40 40 L40 70 Z" fill={color} />
-        <Path d="M45 70 L45 25 L65 25 L65 70 Z" fill={color} opacity={0.8} />
-        <Path d="M70 70 L70 10 L90 10 L90 70 Z" fill={color} opacity={0.6} />
+        <Path d="M45 70 L45 25 L65 25 L65 70 Z" fill={color} fillOpacity={0.8} />
+        <Path d="M70 70 L70 10 L90 10 L90 70 Z" fill={color} fillOpacity={0.6} />
         <Path d="M10 80 L95 80" stroke={color} strokeWidth="4" />
     </Svg>
 );
@@ -334,8 +334,8 @@ export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
 
 
                 {hasSefaz && (
-                    <View wrap={false} style={{ marginBottom: 20 }}>
-                        <View style={styles.sectionTitle}>
+                    <View style={{ marginBottom: 20 }}>
+                        <View style={styles.sectionTitle} wrap={false}>
                             <View style={{ width: 12, height: 2, backgroundColor: colors.accent, marginRight: 8 }} />
                             <Text>Monitoramento SEFAZ (Malha Fiscal)</Text>
                         </View>
@@ -490,8 +490,8 @@ export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
                 <View style={{ margin: 40, marginTop: 30 }}>
                     <View style={{ backgroundColor: colors.primary, borderRadius: 8, padding: 25, position: 'relative', overflow: 'hidden' }}>
                         {/* Fake diagonal lines pattern placeholder */}
-                        <Svg width="100%" height="100%" style={{ position: 'absolute', top: 0, left: 0, opacity: 0.1 }}>
-                             <Path d="M0,0 L1000,1000 M10,0 L1010,1000 M20,0 L1020,1000 M30,0 L1030,1000 M40,0 L1040,1000" stroke={colors.accent} strokeWidth={2} />
+                        <Svg width={800} height={200} style={{ position: 'absolute', top: 0, left: 0 }}>
+                             <Path d="M0,0 L1000,1000 M10,0 L1010,1000 M20,0 L1020,1000 M30,0 L1030,1000 M40,0 L1040,1000" stroke={colors.accent} strokeWidth={2} strokeOpacity={0.1} />
                         </Svg>
 
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', zIndex: 1 }}>
