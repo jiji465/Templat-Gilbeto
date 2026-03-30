@@ -234,9 +234,14 @@ const GLOSSARY_TERMS: Record<string, string> = {
     'ISS': 'Imposto Sobre Serviços. Tributo municipal sobre prestação de serviços.',
     'CPP': 'Contribuição Previdenciária Patronal.',
     'INSS': 'Instituto Nacional do Seguro Social. Contribuição recolhida para a Previdência Social.',
+    'INSS PATRONAL': 'Cota patronal do INSS (20%) paga pela empresa no Lucro Presumido ou Real sobre a folha ou pró-labore.',
+    'FGTS': 'Fundo de Garantia do Tempo de Serviço. Contribuição mensal (8%) calculada sobre a remuneração dos empregados.',
+    'RAT/FAP': 'Riscos Ambientais do Trabalho e Fator Acidentário de Prevenção. Contribuição para custear benefícios acidentários.',
+    'IRRF': 'Imposto de Renda Retido na Fonte. Antecipação do imposto de renda da pessoa física na fonte pagadora.',
+    'ADICIONAL IRPJ': 'Adicional do IRPJ. Cobrado à alíquota de 10% sobre a parcela do lucro presumido que excede R$ 20.000,00 mensais.',
     'DIFAL': 'Diferencial de Alíquota. Imposto estadual correspondente à diferença entre a alíquota interna e a interestadual do ICMS.',
     'PARCELAMENTO': 'Acordo para pagamento de dívidas fiscais em parcelas mensais.',
-    'TERCEIROS': 'Contribuição destinada a outras entidades e fundos.'
+    'TERCEIROS': 'Contribuição destinada a outras entidades e fundos (Sistema S - SESC, SENAI, SEBRAE etc.).'
 };
 
 const LogoIcon = ({ size = 40, color = colors.accent }) => (
@@ -293,181 +298,265 @@ export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
                 </View>
             </Page>
 
-            {/* PÁGINA 2: DASHBOARD */}
-            <Page size="A4" style={styles.page}>
-                <View style={styles.header}>
-                    <View style={styles.headerBrand}>
-                        <LogoIcon size={24} />
-                        <View style={{ marginLeft: 10 }}>
-                            <Text style={styles.headerOffice}>{String(OFFICE.name || '')}</Text>
+            {/* PÁGINA 2: DETALHAMENTO TRIBUTÁRIO */}
+            <Page size="A4" style={[styles.page, { padding: 0 }]}>
+                {/* Header */}
+                <View style={{ backgroundColor: colors.primary, padding: 40, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <LogoIcon size={30} />
+                        <View style={{ marginLeft: 15 }}>
+                            <Text style={{ fontSize: 18, fontFamily: FONT_BOLD, color: colors.white, marginBottom: 4 }}>Detalhamento Tributário</Text>
+                            <Text style={{ fontSize: 10, color: colors.accent }}>Competência {String(month)} / {String(data?.compYear || '')} • {String(data?.clientName || 'CLIENTE')}</Text>
                         </View>
                     </View>
-                    <Text style={styles.kpiLabel}>{String(data?.regime || '')}</Text>
-                </View>
-
-                <Text style={{ fontSize: 24, fontFamily: FONT_BOLD, marginBottom: 5 }}>Resumo Consolidado</Text>
-                <Text style={{ fontSize: 9, color: colors.slate, marginBottom: 30 }}>Demonstrativo analítico de apuração tributária para o período de {month}.</Text>
-
-                <View style={styles.kpiRow}>
-                    <View style={styles.kpiCard}>
-                        <Text style={styles.kpiLabel}>Receita Bruta</Text>
-                        <Text style={styles.kpiValue}>{fmtBRL(totalRev)}</Text>
-                    </View>
-                    <View style={[styles.kpiCard, styles.kpiCardDark]}>
-                        <Text style={[styles.kpiLabel, { color: 'rgba(255,255,255,0.6)' }]}>GUIA ÚNICA DAS</Text>
-                        <Text style={[styles.kpiValue, styles.kpiAccent]}>{fmtBRL(totalTrib)}</Text>
-                    </View>
-                    <View style={styles.kpiCard}>
-                        <Text style={styles.kpiLabel}>Alíquota Efetiva</Text>
-                        <Text style={styles.kpiValue}>{fmtPct(cargaEf)}</Text>
+                    <View style={{ alignItems: 'flex-end' }}>
+                        <Text style={{ fontSize: 10, color: colors.accent, fontFamily: FONT_BOLD }}>2 / 3</Text>
+                        <Text style={{ fontSize: 8, color: colors.white, marginTop: 4 }}>CONFIDENCIAL</Text>
                     </View>
                 </View>
 
-                {totalEcon > 0 && (
-                    <View style={{ backgroundColor: '#fffdf5', borderTopWidth: 1, borderBottomWidth: 1, borderLeftWidth: 1, borderRightWidth: 1, borderStyle: 'solid', borderColor: colors.accent, padding: 15, borderRadius: 10, marginBottom: 20 }}>
-                        <Text style={{ fontSize: 9, fontFamily: FONT_BOLD, color: colors.accent, marginBottom: 4 }}>Diferencial Estratégico:</Text>
-                        <Text style={{ fontSize: 8, color: colors.primary, lineHeight: 1.4 }}>
-                            Através da aplicação correta de benefícios de Substituição Tributária (ICMS-ST) e Regime Monofásico (PIS/COFINS), conseguimos uma economia real de <Text style={styles.tdBold}>{fmtBRL(totalEcon)}</Text> neste período.
-                        </Text>
+                <View style={{ margin: 40, marginTop: 30 }}>
+                    <Text style={{ fontSize: 10, fontFamily: FONT_BOLD, color: colors.primary, marginBottom: 10, textTransform: 'uppercase', borderBottomWidth: 1, borderBottomColor: '#e2e8f0', paddingBottom: 5 }}>DADOS DA APURAÇÃO</Text>
+                    
+                    <View style={{ flexDirection: 'row', gap: 10, marginBottom: 20 }}>
+                        <View style={{ flex: 1, backgroundColor: colors.white, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 6, padding: 15, borderTopWidth: 4, borderTopColor: colors.primary }}>
+                            <Text style={{ fontSize: 7, color: colors.slate, textTransform: 'uppercase', marginBottom: 5 }}>FOLHA DE PAGAMENTO 12M</Text>
+                            <Text style={{ fontSize: 14, fontFamily: FONT_BOLD, color: colors.primary }}>{fmtBRL(parseNum(String(data?.folha||'0')))}</Text>
+                            <Text style={{ fontSize: 7, color: colors.accent, marginTop: 5 }}>Fator R: {data?.rbt12 && parseNum(String(data.rbt12)) > 0 ? ((parseNum(String(data?.folha||'0'))/parseNum(String(data.rbt12)))*100).toFixed(2).replace('.',',') : '0,00'}%</Text>
+                        </View>
+                        <View style={{ flex: 1, backgroundColor: colors.white, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 6, padding: 15, borderTopWidth: 4, borderTopColor: colors.primary }}>
+                            <Text style={{ fontSize: 7, color: colors.slate, textTransform: 'uppercase', marginBottom: 5 }}>RECEITA BRUTA 12M — RBT12</Text>
+                            <Text style={{ fontSize: 14, fontFamily: FONT_BOLD, color: colors.primary }}>{fmtBRL(parseNum(String(data?.rbt12||'0')))}</Text>
+                            <Text style={{ fontSize: 7, color: colors.accent, marginTop: 5 }}>Base de enquadramento</Text>
+                        </View>
+                        <View style={{ flex: 1, backgroundColor: colors.white, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 6, padding: 15, borderTopWidth: 4, borderTopColor: colors.primary }}>
+                            <Text style={{ fontSize: 7, color: colors.slate, textTransform: 'uppercase', marginBottom: 5 }}>PRÓ-LABORE DO SÓCIO</Text>
+                            <Text style={{ fontSize: 14, fontFamily: FONT_BOLD, color: colors.primary }}>{fmtBRL(parseNum(String(data?.proLabore||'0')))}</Text>
+                            <Text style={{ fontSize: 7, color: colors.accent, marginTop: 5 }}>Base de cálculo INSS</Text>
+                        </View>
                     </View>
-                )}
 
+                    <Text style={{ fontSize: 10, fontFamily: FONT_BOLD, color: colors.primary, marginTop: 10, marginBottom: 10, textTransform: 'uppercase', borderBottomWidth: 1, borderBottomColor: '#e2e8f0', paddingBottom: 5 }}>TRIBUTOS A RECOLHER</Text>
 
-                {hasSefaz && (
-                    <View style={{ marginBottom: 20 }}>
-                        <View style={styles.sectionTitle} wrap={false}>
-                            <View style={{ width: 12, height: 2, backgroundColor: colors.accent, marginRight: 8 }} />
-                            <Text>Monitoramento SEFAZ (Malha Fiscal)</Text>
+                    <View style={styles.table}>
+                        <View style={styles.tableHeaderBase}>
+                            <Text style={[styles.th, { flex: 3 }]}>DESCRIÇÃO</Text>
+                            <Text style={[styles.th, { flex: 1, textAlign: 'center' }]}>ALÍQUOTA</Text>
+                            <Text style={[styles.th, { flex: 1.5, textAlign: 'right' }]}>BASE DE CÁLCULO</Text>
+                            <Text style={[styles.th, { flex: 1.5, textAlign: 'center' }]}>VENCIMENTO</Text>
+                            <Text style={[styles.th, { flex: 2, textAlign: 'right' }]}>VALOR</Text>
                         </View>
-                        <View style={{ flexDirection: 'row', gap: 10 }}>
-                            <View style={[styles.kpiCard, { flex: 1, backgroundColor: isSefazRisk ? '#fef2f2' : '#f0fdf4', borderColor: isSefazRisk ? '#fecaca' : '#bbf7d0', borderTopWidth: 1, borderBottomWidth: 1, borderLeftWidth: 1, borderRightWidth: 1, borderStyle: 'solid' }]}>
-                                <Text style={{ fontSize: 7, fontFamily: FONT_BOLD, color: colors.slate, textTransform: 'uppercase', marginBottom: 4 }}>Entradas vs Saídas</Text>
-                                <Text style={{ fontSize: 16, fontFamily: FONT_BOLD, color: isSefazRisk ? '#ef4444' : '#22c55e', marginBottom: 4 }}>{propSefaz.toFixed(1).replace('.',',')}%</Text>
-                                <Text style={{ fontSize: 7, color: colors.slate, lineHeight: 1.4 }}>
-                                    Entradas: {fmtBRL(entradas)} / Saídas: {fmtBRL(saidas)}
-                                </Text>
-                            </View>
-                            <View style={{ flex: 2, justifyContent: 'center', paddingLeft: 10 }}>
-                                <Text style={{ fontSize: 8, fontFamily: FONT_BOLD, color: isSefazRisk ? '#ef4444' : colors.primary, marginBottom: 4 }}>
-                                    {isSefazRisk ? 'ATENÇÃO: Risco de Malha Fiscal Identificado' : 'Proporção Regular Identificada'}
-                                </Text>
-                                <Text style={{ fontSize: 7, color: colors.slate, lineHeight: 1.4 }}>
-                                    A SEFAZ cruza continuamente o volume de notas fiscais de venda com as compras. O controle avalia os últimos 12 meses, verificando o percentual de faturamento em relação ao que foi comprado. A fórmula dos servidores do fisco é: (Total Saídas / Total Entradas) × 100. Valores abaixo de 100% indicam que as compras superaram as vendas no período, alertando o fisco para indícios de omissão de receitas e risco de malha fiscal. {isSefazRisk ? 'Recomendamos revisão imediata.' : 'Sua operação apresenta coerência neste indicador.'}
-                                </Text>
-                            </View>
-                        </View>
-                        {sefazHistory.length > 0 && (
-                            <View style={{ marginTop: 15, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 8, overflow: 'hidden' }}>
-                                <View style={{ flexDirection: 'row', backgroundColor: '#f8fafc', padding: 6, borderBottomWidth: 1, borderColor: '#e2e8f0' }}>
-                                    <Text style={{ flex: 1, fontSize: 7, fontFamily: FONT_BOLD, color: colors.slate, textAlign: 'center' }}>Período</Text>
-                                    <Text style={{ flex: 1, fontSize: 7, fontFamily: FONT_BOLD, color: colors.slate, textAlign: 'right' }}>Entradas (Compras)</Text>
-                                    <Text style={{ flex: 1, fontSize: 7, fontFamily: FONT_BOLD, color: colors.slate, textAlign: 'right' }}>Saídas (Faturamento)</Text>
-                                    <Text style={{ flex: 1, fontSize: 7, fontFamily: FONT_BOLD, color: colors.slate, textAlign: 'right' }}>Proporção</Text>
+                        {taxesList.map((t, i) => (
+                            <View key={i} style={[styles.tableRow, { borderLeftWidth: 3, borderLeftColor: colors.accent }]} wrap={false}>
+                                <Text style={[styles.td, styles.tdBold, { flex: 3, color: colors.primary }]}>{String(t.tax || '')}</Text>
+                                <View style={{ flex: 1, alignItems: 'center' }}>
+                                    <View style={{ backgroundColor: colors.primary, padding: 4, borderRadius: 4 }}>
+                                        <Text style={{ fontSize: 7, fontFamily: FONT_BOLD, color: colors.accent }}>{String(t.rate || '0')}%</Text>
+                                    </View>
                                 </View>
-                                {sefazHistory.map((item: any, i: number) => {
-                                    const mEntradas = parseNum(item.entradas);
-                                    const mSaidas = parseNum(item.saidas);
-                                    const mProp = mEntradas > 0 ? (mSaidas / mEntradas) * 100 : (mSaidas > 0 ? 999 : 0);
-                                    const mRisk = mEntradas > 0 && mProp < 100;
-
-                                    if (mEntradas === 0 && mSaidas === 0) return null;
-
-                                    return (
-                                        <View key={i} style={{ flexDirection: 'row', padding: 6, borderBottomWidth: i === sefazHistory.length - 1 ? 0 : 1, borderColor: '#f1f5f9' }}>
-                                            <Text style={{ flex: 1, fontSize: 7, color: colors.slate, textAlign: 'center' }}>{item.month}</Text>
-                                            <Text style={{ flex: 1, fontSize: 7, color: colors.slate, textAlign: 'right' }}>{fmtBRL(mEntradas)}</Text>
-                                            <Text style={{ flex: 1, fontSize: 7, color: colors.slate, textAlign: 'right' }}>{fmtBRL(mSaidas)}</Text>
-                                            <Text style={{ flex: 1, fontSize: 7, fontFamily: FONT_BOLD, color: mRisk ? '#ef4444' : '#22c55e', textAlign: 'right' }}>
-                                                {mProp.toFixed(1).replace('.',',')}%
-                                            </Text>
-                                        </View>
-                                    );
-                                })}
+                                <Text style={[styles.td, { flex: 1.5, textAlign: 'right', color: colors.slate }]}>R$ {String(t.base || '0,00')}</Text>
+                                <Text style={[styles.td, { flex: 1.5, textAlign: 'center', color: colors.slate }]}>{String(t.dueDate || '--/--/----')}</Text>
+                                <Text style={[styles.td, styles.tdBold, { flex: 2, textAlign: 'right', fontSize: 10 }]}>{String(t.value || '0,00')}</Text>
                             </View>
-                        )}
-                    </View>
-                )}
-
-                <View style={styles.sectionTitle}>
-                    <View style={{ width: 12, height: 2, backgroundColor: colors.accent, marginRight: 8 }} />
-                    <Text>Detalhes da Apuração</Text>
-                </View>
-
-                <View style={styles.table}>
-                    <View style={styles.tableHeaderBase}>
-                        <Text style={[styles.th, { flex: 3 }]}>Descrição do Tributo</Text>
-                        <Text style={[styles.th, { flex: 1.2, textAlign: 'right' }]}>Base de Cálculo</Text>
-                        <Text style={[styles.th, { flex: 1, textAlign: 'right' }]}>Alíquota</Text>
-                        <Text style={[styles.th, { flex: 2, textAlign: 'right' }]}>Valor Devido</Text>
-                    </View>
-                    {taxesList.map((t, i) => (
-                        <View key={i} style={styles.tableRow} wrap={false}>
-                            <Text style={[styles.td, styles.tdBold, { flex: 3 }]}>{String(t.tax || '')}</Text>
-                            <Text style={[styles.td, { flex: 1.2, textAlign: 'right', color: colors.slate }]}>{String(t.base || '0,00')}</Text>
-                            <Text style={[styles.td, { flex: 1, textAlign: 'right', color: colors.slate }]}>{String(t.rate || '0')}%</Text>
-                            <Text style={[styles.td, styles.tdBold, { flex: 2, textAlign: 'right' }]}>{String(t.value || '0,00')}</Text>
+                        ))}
+                        <View style={[styles.tableRow, { backgroundColor: colors.primary, color: colors.white, borderTopWidth: 0, borderBottomWidth: 0, borderLeftWidth: 0, borderRightWidth: 0, marginTop: 8, borderRadius: 4, paddingVertical: 10 }]} wrap={false}>
+                            <Text style={[styles.tdBold, { flex: 5, fontSize: 9, textTransform: 'uppercase' }]}>TOTAL CONSOLIDADO A RECOLHER</Text>
+                            <Text style={[styles.tdBold, { flex: 3, textAlign: 'right', fontSize: 14, color: colors.accent }]}>{fmtBRL(totalTrib)}</Text>
                         </View>
-                    ))}
-                    <View style={[styles.tableRow, { backgroundColor: colors.primary, color: colors.white, borderTopWidth: 0, borderBottomWidth: 0, borderLeftWidth: 0, borderRightWidth: 0, marginTop: 10, borderRadius: 4 }]}>
-                        <Text style={[styles.tdBold, { flex: 4.2 }]}>TOTAL CONSOLIDADO</Text>
-                        <Text style={[styles.tdBold, { flex: 3, textAlign: 'right', fontSize: 12, color: colors.accent }]}>{fmtBRL(totalTrib)}</Text>
                     </View>
+
+                    <Text style={{ fontSize: 10, fontFamily: FONT_BOLD, color: colors.primary, marginTop: 25, marginBottom: 15, textTransform: 'uppercase', borderBottomWidth: 1, borderBottomColor: '#e2e8f0', paddingBottom: 5 }}>INDICADORES DO PERÍODO</Text>
+
+                    <View style={{ flexDirection: 'row', gap: 10 }}>
+                        <View style={{ flex: 1, backgroundColor: colors.white, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 6, padding: 15, alignItems: 'center' }}>
+                            <Text style={{ fontSize: 14, fontFamily: FONT_BOLD, color: colors.primary }}>{fmtPct(cargaEf)}</Text>
+                            <View style={{ width: '100%', height: 4, backgroundColor: '#e2e8f0', borderRadius: 2, marginVertical: 8 }}>
+                                <View style={{ width: `${Math.min(100, cargaEf)}%`, height: '100%', backgroundColor: colors.accent, borderRadius: 2 }} />
+                            </View>
+                            <Text style={{ fontSize: 6, color: colors.slate, textTransform: 'uppercase' }}>CARGA EFETIVA</Text>
+                        </View>
+                        <View style={{ flex: 1, backgroundColor: colors.white, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 6, padding: 15, alignItems: 'center' }}>
+                            <Text style={{ fontSize: 14, fontFamily: FONT_BOLD, color: colors.primary }}>
+                                {data?.rbt12 && parseNum(String(data.rbt12)) > 0 ? ((parseNum(String(data?.folha||'0'))/parseNum(String(data.rbt12)))*100).toFixed(2).replace('.',',') : '0,00'}%
+                            </Text>
+                            <View style={{ width: '100%', height: 4, backgroundColor: '#e2e8f0', borderRadius: 2, marginVertical: 8 }}>
+                                <View style={{ width: `${Math.min(100, data?.rbt12 && parseNum(String(data.rbt12)) > 0 ? ((parseNum(String(data?.folha||'0'))/parseNum(String(data.rbt12)))*100) : 0)}%`, height: '100%', backgroundColor: colors.accent, borderRadius: 2 }} />
+                            </View>
+                            <Text style={{ fontSize: 6, color: colors.slate, textTransform: 'uppercase' }}>FATOR R</Text>
+                        </View>
+                        <View style={{ flex: 1, backgroundColor: colors.white, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 6, padding: 15, alignItems: 'center' }}>
+                            <Text style={{ fontSize: 14, fontFamily: FONT_BOLD, color: colors.primary }}>
+                                {totalTrib > 0 && data?.regime === 'Simples Nacional' ? ((parseNum(String(taxesList.find((t: any)=>t.tax.includes('DAS'))?.value || '0')) / totalTrib) * 100).toFixed(2).replace('.',',') : '100,00'}%
+                            </Text>
+                            <View style={{ width: '100%', height: 4, backgroundColor: '#e2e8f0', borderRadius: 2, marginVertical: 8 }}>
+                                <View style={{ width: '90%', height: '100%', backgroundColor: colors.accent, borderRadius: 2 }} />
+                            </View>
+                            <Text style={{ fontSize: 6, color: colors.slate, textTransform: 'uppercase' }}>COMPOSIÇÃO DAS</Text>
+                        </View>
+                        <View style={{ flex: 1, backgroundColor: colors.white, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 6, padding: 15, alignItems: 'center' }}>
+                            <Text style={{ fontSize: 14, fontFamily: FONT_BOLD, color: colors.primary }}>
+                                {totalTrib > 0 ? ((parseNum(String(taxesList.find((t: any)=>t.tax.includes('INSS sobre'))?.value || '0')) / totalTrib) * 100).toFixed(2).replace('.',',') : '0,00'}%
+                            </Text>
+                            <View style={{ width: '100%', height: 4, backgroundColor: '#e2e8f0', borderRadius: 2, marginVertical: 8 }}>
+                                <View style={{ width: '10%', height: '100%', backgroundColor: colors.accent, borderRadius: 2 }} />
+                            </View>
+                            <Text style={{ fontSize: 6, color: colors.slate, textTransform: 'uppercase' }}>IMPACTO PRÓ-LABORE</Text>
+                        </View>
+                    </View>
+
+                    {data.observations ? (
+                        <View style={{ marginTop: 20, padding: 10, backgroundColor: '#f8fafc', borderRadius: 6, borderWidth: 1, borderColor: '#cbd5e1', flexDirection: 'row' }}>
+                            <Text style={{ fontSize: 8, fontFamily: FONT_BOLD, color: colors.primary, marginRight: 5 }}>NOTAS DO ANALISTA:</Text>
+                            <Text style={{ fontSize: 8, color: colors.slate, flex: 1 }}>{String(data.observations)}</Text>
+                        </View>
+                    ) : null}
                 </View>
 
-                {data.observations ? (
-                    <View style={{ marginTop: 30, padding: 15, borderLeftWidth: 3, borderLeftStyle: 'solid', borderLeftColor: colors.accent, backgroundColor: colors.light }}>
-                        <Text style={{ fontSize: 8, fontFamily: FONT_BOLD, marginBottom: 5 }}>NOTAS DO ANALISTA:</Text>
-                        <Text style={{ fontSize: 8, color: colors.slate, lineHeight: 1.5 }}>{String(data.observations)}</Text>
-                    </View>
-                ) : null}
-
-                <View style={styles.footer}>
-                    <Text style={styles.footerText}>{OFFICE.name}</Text>
-                    <Text style={styles.footerText}>Relatório Estritamente Confidencial</Text>
+                {/* Footer matching other pages */}
+                <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: colors.primary, padding: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.6)' }}>{OFFICE.name} • CNPJ {String(data?.cnpj || '00.000.000/0001-00')}</Text>
+                    <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.6)' }}>Competência {String(month)} / {String(data?.compYear || '')} • Documento Confidencial</Text>
                 </View>
             </Page>
 
-            {/* GLOSSARY PAGE */}
-            <Page size="A4" style={styles.page}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: colors.border, paddingBottom: 15 }}>
-                    <Text style={{ fontSize: 16, fontFamily: FONT_BOLD, color: colors.primary, textTransform: 'uppercase' }}>GLOSSÁRIO TRIBUTÁRIO</Text>
+            {/* PÁGINA EXTRA: MONITORAMENTO SEFAZ */}
+            {hasSefaz && (
+            <Page size="A4" style={[styles.page, { padding: 0 }]}>
+                {/* Header that matches visually */}
+                <View style={{ backgroundColor: colors.primary, padding: 40, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <LogoIcon size={30} />
+                        <View style={{ marginLeft: 15 }}>
+                            <Text style={{ fontSize: 18, fontFamily: FONT_BOLD, color: colors.white, marginBottom: 4 }}>Monitoramento Fiscal SEFAZ</Text>
+                            <Text style={{ fontSize: 10, color: colors.accent }}>Competência {String(month)} / {String(data?.compYear || '')} • {String(data?.clientName || 'CLIENTE')}</Text>
+                        </View>
+                    </View>
+                    <View style={{ alignItems: 'flex-end' }}>
+                        <Text style={{ fontSize: 10, color: colors.accent, fontFamily: FONT_BOLD }}>Extra</Text>
+                        <Text style={{ fontSize: 8, color: colors.white, marginTop: 4 }}>CONFIDENCIAL</Text>
+                    </View>
                 </View>
 
-                <Text wrap={false} style={{ fontSize: 10, fontFamily: FONT_BOLD, marginBottom: 15, marginTop: 25, textTransform: 'uppercase', letterSpacing: 1.5 }}>
-                    TERMOS APLICADOS NESTE RELATÓRIO
-                </Text>
+                <View style={{ margin: 40, marginTop: 20 }}>
+                    <Text style={{ fontSize: 10, fontFamily: FONT_BOLD, color: colors.primary, marginBottom: 10, textTransform: 'uppercase', borderBottomWidth: 1, borderBottomColor: '#e2e8f0', paddingBottom: 5 }}>ANÁLISE DE MALHA FISCAL</Text>
 
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 15, marginTop: 15 }}>
-                    {Object.entries(GLOSSARY_TERMS).map(([term, def]) => {
-                        let show = false;
+                    <View style={{ flexDirection: 'row', gap: 10, marginBottom: 20 }}>
+                        <View style={{ flex: 1, backgroundColor: isSefazRisk ? '#fef2f2' : '#f0fdf4', borderColor: isSefazRisk ? '#fecaca' : '#bbf7d0', borderWidth: 1, borderRadius: 6, padding: 15, borderTopWidth: 4, borderTopColor: isSefazRisk ? '#ef4444' : '#22c55e', alignItems: 'center' }}>
+                            <Text style={{ fontSize: 7, color: colors.slate, textTransform: 'uppercase', marginBottom: 5 }}>ENTRADAS VS SAÍDAS</Text>
+                            <Text style={{ fontSize: 24, fontFamily: FONT_BOLD, color: isSefazRisk ? '#ef4444' : '#22c55e' }}>{propSefaz.toFixed(1).replace('.',',')}%</Text>
+                            <Text style={{ fontSize: 7, color: colors.slate, marginTop: 5 }}>
+                                Entradas: {fmtBRL(entradas)} | Saídas: {fmtBRL(saidas)}
+                            </Text>
+                        </View>
+                        <View style={{ flex: 1.5, justifyContent: 'center', padding: 15, backgroundColor: colors.white, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 6 }}>
+                            <Text style={{ fontSize: 10, fontFamily: FONT_BOLD, color: isSefazRisk ? '#ef4444' : colors.primary, marginBottom: 6 }}>
+                                {isSefazRisk ? 'ATENÇÃO: Risco de Malha Fiscal Identificado' : 'Proporção Regular Identificada'}
+                            </Text>
+                            <Text style={{ fontSize: 8, color: colors.slate, lineHeight: 1.5 }}>
+                                A SEFAZ cruza continuamente o volume de notas fiscais de venda com as compras. A regra avalia meses passados: se as compras (entradas) superam as vendas (saídas), indica lucro bruto negativo ou forte evasão, alertando o fisco.
+                                {isSefazRisk ? ' Recomendamos revisão imediata deste indicador.' : ' Sua operação apresenta coerência neste indicador.'}
+                            </Text>
+                        </View>
+                    </View>
 
-                        // Check if the explicit tax exists in the list
-                        if (taxesList.some((t: any) => String(t.tax).toUpperCase().includes(term.toUpperCase()))) {
-                            show = true;
-                        }
+                    <Text style={{ fontSize: 10, fontFamily: FONT_BOLD, color: colors.primary, marginTop: 10, marginBottom: 10, textTransform: 'uppercase', borderBottomWidth: 1, borderBottomColor: '#e2e8f0', paddingBottom: 5 }}>HISTÓRICO DE CRUZAMENTO 12 MESES</Text>
+                    <View style={{ borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 6, overflow: 'hidden' }}>
+                        <View style={{ flexDirection: 'row', backgroundColor: colors.primary, padding: 8 }}>
+                            <Text style={{ flex: 1, fontSize: 8, fontFamily: FONT_BOLD, color: colors.white, textAlign: 'center' }}>PERÍODO</Text>
+                            <Text style={{ flex: 1.5, fontSize: 8, fontFamily: FONT_BOLD, color: colors.white, textAlign: 'right' }}>ENTRADAS (COMPRAS)</Text>
+                            <Text style={{ flex: 1.5, fontSize: 8, fontFamily: FONT_BOLD, color: colors.white, textAlign: 'right' }}>SAÍDAS (FATURAMENTO)</Text>
+                            <Text style={{ flex: 1, fontSize: 8, fontFamily: FONT_BOLD, color: colors.white, textAlign: 'center' }}>PROPORÇÃO</Text>
+                        </View>
+                        {sefazHistory.map((item: any, i: number) => {
+                            const mEntradas = parseNum(item.entradas);
+                            const mSaidas = parseNum(item.saidas);
+                            const mProp = mEntradas > 0 ? (mSaidas / mEntradas) * 100 : (mSaidas > 0 ? 999 : 0);
+                            const mRisk = mEntradas > 0 && mProp < 100;
 
-                        // Rule: If Simples Nacional, ONLY show DAS (and any explicitly added taxes like INSS/DIFAL that matched above)
-                        if (data?.regime === 'Simples Nacional' && term === 'DAS' && taxesList.length > 0) show = true;
-                        if (data?.regime === 'MEI' && term === 'DAS-MEI' && taxesList.length > 0) show = true;
+                            if (mEntradas === 0 && mSaidas === 0) return null;
 
-                        if (show) {
                             return (
-                                <View key={term} wrap={false} style={{ width: '47%', padding: 12, backgroundColor: colors.white, borderLeftWidth: 3, borderLeftStyle: 'solid', borderLeftColor: colors.primary, borderRadius: 4, marginBottom: 10 }}>
-                                    <Text style={{ fontSize: 9, fontFamily: FONT_BOLD, color: colors.primary, marginBottom: 4 }}>{term}</Text>
-                                    <Text style={{ fontSize: 7, color: colors.slate, lineHeight: 1.4 }}>{def}</Text>
+                                <View key={i} style={{ flexDirection: 'row', padding: 8, backgroundColor: i % 2 === 0 ? colors.white : colors.light, borderTopWidth: 1, borderColor: '#f1f5f9', alignItems: 'center' }} wrap={false}>
+                                    <Text style={{ flex: 1, fontSize: 8, color: colors.slate, textAlign: 'center' }}>{item.month}</Text>
+                                    <Text style={{ flex: 1.5, fontSize: 8, color: colors.slate, textAlign: 'right' }}>{fmtBRL(mEntradas)}</Text>
+                                    <Text style={{ flex: 1.5, fontSize: 8, color: colors.slate, textAlign: 'right' }}>{fmtBRL(mSaidas)}</Text>
+                                    <Text style={{ flex: 1, fontSize: 8, fontFamily: FONT_BOLD, color: mRisk ? '#ef4444' : '#22c55e', textAlign: 'center' }}>
+                                        {mProp.toFixed(1).replace('.',',')}%
+                                    </Text>
                                 </View>
                             );
-                        }
-                        return null;
-                    })}
+                        })}
+                    </View>
                 </View>
 
-                <View style={{ position: 'absolute', bottom: 30, left: 40, right: 40, borderTopWidth: 1, borderTopStyle: 'solid', borderTopColor: '#f1f5f9', paddingTop: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Text style={{ fontSize: 6, color: colors.slate, textTransform: 'uppercase', letterSpacing: 1 }}>{OFFICE.name}</Text>
-                    <Text style={{ fontSize: 6, color: colors.slate, textTransform: 'uppercase', letterSpacing: 1 }}>{String(data?.cnpj || '00.000.000/0001-00')}</Text>
+                {/* Footer matching other pages */}
+                <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: colors.primary, padding: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.6)' }}>{OFFICE.name} • CNPJ {String(data?.cnpj || '00.000.000/0001-00')}</Text>
+                    <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.6)' }}>Competência {String(month)} / {String(data?.compYear || '')} • Documento Confidencial</Text>
                 </View>
             </Page>
+            )}
 
+            {/* GLOSSÁRIO PAGE */}
+            <Page size="A4" style={[styles.page, { padding: 0 }]}>
+                {/* Header that matches visually */}
+                <View style={{ backgroundColor: colors.primary, padding: 40, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <LogoIcon size={30} />
+                        <View style={{ marginLeft: 15 }}>
+                            <Text style={{ fontSize: 18, fontFamily: FONT_BOLD, color: colors.white, marginBottom: 4 }}>Glossário Tributário</Text>
+                            <Text style={{ fontSize: 10, color: colors.accent }}>Competência {String(month)} / {String(data?.compYear || '')} • {String(data?.clientName || 'CLIENTE')}</Text>
+                        </View>
+                    </View>
+                    <View style={{ alignItems: 'flex-end' }}>
+                        <Text style={{ fontSize: 10, color: colors.accent, fontFamily: FONT_BOLD }}>Extra</Text>
+                        <Text style={{ fontSize: 8, color: colors.white, marginTop: 4 }}>CONFIDENCIAL</Text>
+                    </View>
+                </View>
+                
+                <View style={{ margin: 40, marginTop: 30 }}>
+                    <Text wrap={false} style={{ fontSize: 10, fontFamily: FONT_BOLD, marginBottom: 15, textTransform: 'uppercase', borderBottomWidth: 1, borderBottomColor: '#e2e8f0', paddingBottom: 5, color: colors.primary }}>
+                        TERMOS APLICADOS NESTE RELATÓRIO
+                    </Text>
+
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 15, marginTop: 15 }}>
+                        {Object.entries(GLOSSARY_TERMS).map(([term, def]) => {
+                            let show = false;
+
+                            if (taxesList.some((t: any) => String(t.tax).toUpperCase().includes(term.toUpperCase()))) {
+                                show = true;
+                            }
+
+                            if (!show && data?.regime === 'Simples Nacional') {
+                                taxesList.forEach((t: any) => {
+                                    if (t.repart && t.repart[term] && t.repart[term] > 0) {
+                                        show = true;
+                                    }
+                                });
+                            }
+
+                            if (data?.regime === 'Simples Nacional' && term === 'DAS' && taxesList.length > 0) show = true;
+                            if (data?.regime === 'MEI' && term === 'DAS-MEI' && taxesList.length > 0) show = true;
+
+                            if (show) {
+                                return (
+                                    <View key={term} wrap={false} style={{ width: '47%', padding: 12, backgroundColor: colors.white, borderLeftWidth: 3, borderLeftStyle: 'solid', borderLeftColor: colors.primary, borderRadius: 4, marginBottom: 10, borderWidth: 1, borderColor: '#e2e8f0' }}>
+                                        <Text style={{ fontSize: 9, fontFamily: FONT_BOLD, color: colors.primary, marginBottom: 4 }}>{term}</Text>
+                                        <Text style={{ fontSize: 7, color: colors.slate, lineHeight: 1.4 }}>{def}</Text>
+                                    </View>
+                                );
+                            }
+                            return null;
+                        })}
+                    </View>
+                </View>
+
+                {/* Footer matching other pages */}
+                <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: colors.primary, padding: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.6)' }}>{OFFICE.name} • CNPJ {String(data?.cnpj || '00.000.000/0001-00')}</Text>
+                    <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.6)' }}>Competência {String(month)} / {String(data?.compYear || '')} • Documento Confidencial</Text>
+                </View>
+            </Page>
 
             {totalFatorREcon > 0 && (
             <Page size="A4" style={[styles.page, { padding: 0 }]}>

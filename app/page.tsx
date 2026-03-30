@@ -46,6 +46,30 @@ export default function Home() {
     const [calcId, setCalcId] = useState(0);
     const [activeTab, setActiveTab] = useState<'form' | 'preview'>('form');
 
+    const [showSefazPaste, setShowSefazPaste] = useState(false);
+    const [sefazPasteText, setSefazPasteText] = useState('');
+
+    const handleSefazPaste = () => {
+        if (!clientData || !sefazPasteText.trim()) return;
+        const rows = sefazPasteText.trim().split('\n').map((r: string) => r.split('\t')).filter((r: string[]) => r.length >= 2);
+        const newHistory = [...(clientData.sefazHistory || [])];
+        
+        rows.forEach((cols: string[], i: number) => {
+            const m = cols[0] ? cols[0].trim() : '';
+            if (m && !m.toLowerCase().includes('mês') && !m.toLowerCase().includes('mes')) {
+                newHistory.push({
+                    id: Date.now() + i,
+                    month: m,
+                    entradas: cols[1] ? inputBRL(cols[1]) : '0,00',
+                    saidas: cols[2] ? inputBRL(cols[2]) : '0,00'
+                });
+            }
+        });
+        setClientData({ ...clientData, sefazHistory: newHistory });
+        setSefazPasteText('');
+        setShowSefazPaste(false);
+    };
+
     useEffect(() => {
         const STORAGE_KEY = 'fiscal_pro_v3';
         const timer = setTimeout(() => {
@@ -411,10 +435,37 @@ export default function Home() {
                             <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
                                 <Plus className="w-3.5 h-3.5" /> Monitoramento SEFAZ (Últimos 12 Meses)
                             </h2>
-                            <button onClick={() => upd('sefazHistory', [...(clientData.sefazHistory || []), { id: Date.now(), month: '', entradas: '0,00', saidas: '0,00' }])} className="text-[10px] font-black bg-slate-200 text-slate-600 px-3 py-1.5 rounded-lg hover:bg-slate-300 transition-all uppercase flex items-center gap-2">
-                                <Plus className="w-3 h-3" /> Adicionar Mês
-                            </button>
+                            <div className="flex gap-3">
+                                <button onClick={() => setShowSefazPaste(!showSefazPaste)} className="text-[10px] font-black bg-emerald-100 text-emerald-600 px-3 py-1.5 rounded-lg hover:bg-emerald-200 transition-all uppercase flex items-center gap-2 border border-emerald-200">
+                                    <FileText className="w-3 h-3" /> Colar do Excel
+                                </button>
+                                <button onClick={() => upd('sefazHistory', [...(clientData.sefazHistory || []), { id: Date.now(), month: '', entradas: '0,00', saidas: '0,00' }])} className="text-[10px] font-black bg-slate-200 text-slate-600 px-3 py-1.5 rounded-lg hover:bg-slate-300 transition-all uppercase flex items-center gap-2">
+                                    <Plus className="w-3 h-3" /> Adicionar Mês
+                                </button>
+                            </div>
                         </div>
+
+                        {showSefazPaste && (
+                            <div className="mb-4 p-5 bg-emerald-50 border border-emerald-100 rounded-xl">
+                                <label className="text-[10px] font-black text-emerald-600 uppercase mb-2 block flex items-center gap-2">
+                                    <FileText className="w-3 h-3" /> Cole os dados (Selecionar no Excel e "CTRL+C")
+                                </label>
+                                <textarea 
+                                    className="w-full p-3 bg-white border border-emerald-200 rounded-lg text-xs font-mono focus:ring-2 focus:ring-emerald-500/20 outline-none mb-3"
+                                    rows={4}
+                                    placeholder={`Exemplo de colunas no Excel:\nMês/Ano\t\t\tEntradas\t\tSaídas\nJan/2026\t\t15000,00\t\t25000,00`}
+                                    value={sefazPasteText}
+                                    onChange={e => setSefazPasteText(e.target.value)}
+                                />
+                                <div className="flex justify-end gap-3">
+                                    <button onClick={() => setShowSefazPaste(false)} className="px-4 py-2 text-[10px] font-black text-slate-400 hover:text-red-500 uppercase transition-colors">Cancelar</button>
+                                    <button onClick={handleSefazPaste} className="px-4 py-2 bg-emerald-500 text-white rounded-lg text-[10px] font-black uppercase hover:bg-emerald-600 shadow-md flex items-center gap-2">
+                                        <Check className="w-3 h-3" /> Processar e Importar Análise
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
                         <div className="space-y-3">
                             {(clientData.sefazHistory || []).map((item, idx) => (
                                 <div key={item.id} className="grid grid-cols-1 md:grid-cols-12 gap-3 p-4 bg-slate-50 rounded-xl border border-slate-100 items-center relative group">

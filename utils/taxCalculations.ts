@@ -170,22 +170,23 @@ export const calcFatorR = (folha12: number, rbt12: number) => (!rbt12||rbt12<=0)
 export const getAnexoEfetivo = (anexo: string, fR: number) => (anexo==='Anexo V' && fR>=28)?'Anexo III':anexo;
 
 export const calcIRRFProLabore = (proLabore: number, inss: number) => {
-    const base = Math.max(0, proLabore - inss);
-    if(base<=2259.20) return 0;
-    let imp=0;
-    if(base<=2826.65)      imp=(base*0.075)-169.44;
-    else if(base<=3751.05) imp=(base*0.15)-381.44;
-    else if(base<=4664.68) imp=(base*0.225)-662.77;
-    else                   imp=(base*0.275)-896.00;
+    // Nova Tabela 2025
+    const calcProg = (b: number) => {
+        if (b <= 3036.00) return 0;
+        if (b <= 3751.05) return (b * 0.075) - 227.70;
+        if (b <= 4664.68) return (b * 0.15) - 508.78;
+        if (b <= 5664.68) return (b * 0.225) - 859.07;
+        return (b * 0.275) - 1142.23;
+    };
+
+    const baseLegal = Math.max(0, proLabore - inss);
+    const impLegal = Math.max(0, calcProg(baseLegal));
+
+    // Desconto simplificado de R$ 607,20 mensal (em vigor)
+    const baseAlt = Math.max(0, proLabore - 607.20);
+    const impAlt = Math.max(0, calcProg(baseAlt));
     
-    const baseAlt=Math.max(0,proLabore-564.80);
-    let impAlt=0;
-    if(baseAlt<=2259.20)      impAlt=0;
-    else if(baseAlt<=2826.65) impAlt=(baseAlt*0.075)-169.44;
-    else if(baseAlt<=3751.05) impAlt=(baseAlt*0.15)-381.44;
-    else if(baseAlt<=4664.68) impAlt=(baseAlt*0.225)-662.77;
-    else                      impAlt=(baseAlt*0.275)-896.00;
-    return Math.max(0,Math.min(imp,impAlt));
+    return Math.min(impLegal, impAlt);
 };
 
 export const PRES_IRPJ: Record<string, number> = { 'Serviços':0.32, 'Comércio':0.08, 'Indústria':0.08 };
