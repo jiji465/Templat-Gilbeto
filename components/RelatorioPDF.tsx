@@ -28,7 +28,7 @@ const colors = {
 
 const styles = StyleSheet.create({
     page: {
-        padding: 40,
+        padding: 30,
         backgroundColor: colors.white,
         fontFamily: FONT_BODY,
         color: colors.primary,
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     },
     kpiCard: {
         flex: 1,
-        padding: 20,
+        padding: 15,
         borderRadius: 12,
         backgroundColor: colors.light,
         borderTopWidth: 1, borderBottomWidth: 1, borderLeftWidth: 1, borderRightWidth: 1,
@@ -160,8 +160,8 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 10,
         fontFamily: FONT_BOLD,
-        marginBottom: 15,
-        marginTop: 25,
+        marginBottom: 10,
+        marginTop: 15,
         textTransform: 'uppercase',
         letterSpacing: 1.5,
         flexDirection: 'row',
@@ -314,7 +314,7 @@ export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
                         <Text style={styles.kpiValue}>{fmtBRL(totalRev)}</Text>
                     </View>
                     <View style={[styles.kpiCard, styles.kpiCardDark]}>
-                        <Text style={[styles.kpiLabel, { color: 'rgba(255,255,255,0.6)' }]}>Total em Impostos</Text>
+                        <Text style={[styles.kpiLabel, { color: 'rgba(255,255,255,0.6)' }]}>GUIA ÚNICA DAS</Text>
                         <Text style={[styles.kpiValue, styles.kpiAccent]}>{fmtBRL(totalTrib)}</Text>
                     </View>
                     <View style={styles.kpiCard}>
