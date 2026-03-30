@@ -270,6 +270,13 @@ export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
     const totalEcon = taxesList.reduce((s: number, t: any) => s + (t.savedValue || 0), 0);
     const totalFatorREcon = taxesList.reduce((s: number, t: any) => s + (t.fatorREcon || 0), 0);
     
+    // Novas métricas robustas
+    const majorTaxItem = [...taxesList].sort((a,b) => parseNum(b.value) - parseNum(a.value))[0];
+    const majorTaxName = majorTaxItem ? String(majorTaxItem.tax).split(' ')[0] : 'N/A';
+    const majorTaxPct = (majorTaxItem && totalTrib > 0) ? (parseNum(majorTaxItem.value) / totalTrib) * 100 : 0;
+    const revPerTax = totalTrib > 0 ? (totalRev / totalTrib) : 0;
+    const hasBenefit = totalEcon > 0;
+    
     const monthIdx = parseInt(data?.compMonth || '1') - 1;
     const month = MONTHS[monthIdx >= 0 && monthIdx < 12 ? monthIdx : 0] || 'Mês';
     const hasAnexoV = (data?.revenues || []).some((r: any) => String(r.anexo).toUpperCase().includes('V'));
@@ -372,36 +379,33 @@ export const RelatorioPDF = ({ data, taxes }: { data: any, taxes: any[] }) => {
                             <View style={{ width: '100%', height: 4, backgroundColor: '#e2e8f0', borderRadius: 2, marginVertical: 8 }}>
                                 <View style={{ width: `${Math.min(100, cargaEf)}%`, height: '100%', backgroundColor: colors.accent, borderRadius: 2 }} />
                             </View>
-                            <Text style={{ fontSize: 6, color: colors.slate, textTransform: 'uppercase' }}>CARGA EFETIVA</Text>
+                            <Text style={{ fontSize: 6, color: colors.slate, textTransform: 'uppercase' }}>PESO TRIBUTÁRIO</Text>
                         </View>
-                        {hasAnexoV && (
-                            <View style={{ flex: 1, backgroundColor: colors.white, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 6, padding: 15, alignItems: 'center' }}>
-                                <Text style={{ fontSize: 14, fontFamily: FONT_BOLD, color: colors.primary }}>
-                                    {data?.rbt12 && parseNum(String(data.rbt12)) > 0 ? ((parseNum(String(data?.folha||'0'))/parseNum(String(data.rbt12)))*100).toFixed(2).replace('.',',') : '0,00'}%
-                                </Text>
-                                <View style={{ width: '100%', height: 4, backgroundColor: '#e2e8f0', borderRadius: 2, marginVertical: 8 }}>
-                                    <View style={{ width: `${Math.min(100, data?.rbt12 && parseNum(String(data.rbt12)) > 0 ? ((parseNum(String(data?.folha||'0'))/parseNum(String(data.rbt12)))*100) : 0)}%`, height: '100%', backgroundColor: colors.accent, borderRadius: 2 }} />
-                                </View>
-                                <Text style={{ fontSize: 6, color: colors.slate, textTransform: 'uppercase' }}>FATOR R</Text>
-                            </View>
-                        )}
+                        
                         <View style={{ flex: 1, backgroundColor: colors.white, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 6, padding: 15, alignItems: 'center' }}>
-                            <Text style={{ fontSize: 14, fontFamily: FONT_BOLD, color: colors.primary }}>
-                                {totalTrib > 0 && data?.regime === 'Simples Nacional' ? ((parseNum(String(taxesList.find((t: any)=>t.tax.includes('DAS'))?.value || '0')) / totalTrib) * 100).toFixed(2).replace('.',',') : '100,00'}%
+                            <Text style={{ fontSize: 14, fontFamily: FONT_BOLD, color: colors.primary }}>{majorTaxName}</Text>
+                            <View style={{ width: '100%', height: 4, backgroundColor: '#e2e8f0', borderRadius: 2, marginVertical: 8 }}>
+                                <View style={{ width: `${Math.min(100, majorTaxPct)}%`, height: '100%', backgroundColor: colors.accent, borderRadius: 2 }} />
+                            </View>
+                            <Text style={{ fontSize: 6, color: colors.slate, textTransform: 'uppercase' }}>MAIOR IMPACTO</Text>
+                        </View>
+
+                        <View style={{ flex: 1, backgroundColor: colors.white, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 6, padding: 15, alignItems: 'center' }}>
+                            <Text style={{ fontSize: 14, fontFamily: FONT_BOLD, color: colors.primary }}>{revPerTax.toFixed(2).replace('.', ',')}x</Text>
+                            <View style={{ width: '100%', height: 4, backgroundColor: '#e2e8f0', borderRadius: 2, marginVertical: 8 }}>
+                                <View style={{ width: '60%', height: '100%', backgroundColor: colors.accent, borderRadius: 2 }} />
+                            </View>
+                            <Text style={{ fontSize: 6, color: colors.slate, textTransform: 'uppercase' }}>ALAVANCAGEM</Text>
+                        </View>
+
+                        <View style={{ flex: 1, backgroundColor: colors.white, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 6, padding: 15, alignItems: 'center' }}>
+                            <Text style={{ fontSize: 14, fontFamily: FONT_BOLD, color: hasBenefit ? '#15803d' : colors.primary }}>
+                                {hasBenefit ? 'ATIVO' : 'REGULAR'}
                             </Text>
                             <View style={{ width: '100%', height: 4, backgroundColor: '#e2e8f0', borderRadius: 2, marginVertical: 8 }}>
-                                <View style={{ width: '90%', height: '100%', backgroundColor: colors.accent, borderRadius: 2 }} />
+                                <View style={{ width: hasBenefit ? '100%' : '20%', height: '100%', backgroundColor: hasBenefit ? '#22c55e' : colors.accent, borderRadius: 2 }} />
                             </View>
-                            <Text style={{ fontSize: 6, color: colors.slate, textTransform: 'uppercase' }}>COMPOSIÇÃO DAS</Text>
-                        </View>
-                        <View style={{ flex: 1, backgroundColor: colors.white, borderWidth: 1, borderColor: '#e2e8f0', borderRadius: 6, padding: 15, alignItems: 'center' }}>
-                            <Text style={{ fontSize: 14, fontFamily: FONT_BOLD, color: colors.primary }}>
-                                {totalTrib > 0 ? ((parseNum(String(taxesList.find((t: any)=>t.tax.includes('INSS sobre'))?.value || '0')) / totalTrib) * 100).toFixed(2).replace('.',',') : '0,00'}%
-                            </Text>
-                            <View style={{ width: '100%', height: 4, backgroundColor: '#e2e8f0', borderRadius: 2, marginVertical: 8 }}>
-                                <View style={{ width: '10%', height: '100%', backgroundColor: colors.accent, borderRadius: 2 }} />
-                            </View>
-                            <Text style={{ fontSize: 6, color: colors.slate, textTransform: 'uppercase' }}>IMPACTO PRÓ-LABORE</Text>
+                            <Text style={{ fontSize: 6, color: colors.slate, textTransform: 'uppercase' }}>STATUS FISCAL</Text>
                         </View>
                     </View>
 
