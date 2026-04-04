@@ -1,7 +1,5 @@
 import React from 'react';
-import { 
-    Shield, RotateCcw, Check, MessageSquare
-} from 'lucide-react';
+import { Shield, RotateCcw, Check, MessageSquare, Sparkles } from 'lucide-react';
 import { OFFICE } from '../../utils/taxCalculations';
 
 interface HeaderProps {
@@ -12,44 +10,74 @@ interface HeaderProps {
 
 export function Header({ clearData, copyWpp, copied }: HeaderProps) {
     return (
-        <header className="bg-white border-b border-border sticky top-0 z-50 glass-shadow">
-            <div className="max-w-[1400px] mx-auto px-6 h-20 flex items-center justify-between">
+        <header style={{ background: 'var(--primary)' }} className="sticky top-0 z-50">
+            <div className="max-w-[1440px] mx-auto px-8 h-[72px] flex items-center justify-between">
+                {/* Logo */}
                 <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg border border-accent/20">
-                        <Shield className="w-5 h-5 text-accent" />
+                    <div
+                        className="w-10 h-10 rounded-[14px] flex items-center justify-center flex-shrink-0"
+                        style={{ background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)', boxShadow: '0 4px 16px rgba(201,162,39,0.35)' }}
+                    >
+                        <Shield className="w-5 h-5" style={{ color: 'var(--primary)' }} />
                     </div>
                     <div>
-                        <h1 className="text-lg font-black tracking-tight text-primary leading-none uppercase font-heading">
-                            Fiscal Pro <span className="text-accent underline decoration-2 underline-offset-4">Elite</span>
-                        </h1>
-                        <p className="text-[10px] text-slate-400 font-bold tracking-widest uppercase mt-1">
+                        <div className="flex items-center gap-2">
+                            <h1
+                                className="text-base font-black tracking-tight leading-none"
+                                style={{ color: '#fff', fontFamily: 'var(--font-heading)' }}
+                            >
+                                Fiscal <span style={{ color: 'var(--accent)' }}>Pro</span> Elite
+                            </h1>
+                            <span
+                                className="badge"
+                                style={{ background: 'rgba(201,162,39,0.15)', color: 'var(--accent)', fontSize: '0.5rem' }}
+                            >
+                                v2.0
+                            </span>
+                        </div>
+                        <p className="text-[9px] font-medium mt-0.5 truncate max-w-[260px]"
+                           style={{ color: 'rgba(255,255,255,0.4)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
                             {OFFICE.name}
                         </p>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                    <button 
-                        onClick={clearData} 
-                        className="px-4 py-2 text-[10px] font-black text-slate-400 hover:text-red-500 transition-colors uppercase tracking-widest flex items-center gap-2"
-                    >
-                        <RotateCcw className="w-3.5 h-3.5" /> Resetar
-                    </button>
-                    <div className="w-px h-6 bg-slate-200 mx-2" />
-                    
-                    <button 
+                {/* Actions */}
+                <div className="flex items-center gap-2">
+                    <button
                         onClick={copyWpp}
-                        className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-black text-[10px] uppercase transition-all shadow-md group ${
-                            copied 
-                            ? 'bg-emerald-500 text-white' 
-                            : 'bg-white border-2 border-primary text-primary hover:bg-primary hover:text-white'
-                        }`}
+                        className="flex items-center gap-2 px-4 py-2.5 rounded-[11px] text-[10px] font-bold uppercase transition-all"
+                        style={{
+                            background: copied ? 'rgba(5,150,105,0.15)' : 'rgba(255,255,255,0.06)',
+                            color: copied ? '#34d399' : 'rgba(255,255,255,0.7)',
+                            border: `1px solid ${copied ? 'rgba(52,211,153,0.25)' : 'rgba(255,255,255,0.08)'}`,
+                            letterSpacing: '0.1em',
+                        }}
                     >
-                        {copied ? <Check className="w-3.5 h-3.5" /> : <MessageSquare className="w-3.5 h-3.5" />}
-                        {copied ? 'Copiado!' : 'Resumo WhatsApp'}
+                        {copied
+                            ? <><Check className="w-3.5 h-3.5" /> Copiado!</>
+                            : <><MessageSquare className="w-3.5 h-3.5" /> WhatsApp</>
+                        }
+                    </button>
+
+                    <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.08)' }} />
+
+                    <button
+                        onClick={clearData}
+                        className="flex items-center gap-1.5 px-3 py-2.5 rounded-[11px] text-[10px] font-bold uppercase transition-all"
+                        style={{
+                            color: 'rgba(255,255,255,0.3)',
+                            letterSpacing: '0.1em',
+                        }}
+                        onMouseEnter={e => (e.currentTarget.style.color = '#f87171')}
+                        onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
+                    >
+                        <RotateCcw className="w-3 h-3" /> Resetar
                     </button>
                 </div>
             </div>
+            {/* Accent border bottom */}
+            <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, var(--accent), transparent)', opacity: 0.2 }} />
         </header>
     );
 }

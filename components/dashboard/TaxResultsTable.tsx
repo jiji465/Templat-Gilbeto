@@ -1,7 +1,5 @@
 import React from 'react';
-import { 
-    Calculator, ArrowRight
-} from 'lucide-react';
+import { Calculator, ArrowRight, CheckCircle } from 'lucide-react';
 import { fmtBRL } from '../../utils/taxCalculations';
 import { TaxResult } from '../../types/fiscal';
 
@@ -14,69 +12,101 @@ export function TaxResultsTable({ taxes, totalTrib }: TaxResultsTableProps) {
     if (!taxes || taxes.length === 0) return null;
 
     return (
-        <section className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden mb-8">
-            <div className="p-6 border-b border-slate-50 flex items-center justify-between bg-primary/5">
-                <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                        <Calculator className="w-4 h-4 text-white" />
+        <div className="card">
+            <div className="card-header">
+                <div className="section-heading">
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center"
+                         style={{ background: 'var(--primary)' }}>
+                        <Calculator className="w-3.5 h-3.5" style={{ color: 'var(--accent)' }} />
                     </div>
-                    <div>
-                        <h2 className="text-sm font-black text-primary uppercase tracking-wider">Cálculo de Impostos do Período</h2>
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Baseado no regime Simples Nacional / Presumido</p>
-                    </div>
+                    Tributos Calculados
                 </div>
+                <span className="badge" style={{ background: 'rgba(5,150,105,0.1)', color: '#059669' }}>
+                    <CheckCircle style={{ width: 10, height: 10, marginRight: 4 }} />
+                    {taxes.length} imposto{taxes.length !== 1 ? 's' : ''}
+                </span>
             </div>
 
             <div className="overflow-x-auto">
-                <table className="w-full border-collapse">
-                    <thead>
-                        <tr className="bg-slate-50/50">
-                            <th className="px-6 py-4 text-left text-[9px] font-black text-slate-400 uppercase tracking-widest">Tributo / Guia</th>
-                            <th className="px-6 py-4 text-center text-[9px] font-black text-slate-400 uppercase tracking-widest">Alíquota</th>
-                            <th className="px-6 py-4 text-right text-[9px] font-black text-slate-400 uppercase tracking-widest">Base de Cálculo</th>
-                            <th className="px-6 py-4 text-center text-[9px] font-black text-slate-400 uppercase tracking-widest">Vencimento</th>
-                            <th className="px-6 py-4 text-right text-[9px] font-black text-slate-400 uppercase tracking-widest font-black">Valor Total</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-50">
-                        {taxes.map((t, i) => (
-                            <tr key={i} className="hover:bg-primary/5 transition-colors group">
-                                <td className="px-6 py-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-2 h-2 rounded-full bg-accent shadow-[0_0_8px_rgba(201,162,39,0.5)]" />
-                                        <span className="text-xs font-black text-primary uppercase">{t.tax}</span>
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4 text-center">
-                                    <span className="text-xs font-bold text-slate-500">{t.rate}%</span>
-                                </td>
-                                <td className="px-6 py-4 text-right text-xs font-bold text-slate-600">
-                                    {t.base}
-                                </td>
-                                <td className="px-6 py-4 text-center">
-                                    <span className="px-2 py-1 bg-slate-100 rounded text-[9px] font-black text-slate-400 uppercase">
-                                        {t.dueDate}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4 text-right">
-                                    <span className="text-sm font-black text-primary">{t.value}</span>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                    <tfoot>
-                        <tr className="bg-primary text-white">
-                            <td colSpan={4} className="px-6 py-5 text-xs font-black uppercase tracking-[0.2em]">Total Facilitado para Guia Única</td>
-                            <td className="px-6 py-5 text-right">
-                                <div className="flex items-center justify-end gap-3">
-                                    <ArrowRight className="w-4 h-4 text-accent" />
-                                    <span className="text-xl font-black text-accent tracking-tighter">{fmtBRL(totalTrib)}</span>
-                                </div>
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
+                {/* Table Header */}
+                <div
+                    className="grid text-[9px] font-black uppercase px-5 py-3"
+                    style={{
+                        gridTemplateColumns: '3fr 1fr 2fr 2fr 2fr',
+                        letterSpacing: '0.12em',
+                        color: 'var(--text-muted)',
+                        borderBottom: '1px solid var(--border)',
+                        background: 'linear-gradient(135deg, #f9fafb 0%, #ffffff 100%)',
+                    }}
+                >
+                    <span>Tributo</span>
+                    <span className="text-center">Alíq.</span>
+                    <span className="text-right">Base</span>
+                    <span className="text-center">Venc.</span>
+                    <span className="text-right">Valor</span>
+                </div>
+
+                {/* Rows */}
+                {taxes.map((t, i) => (
+                    <div
+                        key={i}
+                        className="grid items-center px-5 py-3.5 transition-all"
+                        style={{
+                            gridTemplateColumns: '3fr 1fr 2fr 2fr 2fr',
+                            borderBottom: '1px solid #f3f6f4',
+                            cursor: 'default',
+                        }}
+                        onMouseEnter={e => (e.currentTarget.style.background = '#f9fafb')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    >
+                        <div className="flex items-center gap-3">
+                            <div
+                                className="w-1.5 h-6 rounded-full flex-shrink-0"
+                                style={{ background: `linear-gradient(180deg, var(--accent) 0%, var(--primary) 100%)` }}
+                            />
+                            <span className="text-sm font-bold" style={{ color: 'var(--primary)' }}>
+                                {t.tax}
+                            </span>
+                        </div>
+                        <span className="text-center text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
+                            {t.rate}%
+                        </span>
+                        <span className="text-right text-xs" style={{ color: 'var(--text-muted)' }}>
+                            {t.base}
+                        </span>
+                        <span className="text-center">
+                            <span className="badge text-[9px]"
+                                  style={{ background: '#f3f6f4', color: 'var(--text-muted)' }}>
+                                {t.dueDate}
+                            </span>
+                        </span>
+                        <span className="text-right text-sm font-black" style={{ color: 'var(--primary)' }}>
+                            {t.value}
+                        </span>
+                    </div>
+                ))}
+
+                {/* Total footer */}
+                <div
+                    className="flex items-center justify-between px-5 py-4"
+                    style={{
+                        background: 'var(--primary)',
+                        borderRadius: '0 0 18px 18px',
+                    }}
+                >
+                    <div className="flex items-center gap-2">
+                        <ArrowRight style={{ width: 16, height: 16, color: 'var(--accent)' }} />
+                        <span className="text-xs font-black uppercase tracking-widest"
+                              style={{ color: 'rgba(255,255,255,0.6)' }}>
+                            Total a Recolher
+                        </span>
+                    </div>
+                    <span className="text-2xl font-black tracking-tight"
+                          style={{ color: 'var(--accent)', fontFamily: 'var(--font-heading)' }}>
+                        {fmtBRL(totalTrib)}
+                    </span>
+                </div>
             </div>
-        </section>
+        </div>
     );
 }

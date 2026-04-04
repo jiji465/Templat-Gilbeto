@@ -1,8 +1,6 @@
 import React from 'react';
-import { 
-    Plus, Trash2, Briefcase, TrendingUp
-} from 'lucide-react';
-import { fmtBRL, inputBRL } from '../../utils/taxCalculations';
+import { Plus, Trash2, Briefcase, TrendingUp } from 'lucide-react';
+import { inputBRL } from '../../utils/taxCalculations';
 import { Revenue } from '../../types/fiscal';
 
 interface RevenueFormProps {
@@ -12,141 +10,171 @@ interface RevenueFormProps {
     updRev: (id: number, field: string, val: any) => void;
 }
 
-export function RevenueForm({
-    revenues,
-    addRev,
-    rmRev,
-    updRev
-}: RevenueFormProps) {
+export function RevenueForm({ revenues, addRev, rmRev, updRev }: RevenueFormProps) {
     return (
-        <section className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden mb-8">
-            <div className="p-6 border-b border-slate-50 flex items-center justify-between bg-primary/5">
-                <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                        <Briefcase className="w-4 h-4 text-white" />
+        <div className="card">
+            <div className="card-header">
+                <div className="section-heading">
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center"
+                         style={{ background: 'var(--primary)' }}>
+                        <Briefcase className="w-3.5 h-3.5" style={{ color: 'var(--accent)' }} />
                     </div>
-                    <div>
-                        <h2 className="text-sm font-black text-primary uppercase tracking-wider">Fontes de Faturamento Bruto</h2>
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Detalhe por anexo e tipo de atividade</p>
-                    </div>
+                    Fontes de Faturamento
                 </div>
-                <button 
+                <button
                     onClick={addRev}
-                    className="px-4 py-2 bg-primary text-white rounded-xl text-[10px] font-black uppercase hover:bg-slate-800 transition-all shadow-md flex items-center gap-2"
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[10px] font-black uppercase transition-all"
+                    style={{
+                        background: 'var(--primary)',
+                        color: 'var(--accent)',
+                        letterSpacing: '0.1em',
+                        boxShadow: '0 4px 12px rgba(15,35,24,0.15)',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--primary-light)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'var(--primary)')}
                 >
-                    <Plus className="w-3.5 h-3.5" /> Adicionar Atividade
+                    <Plus className="w-3.5 h-3.5" /> Adicionar
                 </button>
             </div>
 
-            <div className="p-6">
-                {revenues.length > 0 ? (
-                    <div className="space-y-4">
+            <div className="card-body">
+                {revenues.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-14 text-center">
+                        <div className="w-14 h-14 rounded-2xl mb-4 flex items-center justify-center"
+                             style={{ background: '#f3f6f4' }}>
+                            <TrendingUp className="w-6 h-6" style={{ color: '#c9d9cc' }} />
+                        </div>
+                        <p className="text-sm font-semibold" style={{ color: 'var(--text-muted)' }}>
+                            Nenhuma fonte adicionada
+                        </p>
+                        <p className="text-xs mt-1" style={{ color: '#b0bec5' }}>
+                            Adicione ao menos uma fonte de faturamento para calcular os impostos.
+                        </p>
+                    </div>
+                ) : (
+                    <div className="space-y-3">
                         {revenues.map((item, idx) => (
-                            <div key={item.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center p-5 rounded-2xl border border-slate-100 bg-white hover:border-accent/30 transition-all group relative">
-                                <div className="md:col-span-1 flex items-center justify-center">
-                                    <span className="text-[10px] font-black text-slate-300">#{(idx + 1).toString().padStart(2, '0')}</span>
-                                </div>
-                                
-                                <div className="md:col-span-3">
-                                    <label className="text-[8px] font-black text-slate-400 uppercase mb-1 block">Tipo de Atividade</label>
-                                    <select 
-                                        className="w-full p-2 bg-slate-50 border border-slate-100 rounded-lg text-xs font-bold focus:ring-2 focus:ring-primary/10 outline-none"
-                                        value={item.type}
-                                        onChange={(e) => updRev(item.id, 'type', e.target.value)}
-                                    >
-                                        <option value="Serviços">Serviços</option>
-                                        <option value="Comércio">Comércio</option>
-                                        <option value="Indústria">Indústria</option>
-                                        <option value="Locação">Locação</option>
-                                    </select>
-                                </div>
+                            <div
+                                key={item.id}
+                                className="rounded-2xl p-4 transition-all"
+                                style={{
+                                    background: '#f9fafb',
+                                    border: '1px solid var(--border)',
+                                }}
+                                onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(201,162,39,0.3)')}
+                                onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
+                            >
+                                <div className="grid grid-cols-12 gap-3 items-start">
+                                    {/* Number */}
+                                    <div className="col-span-1 pt-6 text-center">
+                                        <span className="text-[10px] font-black" style={{ color: '#d1d9d4' }}>
+                                            {String(idx + 1).padStart(2, '0')}
+                                        </span>
+                                    </div>
 
-                                <div className="md:col-span-2">
-                                    <label className="text-[8px] font-black text-slate-400 uppercase mb-1 block">Anexo (Simples)</label>
-                                    <select 
-                                        className="w-full p-2 bg-slate-50 border border-slate-100 rounded-lg text-xs font-bold focus:ring-2 focus:ring-primary/10 outline-none"
-                                        value={item.anexo}
-                                        onChange={(e) => updRev(item.id, 'anexo', e.target.value)}
-                                    >
-                                        <option value="Anexo I">Anexo I</option>
-                                        <option value="Anexo II">Anexo II</option>
-                                        <option value="Anexo III">Anexo III</option>
-                                        <option value="Anexo IV">Anexo IV</option>
-                                        <option value="Anexo V">Anexo V</option>
-                                    </select>
-                                </div>
+                                    {/* Tipo */}
+                                    <div className="col-span-3">
+                                        <label className="field-label">Tipo</label>
+                                        <select
+                                            className="input-premium"
+                                            value={item.type}
+                                            onChange={e => updRev(item.id, 'type', e.target.value)}
+                                        >
+                                            <option>Serviços</option>
+                                            <option>Comércio</option>
+                                            <option>Indústria</option>
+                                            <option>Locação</option>
+                                        </select>
+                                    </div>
 
-                                <div className="md:col-span-3">
-                                    <label className="text-[8px] font-black text-slate-400 uppercase mb-1 block">Descrição / Rótulo</label>
-                                    <input 
-                                        type="text"
-                                        className="w-full p-2 bg-slate-50 border border-slate-100 rounded-lg text-xs font-bold focus:ring-2 focus:ring-primary/10 outline-none"
-                                        placeholder="Ex: Venda de Mercadorias..."
-                                        value={item.label}
-                                        onChange={(e) => updRev(item.id, 'label', e.target.value)}
-                                    />
-                                </div>
+                                    {/* Anexo */}
+                                    <div className="col-span-2">
+                                        <label className="field-label">Anexo</label>
+                                        <select
+                                            className="input-premium"
+                                            value={item.anexo}
+                                            onChange={e => updRev(item.id, 'anexo', e.target.value)}
+                                        >
+                                            <option>Anexo I</option>
+                                            <option>Anexo II</option>
+                                            <option>Anexo III</option>
+                                            <option>Anexo IV</option>
+                                            <option>Anexo V</option>
+                                        </select>
+                                    </div>
 
-                                <div className="md:col-span-2">
-                                    <label className="text-[8px] font-black text-slate-400 uppercase mb-1 block">Valor Bruto (R$)</label>
-                                    <input 
-                                        type="text"
-                                        className="w-full p-2 bg-primary/5 border border-primary/10 rounded-lg text-xs font-black text-primary text-right focus:bg-white transition-all outline-none"
-                                        value={item.value}
-                                        onChange={(e) => updRev(item.id, 'value', inputBRL(e.target.value))}
-                                    />
-                                </div>
-
-                                <div className="md:col-span-1 flex items-center justify-center">
-                                    <button 
-                                        onClick={() => rmRev(item.id)}
-                                        className="p-2 text-slate-300 hover:text-red-500 transition-colors"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
-                                </div>
-
-                                {/* Secondary Toggles */}
-                                <div className="md:col-span-12 flex flex-wrap gap-4 pt-2 border-t border-slate-50 mt-2">
-                                    <label className="flex items-center gap-2 cursor-pointer group/toggle">
-                                        <input 
-                                            type="checkbox"
-                                            className="w-3.5 h-3.5 accent-primary"
-                                            checked={item.isST}
-                                            onChange={(e) => updRev(item.id, 'isST', e.target.checked)}
+                                    {/* Descrição */}
+                                    <div className="col-span-3">
+                                        <label className="field-label">Descrição</label>
+                                        <input
+                                            type="text"
+                                            className="input-premium"
+                                            placeholder="Ex: Venda de Produtos..."
+                                            value={item.label}
+                                            onChange={e => updRev(item.id, 'label', e.target.value)}
                                         />
-                                        <span className="text-[9px] font-black uppercase text-slate-400 group-hover/toggle:text-primary transition-colors">ICMS ST</span>
-                                    </label>
-                                    <label className="flex items-center gap-2 cursor-pointer group/toggle">
-                                        <input 
-                                            type="checkbox"
-                                            className="w-3.5 h-3.5 accent-primary"
-                                            checked={item.isMono}
-                                            onChange={(e) => updRev(item.id, 'isMono', e.target.checked)}
+                                    </div>
+
+                                    {/* Valor */}
+                                    <div className="col-span-2">
+                                        <label className="field-label">Valor</label>
+                                        <input
+                                            type="text"
+                                            className="input-premium text-right font-black"
+                                            style={{ borderColor: 'rgba(201,162,39,0.3)', background: 'rgba(201,162,39,0.04)' }}
+                                            value={item.value}
+                                            onChange={e => updRev(item.id, 'value', inputBRL(e.target.value))}
                                         />
-                                        <span className="text-[9px] font-black uppercase text-slate-400 group-hover/toggle:text-primary transition-colors">PIS/COF Mono</span>
-                                    </label>
-                                    <label className="flex items-center gap-2 cursor-pointer group/toggle">
-                                        <input 
-                                            type="checkbox"
-                                            className="w-3.5 h-3.5 accent-primary"
-                                            checked={item.isISSRetido}
-                                            onChange={(e) => updRev(item.id, 'isISSRetido', e.target.checked)}
-                                        />
-                                        <span className="text-[9px] font-black uppercase text-slate-400 group-hover/toggle:text-primary transition-colors">ISS Retido</span>
-                                    </label>
+                                    </div>
+
+                                    {/* Delete */}
+                                    <div className="col-span-1 pt-6 flex justify-center">
+                                        <button
+                                            onClick={() => rmRev(item.id)}
+                                            className="w-8 h-8 rounded-lg flex items-center justify-center transition-all"
+                                            style={{ background: '#f3f6f4' }}
+                                            onMouseEnter={e => {
+                                                e.currentTarget.style.background = '#fee2e2';
+                                                (e.currentTarget.querySelector('svg') as SVGElement)?.setAttribute('style', 'color:#dc2626;width:15px;height:15px');
+                                            }}
+                                            onMouseLeave={e => {
+                                                e.currentTarget.style.background = '#f3f6f4';
+                                                (e.currentTarget.querySelector('svg') as SVGElement)?.setAttribute('style', 'color:#b0bec5;width:15px;height:15px');
+                                            }}
+                                        >
+                                            <Trash2 style={{ width: 15, height: 15, color: '#b0bec5' }} />
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Flags */}
+                                <div className="flex flex-wrap gap-4 mt-3 pt-3"
+                                     style={{ borderTop: '1px solid var(--border)' }}>
+                                    {[
+                                        { key: 'isST', label: 'ICMS ST' },
+                                        { key: 'isMono', label: 'PIS/COF Monofásico' },
+                                        { key: 'isISSRetido', label: 'ISS Retido' },
+                                    ].map(flag => (
+                                        <label key={flag.key} className="flex items-center gap-2 cursor-pointer group">
+                                            <input
+                                                type="checkbox"
+                                                className="w-3.5 h-3.5 rounded"
+                                                style={{ accentColor: 'var(--primary)' }}
+                                                checked={!!(item as any)[flag.key]}
+                                                onChange={e => updRev(item.id, flag.key, e.target.checked)}
+                                            />
+                                            <span className="text-[9px] font-bold uppercase"
+                                                  style={{ color: 'var(--text-muted)', letterSpacing: '0.1em' }}>
+                                                {flag.label}
+                                            </span>
+                                        </label>
+                                    ))}
                                 </div>
                             </div>
                         ))}
                     </div>
-                ) : (
-                    <div className="py-12 flex flex-col items-center justify-center text-center">
-                        <TrendingUp className="w-8 h-8 text-slate-200 mb-4" />
-                        <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest">Nenhuma fonte lançada</h3>
-                        <p className="text-xs text-slate-300 mt-1">Inclua o faturamento para gerar os impostos.</p>
-                    </div>
                 )}
             </div>
-        </section>
+        </div>
     );
 }

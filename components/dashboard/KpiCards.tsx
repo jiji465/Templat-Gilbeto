@@ -1,47 +1,6 @@
 import React from 'react';
-import { 
-    TrendingUp, DollarSign, Calculator, Info
-} from 'lucide-react';
+import { TrendingUp, DollarSign, Percent, PiggyBank, ArrowUpRight } from 'lucide-react';
 import { fmtBRL } from '../../utils/taxCalculations';
-
-interface StatCardProps {
-    icon: React.ElementType;
-    label: string;
-    value: string;
-    sublabel?: string;
-    variant?: 'primary' | 'accent' | 'success';
-}
-
-function StatCard({ icon: Icon, label, value, sublabel, variant = 'primary' }: StatCardProps) {
-    const variants = {
-        primary: 'bg-white border-slate-100',
-        accent: 'bg-accent/5 border-accent/20',
-        success: 'bg-emerald-50 border-emerald-100',
-    };
-
-    const iconColors = {
-        primary: 'bg-primary text-white',
-        accent: 'bg-accent text-primary',
-        success: 'bg-emerald-500 text-white',
-    };
-
-    return (
-        <div className={`p-6 rounded-3xl border shadow-sm transition-all hover:shadow-md ${variants[variant]}`}>
-            <div className="flex justify-between items-start mb-4">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${iconColors[variant]}`}>
-                    <Icon className="w-5 h-5" />
-                </div>
-                {sublabel && (
-                    <span className="text-[10px] font-black text-slate-400 bg-slate-50 px-2 py-1 rounded-full uppercase tracking-tighter">
-                        {sublabel}
-                    </span>
-                )}
-            </div>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{label}</p>
-            <h4 className="text-2xl font-black text-primary tracking-tight">{value}</h4>
-        </div>
-    );
-}
 
 interface KpiCardsProps {
     totalRev: number;
@@ -50,33 +9,100 @@ interface KpiCardsProps {
     totalEcon: number;
 }
 
+interface KpiProps {
+    icon: React.ElementType;
+    label: string;
+    value: string;
+    sub?: string;
+    trend?: string;
+    accentColor?: string;
+    dark?: boolean;
+}
+
+function KpiCard({ icon: Icon, label, value, sub, trend, accentColor = 'var(--primary)', dark = false }: KpiProps) {
+    return (
+        <div
+            className="kpi-card flex-1"
+            style={dark ? {
+                background: 'var(--primary)',
+                borderColor: 'transparent',
+                boxShadow: '0 8px 32px -8px rgba(15,35,24,0.4)',
+            } : {}}
+        >
+            {/* Top accent line override for dark */}
+            {dark && (
+                <div style={{
+                    position: 'absolute', top: 0, left: 0, right: 0, height: 3,
+                    background: `linear-gradient(90deg, ${accentColor}, var(--accent-light))`
+                }} />
+            )}
+
+            <div className="flex items-start justify-between mb-4">
+                <div
+                    className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style={{
+                        background: dark ? 'rgba(255,255,255,0.08)' : `${accentColor}14`,
+                    }}
+                >
+                    <Icon className="w-4.5 h-4.5" style={{ color: dark ? 'var(--accent)' : accentColor, width: 18, height: 18 }} />
+                </div>
+                {trend && (
+                    <span className="flex items-center gap-1 text-[10px] font-bold"
+                          style={{ color: dark ? 'rgba(255,255,255,0.4)' : 'var(--text-muted)' }}>
+                        <ArrowUpRight style={{ width: 12, height: 12 }} />
+                        {trend}
+                    </span>
+                )}
+            </div>
+
+            <p className="field-label mb-2" style={{ color: dark ? 'rgba(255,255,255,0.35)' : undefined }}>
+                {label}
+            </p>
+            <p className="text-2xl font-black leading-none tracking-tight"
+               style={{ fontFamily: 'var(--font-heading)', color: dark ? '#fff' : 'var(--primary)' }}>
+                {value}
+            </p>
+            {sub && (
+                <p className="text-[10px] font-medium mt-2"
+                   style={{ color: dark ? 'rgba(255,255,255,0.3)' : 'var(--text-muted)' }}>
+                    {sub}
+                </p>
+            )}
+        </div>
+    );
+}
+
 export function KpiCards({ totalRev, totalTrib, cargaEf, totalEcon }: KpiCardsProps) {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-            <StatCard 
-                icon={TrendingUp} 
-                label="Faturamento Bruto" 
-                value={fmtBRL(totalRev)} 
-                sublabel="Mês Atual"
+        <div className="flex gap-5 mb-8">
+            <KpiCard
+                icon={TrendingUp}
+                label="Faturamento do Mês"
+                value={fmtBRL(totalRev)}
+                sub="Receita bruta consolidada"
+                accentColor="var(--primary)"
             />
-            <StatCard 
-                icon={Calculator} 
-                label="Total de Impostos" 
-                value={fmtBRL(totalTrib)} 
-                variant="accent"
+            <KpiCard
+                icon={DollarSign}
+                label="Total de Impostos"
+                value={fmtBRL(totalTrib)}
+                sub="Tributos a recolher"
+                accentColor="#dc2626"
             />
-            <StatCard 
-                icon={Info} 
-                label="Carga Efetiva" 
+            <KpiCard
+                icon={Percent}
+                label="Carga Efetiva"
                 value={`${cargaEf.toFixed(2)}%`}
-                sublabel="Impacto Real"
+                sub="Impacto real no faturamento"
+                accentColor="var(--accent)"
+                dark
             />
-            <StatCard 
-                icon={DollarSign} 
-                label="Economia Gerada" 
-                value={fmtBRL(totalEcon)} 
-                variant="success"
-                sublabel="Legal/Fiscal"
+            <KpiCard
+                icon={PiggyBank}
+                label="Economia Fiscal"
+                value={fmtBRL(totalEcon)}
+                sub="Benefícios tributários"
+                accentColor="#059669"
             />
         </div>
     );
