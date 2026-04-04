@@ -1,8 +1,8 @@
 import React from 'react';
 import { 
-    Plus, Trash2, Briefcase, Info, TrendingUp
+    Plus, Trash2, Briefcase, TrendingUp
 } from 'lucide-react';
-import { fmtBRL, inputBRL, SETORES } from '../../utils/taxCalculations';
+import { fmtBRL, inputBRL } from '../../utils/taxCalculations';
 import { Revenue } from '../../types/fiscal';
 
 interface RevenueFormProps {
@@ -12,12 +12,12 @@ interface RevenueFormProps {
     updRev: (id: number, field: string, val: any) => void;
 }
 
-export const RevenueForm: React.FC<RevenueFormProps> = ({
+export function RevenueForm({
     revenues,
     addRev,
     rmRev,
     updRev
-}) => {
+}: RevenueFormProps) {
     return (
         <section className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden mb-8">
             <div className="p-6 border-b border-slate-50 flex items-center justify-between bg-primary/5">
@@ -97,7 +97,7 @@ export const RevenueForm: React.FC<RevenueFormProps> = ({
                                     />
                                 </div>
 
-                                <div className="md:col-span-1 flex items-center justify-center pt-4">
+                                <div className="md:col-span-1 flex items-center justify-center">
                                     <button 
                                         onClick={() => rmRev(item.id)}
                                         className="p-2 text-slate-300 hover:text-red-500 transition-colors"
@@ -115,7 +115,7 @@ export const RevenueForm: React.FC<RevenueFormProps> = ({
                                             checked={item.isST}
                                             onChange={(e) => updRev(item.id, 'isST', e.target.checked)}
                                         />
-                                        <span className="text-[9px] font-black uppercase text-slate-400 group-hover/toggle:text-primary transition-colors">ICMS Substituição Tributária</span>
+                                        <span className="text-[9px] font-black uppercase text-slate-400 group-hover/toggle:text-primary transition-colors">ICMS ST</span>
                                     </label>
                                     <label className="flex items-center gap-2 cursor-pointer group/toggle">
                                         <input 
@@ -124,7 +124,7 @@ export const RevenueForm: React.FC<RevenueFormProps> = ({
                                             checked={item.isMono}
                                             onChange={(e) => updRev(item.id, 'isMono', e.target.checked)}
                                         />
-                                        <span className="text-[9px] font-black uppercase text-slate-400 group-hover/toggle:text-primary transition-colors">PIS/COFINS Monofásico</span>
+                                        <span className="text-[9px] font-black uppercase text-slate-400 group-hover/toggle:text-primary transition-colors">PIS/COF Mono</span>
                                     </label>
                                     <label className="flex items-center gap-2 cursor-pointer group/toggle">
                                         <input 
@@ -133,7 +133,7 @@ export const RevenueForm: React.FC<RevenueFormProps> = ({
                                             checked={item.isISSRetido}
                                             onChange={(e) => updRev(item.id, 'isISSRetido', e.target.checked)}
                                         />
-                                        <span className="text-[9px] font-black uppercase text-slate-400 group-hover/toggle:text-primary transition-colors">ISS Retido na Fonte</span>
+                                        <span className="text-[9px] font-black uppercase text-slate-400 group-hover/toggle:text-primary transition-colors">ISS Retido</span>
                                     </label>
                                 </div>
                             </div>
@@ -143,10 +143,10 @@ export const RevenueForm: React.FC<RevenueFormProps> = ({
                     <div className="py-12 flex flex-col items-center justify-center text-center">
                         <TrendingUp className="w-8 h-8 text-slate-200 mb-4" />
                         <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest">Nenhuma fonte lançada</h3>
-                        <p className="text-xs text-slate-300 mt-1">É necessário incluir ao menos uma fonte de faturamento para gerar os impostos.</p>
+                        <p className="text-xs text-slate-300 mt-1">Inclua o faturamento para gerar os impostos.</p>
                     </div>
                 )}
             </div>
         </section>
     );
-};
+}

@@ -32,11 +32,12 @@ const PDFViewer = dynamic(
     { ssr: false }
 );
 
-import { Briefcase, Printer, FileText, Info, TrendingUp, DollarSign, Calculator } from 'lucide-react';
+import { Briefcase, Printer, FileText, Calculator } from 'lucide-react';
 
 export default function Home() {
-    const [clientData, setClientData] = useState<ClientData | null>(null);
-    const [pdfData, setPdfData] = useState<ClientData | null>(null);
+    // Initial state must be stable for SSR
+    const [clientData, setClientData] = useState<ClientData>(INIT_DATA);
+    const [pdfData, setPdfData] = useState<ClientData>(INIT_DATA);
     const [taxes, setTaxes] = useState<TaxResult[]>([]);
     const [copied, setCopied] = useState(false);
     const [isClient, setIsClient] = useState(false);
@@ -60,307 +61,226 @@ export default function Home() {
         setShowSefazPaste(false);
     }, [clientData, sefazPasteText]);
 
-    // Initialization
+    // Initialization - Load from LocalStorage only on Client
     useEffect(() => {
-        const STORAGE_KEY = 'fiscal_pro_v3';
-        const timer = setTimeout(() => {
-            try {
-                const saved = localStorage.getItem(STORAGE_KEY);
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    setClientData(parsed.clientData || INIT_DATA);
-                    setPdfData(parsed.clientData || INIT_DATA);
-                    setTaxes(parsed.taxes || []);
-                } else {
-                    setClientData(INIT_DATA);
-                    setPdfData(INIT_DATA);
-                }
-            } catch {
-                setClientData(INIT_DATA);
-                setPdfData(INIT_DATA);
+        const STORAGE_KEY = 'fiscal_pro_v4';
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (parsed.clientData) setClientData(parsed.clientData);
+                if (parsed.clientData) setPdfData(parsed.clientData);
+                if (parsed.taxes) setTaxes(parsed.taxes);
             }
-            setIsClient(true);
-        }, 0);
-        return () => clearTimeout(timer);
+        } catch (e) {
+            console.error('Failed to load storage', e);
+        }
+        setIsClient(true);
     }, []);
 
     // Persist to LocalStorage
     useEffect(() => {
-        if (!clientData) return;
+        if (!isClient) return;
         const t = setTimeout(() => {
-            localStorage.setItem('fiscal_pro_v3', JSON.stringify({ clientData, taxes }));
+            localStorage.setItem('fiscal_pro_v4', JSON.stringify({ clientData, taxes }));
         }, 800);
         return () => clearTimeout(t);
-    }, [clientData, taxes]);
+    }, [clientData, taxes, isClient]);
 
-    const pdfDocument = useMemo(() => {
-        if (!pdfData) return <RelatorioPDF data={INIT_DATA} taxes={[]} />;
-        return <RelatorioPDF data={pdfData} taxes={taxes} />;
-    }, [pdfData, taxes]);
-
-    if (!clientData) return (
-        <div className="min-h-screen bg-primary flex items-center justify-center">
-            <div className="text-accent font-heading text-xl animate-pulse tracking-[0.5em] uppercase">
-                Iniciando Motor Fiscal...
-            </div>
-        </div>
+    // Derived State
+    const { totalRev, totalTrib, cargaEf, totalEcon } = useMemo(() => 
+        calculateDashboardStats(clientData, taxes),
+        [clientData, taxes]
     );
 
-    const upd = (k: keyof ClientData, v: any) => setClientData((p) => p ? ({ ...p, [k]: v } as ClientData) : null);
+    const pdfDocument = useMemo(() => {
+        // Only return real document if on client to avoid renderer issues
+        if (!isClient) return null;
+        return <RelatorioPDF data={pdfData} taxes={taxes} />;
+    }, [pdfData, taxes, isClient]);
 
-    const handleCalc = () => {
-        const result = autoCalc(clientData);
-        setTaxes(result);
+    // --- Core Actions ---
+    const updateClient = (f: keyof ClientData, v: any) => {
+        if (!clientData) return;
+        setClientData({ ...clientData, [f]: v });
+    };
+
+    const addRev = () => {
+        const id = Date.now();
+        const newRev: Revenue = { id, type: 'Serviços', anexo: 'Anexo III', value: 'R$ 0,00', label: '', isST: false, isMono: false, isISSRetido: false };
+        updateClient('revenues', [...(clientData?.revenues || []), newRev]);
+    };
+
+    const rmRev = (id: number) => {
+        updateClient('revenues', (clientData?.revenues || []).filter(r => r.id !== id));
+    };
+
+    const updRev = (id: number, f: string, v: any) => {
+        const next = (clientData?.revenues || []).map(r => r.id === id ? { ...r, [f]: v } : r);
+        updateClient('revenues', next);
+    };
+
+    const runCalculation = async () => {
+        if (!clientData) return;
+        const res = autoCalc(clientData);
+        setTaxes(res);
         setPdfData(clientData);
         setCalcId(prev => prev + 1);
     };
 
-    const addRev = () => upd('revenues', [...(clientData.revenues || []), { id: Date.now(), type: 'Serviços', anexo: 'Anexo III', label: '', value: '', isST: false, isMono: false, isISSRetido: false }]);
-    const rmRev = (id: number) => upd('revenues', clientData.revenues.filter((r: Revenue) => r.id !== id));
-    const updRev = (id: number, field: string, val: any) => {
-        const newRevs = clientData.revenues.map((r: Revenue) => {
-            if (r.id !== id) return r;
-            return { ...r, [field]: val };
-        });
-        upd('revenues', newRevs);
-    };
-
-    const addTax = () => setTaxes([...taxes, { id: Date.now(), tax: 'Novo Tributo', base: '0,00', rate: '0,00', value: '0,00', dueDate: '', obs: '', isManual: true }]);
-    const rmTax = (id: number) => setTaxes(taxes.filter(t => t.id !== id));
-    const updTax = (id: number, field: string, val: any) => setTaxes(taxes.map(t => t.id === id ? { ...t, [field]: val } : t));
-
-    const clearData = () => {
-        if (confirm('Limpar todos os dados?')) {
-            localStorage.removeItem('fiscal_pro_v3');
-            setClientData(INIT_DATA);
-            setTaxes([]);
-        }
-    };
-
     const copyWpp = () => {
-        const text = genWppSummary(clientData, taxes);
-        navigator.clipboard.writeText(text);
+        const summary = genWppSummary(clientData, taxes);
+        navigator.clipboard.writeText(summary);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
 
-    // Calculate Dashboard Stats using Service
-    const stats = calculateDashboardStats(clientData, taxes);
+    const clearData = () => {
+        if (confirm('Deseja limpar todos os dados?')) {
+            setClientData(INIT_DATA);
+            setTaxes([]);
+            localStorage.removeItem('fiscal_pro_v4');
+            window.location.reload();
+        }
+    };
 
-    const COLORS_CHART = ['#0f2318','#c9a227','#3b82f6','#8b5cf6','#ef4444','#f97316','#14b8a6','#64748b'];
+    // --- Render ---
+    if (!isClient) {
+        return (
+            <div className="min-h-screen bg-primary flex items-center justify-center">
+                <div className="flex flex-col items-center gap-6 animate-pulse">
+                    <div className="w-16 h-16 rounded-3xl bg-accent flex items-center justify-center shadow-[0_0_40px_rgba(201,162,39,0.3)]">
+                        <Calculator className="w-8 h-8 text-primary" />
+                    </div>
+                    <p className="text-white text-xs font-black uppercase tracking-[0.4em] opacity-40">Iniciando Motor Fiscal...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <main className="min-h-screen bg-background text-foreground pb-12">
+        <main className="min-h-screen bg-[#FDFDFD] text-primary pb-20 selection:bg-accent/30">
             <Header clearData={clearData} copyWpp={copyWpp} copied={copied} />
 
-            <div className="max-w-[1400px] mx-auto p-6 mt-4">
-                
-                <KpiCards 
-                    totalRev={stats.totalRev} 
-                    totalTrib={stats.totalTrib} 
-                    cargaEf={stats.cargaEf} 
-                    totalEcon={stats.totalEcon} 
-                />
-
-                {/* Main Tabs */}
-                <div className="flex gap-4 mb-8">
-                    <button
-                        onClick={() => setActiveTab('form')}
-                        className={`px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeTab === 'form' ? 'bg-primary text-white shadow-lg' : 'bg-white text-slate-400 border border-slate-200 hover:bg-slate-50'}`}>
-                        <Briefcase className="w-4 h-4" /> 1. Preenchimento de Dados
-                    </button>
-                    <button
-                        onClick={() => {
-                            setActiveTab('preview');
-                            setPdfData({ ...clientData, taxesList: taxes });
-                            setCalcId(prev => prev + 1);
-                        }}
-                        className={`px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeTab === 'preview' ? 'bg-primary text-white shadow-lg' : 'bg-white text-slate-400 border border-slate-200 hover:bg-slate-50'}`}>
-                        <Printer className="w-4 h-4" /> 2. Prévia do Relatório
-                    </button>
-                </div>
-
+            <div className="max-w-[1400px] mx-auto px-6 py-10">
                 {activeTab === 'form' ? (
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    
-                        {/* LEFT COLUMN: Inputs */}
-                        <div className="lg:col-span-8 space-y-8">
-                            
-                            {/* Entity Identification */}
-                            <section className="bg-white rounded-3xl p-8 border border-border glass-shadow relative overflow-hidden">
-                                <div className="absolute top-0 left-0 w-2 h-full bg-primary" />
-                                <h2 className="text-xs font-black text-primary uppercase tracking-[0.2em] mb-8 flex items-center gap-3">
-                                    <Briefcase className="w-4 h-4 text-accent" /> Dados da Entidade
-                                </h2>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <div className="md:col-span-2">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block">Razão Social do Cliente</label>
-                                        <input className="w-full p-3.5 bg-slate-50 border border-border rounded-xl text-sm font-bold focus:ring-2 focus:ring-primary/5 focus:bg-white outline-none transition-all" 
-                                            value={clientData.clientName || ''} onChange={e => upd('clientName', e.target.value)} placeholder="Nome da Empresa" />
-                                    </div>
-                                    <div>
-                                        <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block">CNPJ</label>
-                                        <input className="w-full p-3.5 bg-slate-50 border border-border rounded-xl text-sm font-mono focus:ring-2 focus:ring-primary/5 focus:bg-white outline-none transition-all" 
-                                            value={clientData.cnpj || ''} onChange={e => upd('cnpj', fmtCNPJ(e.target.value))} placeholder="00.000.000/0000-00" />
-                                    </div>
-                                    <div>
-                                        <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block">Competência</label>
-                                        <div className="flex gap-2">
-                                            <select className="flex-1 p-3.5 bg-slate-50 border border-border rounded-xl text-xs font-black transition-all hover:bg-slate-100" value={clientData.compMonth || ''} onChange={e => upd('compMonth', e.target.value)}>
-                                                {MONTHS.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
-                                            </select>
-                                            <input type="number" className="w-24 p-3.5 bg-slate-50 border border-border rounded-xl text-xs font-black" value={clientData.compYear} onChange={e => upd('compYear', e.target.value)} />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block">Regime Tributário</label>
-                                        <select className="w-full p-3.5 bg-slate-50 border border-border rounded-xl text-xs font-black hover:bg-slate-100 transition-all" value={clientData.regime} onChange={e => upd('regime', e.target.value)}>
-                                            <option>Simples Nacional</option>
-                                            <option>Lucro Presumido</option>
-                                            <option>Lucro Real</option>
-                                            <option>MEI</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block">Segmento Predefinido</label>
-                                        <select className="w-full p-3.5 bg-slate-50 border border-border rounded-xl text-xs font-black hover:bg-slate-100 transition-all" value={clientData.setor} 
-                                            onChange={e => {
-                                                const s = SETORES.find(x => x.value === e.target.value);
-                                                if(s) {
-                                                    upd('setor', s.value);
-                                                    if(s.regime) upd('regime', s.regime);
-                                                    if(s.anexo) {
-                                                        const newRevs = clientData.revenues.map((r: Revenue) => ({ ...r, type: s.tipo, anexo: s.anexo }));
-                                                        upd('revenues', newRevs);
-                                                    }
-                                                }
-                                            }}>
-                                            {SETORES.map((s, i) => <option key={i} value={s.value}>{s.label}</option>)}
-                                        </select>
-                                    </div>
-                                </div>
-                            </section>
+                    <>
+                        <KpiCards totalRev={totalRev} totalTrib={totalTrib} cargaEf={cargaEf} totalEcon={totalEcon} />
 
-                            <RevenueForm 
-                                revenues={clientData.revenues} 
-                                addRev={addRev} 
-                                rmRev={rmRev} 
-                                updRev={updRev} 
-                            />
-
-                            {/* Secondary Parameters */}
-                            <section className="bg-white rounded-3xl p-8 border border-border glass-shadow relative overflow-hidden">
-                                <div className="absolute top-0 left-0 w-2 h-full bg-slate-400" />
-                                <h2 className="text-xs font-black text-primary uppercase tracking-[0.2em] mb-8 flex items-center gap-3">
-                                    <Calculator className="w-4 h-4 text-accent" /> Parâmetros de Cálculo
-                                </h2>
-                                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                                    <div>
-                                        <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block">RBT12 Acumulado</label>
-                                        <input className="w-full p-3 bg-slate-50 border border-border rounded-xl text-xs font-mono font-bold" value={clientData.rbt12} onChange={e => upd('rbt12', inputBRL(e.target.value))} />
-                                    </div>
-                                    <div>
-                                        <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block">Folha 12m (Fator R)</label>
-                                        <input className="w-full p-3 bg-slate-50 border border-border rounded-xl text-xs font-mono font-bold" value={clientData.folha} onChange={e => upd('folha', inputBRL(e.target.value))} />
-                                    </div>
-                                    <div>
-                                        <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block">Pró-Labore Sócio</label>
-                                        <input className="w-full p-3 bg-slate-50 border border-border rounded-xl text-xs font-mono font-bold" value={clientData.proLabore} onChange={e => upd('proLabore', inputBRL(e.target.value))} />
-                                    </div>
-                                    <div>
-                                        <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block">Folha CLT (Mensal)</label>
-                                        <input className="w-full p-3 bg-slate-50 border border-border rounded-xl text-xs font-mono font-bold" value={clientData.folhaMensal} onChange={e => upd('folhaMensal', inputBRL(e.target.value))} />
-                                    </div>
-                                </div>
-                            </section>
-
-                            <SefazPasteSection 
-                                showSefazPaste={showSefazPaste}
-                                setShowSefazPaste={setShowSefazPaste}
-                                sefazPasteText={sefazPasteText}
-                                setSefazPasteText={setSefazPasteText}
-                                handleSefazPaste={handleSefazPaste}
-                                sefazHistory={clientData.sefazHistory}
-                                setSefazHistory={(history) => upd('sefazHistory', history)}
-                            />
-
-                            <TaxResultsTable 
-                                taxes={taxes}
-                                addTax={addTax}
-                                rmTax={rmTax}
-                                updTax={updTax}
-                                handleCalc={handleCalc}
-                            />
-                        </div>
-
-                        {/* RIGHT COLUMN: Dashboard & Insights */}
-                        <div className="lg:col-span-4 space-y-8">
-                            
-                            {/* Summary Card */}
-                            <div className="bg-primary rounded-[2.5rem] p-10 text-white shadow-2xl relative overflow-hidden">
-                                <div className="absolute -top-20 -right-20 w-64 h-64 bg-accent/10 rounded-full blur-3xl" />
-                                <div className="relative z-10 space-y-10">
-                                    <div>
-                                        <p className="text-[10px] font-black text-accent uppercase tracking-[0.3em] mb-3">Resultado Disponível</p>
-                                        <h3 className="text-4xl font-black tracking-tight">{inputBRL(stats.netResult)}</h3>
-                                        <p className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest">Faturamento Líquido de Impostos</p>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-8 pt-8 border-t border-white/10">
-                                        <div>
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase mb-2">Alíquota Efetiva</p>
-                                            <p className="text-2xl font-black text-accent">{stats.cargaEf.toFixed(2)}%</p>
-                                        </div>
-                                        {stats.totalEcon > 0 && (
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                            <div className="lg:col-span-2 space-y-8">
+                                <section className="bg-white rounded-3xl p-8 border border-border glass-shadow">
+                                    <h2 className="text-xs font-black text-primary uppercase tracking-[0.2em] mb-8 flex items-center gap-3">
+                                        <Briefcase className="w-4 h-4 text-accent" /> Perfil do Cliente
+                                    </h2>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <div className="space-y-4">
                                             <div>
-                                                <p className="text-[10px] font-bold text-emerald-400 uppercase mb-2 flex items-center gap-1.5">Economia Real</p>
-                                                <p className="text-2xl font-black text-emerald-400">{inputBRL(stats.totalEcon)}</p>
+                                                <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-widest">Nome da Empresa / Cliente</label>
+                                                <input 
+                                                    type="text"
+                                                    className="w-full p-4 bg-slate-50 border border-border rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/5 focus:bg-white transition-all outline-none"
+                                                    placeholder="Razão Social"
+                                                    value={clientData.clientName}
+                                                    onChange={e => updateClient('clientName', e.target.value)}
+                                                />
                                             </div>
-                                        )}
+                                            <div>
+                                                <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-widest">CNPJ (Opcional)</label>
+                                                <input 
+                                                    type="text"
+                                                    className="w-full p-4 bg-slate-50 border border-border rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/5 focus:bg-white transition-all outline-none"
+                                                    placeholder="00.000.000/0000-00"
+                                                    value={clientData.cnpj}
+                                                    onChange={e => updateClient('cnpj', fmtCNPJ(e.target.value))}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-widest">Mês</label>
+                                                    <select 
+                                                        className="w-full p-4 bg-slate-50 border border-border rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/5 focus:bg-white transition-all outline-none"
+                                                        value={clientData.compMonth}
+                                                        onChange={e => updateClient('compMonth', e.target.value)}
+                                                    >
+                                                        {MONTHS.map((m, i) => <option key={i} value={i+1}>{m}</option>)}
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-widest">Ano</label>
+                                                    <input 
+                                                        type="number"
+                                                        className="w-full p-4 bg-slate-50 border border-border rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/5 focus:bg-white transition-all outline-none"
+                                                        value={clientData.compYear}
+                                                        onChange={e => updateClient('compYear', e.target.value)}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-widest">RBT12 (Média 12 Meses)</label>
+                                                <input 
+                                                    type="text"
+                                                    className="w-full p-4 bg-accent/5 border border-accent/20 rounded-2xl text-sm font-black text-primary focus:bg-white transition-all outline-none"
+                                                    value={clientData.rbt12}
+                                                    onChange={e => updateClient('rbt12', inputBRL(e.target.value))}
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+                                </section>
+
+                                <RevenueForm revenues={clientData.revenues} addRev={addRev} rmRev={rmRev} updRev={updRev} />
+                                
+                                <TaxResultsTable taxes={taxes} totalTrib={totalTrib} />
                             </div>
 
-                            {/* Share Chart */}
-                            <section className="bg-white rounded-3xl p-8 border border-border glass-shadow">
-                                <h3 className="text-xs font-black text-primary uppercase tracking-[0.2em] mb-8 flex items-center gap-3">
-                                    <TrendingUp className="w-4 h-4 text-accent" /> Share de Faturamento
-                                </h3>
-                                <div className="space-y-6">
-                                    {(clientData.revenues || []).map((r: Revenue, i: number) => {
-                                        const v = parseFloat(r.value.replace(/\./g,'').replace(',','.'));
-                                        const pct = stats.totalRev > 0 ? (v / stats.totalRev * 100) : 0;
-                                        if (isNaN(v) || v === 0) return null;
-                                        return (
-                                            <div key={r.id} className="space-y-2">
-                                                <div className="flex justify-between items-end">
-                                                    <span className="text-[10px] font-black text-slate-600 truncate max-w-[180px] uppercase">{r.label || r.type}</span>
-                                                    <span className="text-xs font-black text-primary font-mono">{pct.toFixed(1)}%</span>
-                                                </div>
-                                                <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                                                    <div className="h-full rounded-full transition-all duration-1000 ease-out" 
-                                                        style={{ width: `${pct}%`, backgroundColor: COLORS_CHART[i % COLORS_CHART.length] }} />
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                    {stats.totalRev === 0 && <div className="py-12 text-center text-slate-300 font-bold uppercase text-[9px] tracking-widest">Aguardando dados...</div>}
-                                </div>
-                            </section>
+                            <div className="space-y-8">
+                                <section className="bg-primary text-white rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-accent/10 rounded-full -mr-16 -mt-16 blur-3xl" />
+                                    <h2 className="text-xs font-black uppercase tracking-[0.3em] text-accent mb-6">Ações Rápidas</h2>
+                                    <div className="space-y-4">
+                                        <button 
+                                            onClick={runCalculation}
+                                            className="w-full bg-accent text-primary p-5 rounded-2xl font-black uppercase text-xs flex items-center justify-center gap-3 hover:bg-yellow-400 transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-accent/20"
+                                        >
+                                            <Calculator className="w-4 h-4" /> Calcular Impostos
+                                        </button>
+                                        <button 
+                                            disabled={taxes.length === 0}
+                                            onClick={() => setActiveTab('preview')}
+                                            className="w-full bg-white/10 text-white border border-white/10 p-5 rounded-2xl font-black uppercase text-xs flex items-center justify-center gap-3 hover:bg-white/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                                        >
+                                            <Printer className="w-4 h-4 text-accent" /> Gerar Relatório PDF
+                                        </button>
+                                    </div>
+                                </section>
 
-                            {/* Message Area */}
-                            <section className="bg-white rounded-3xl p-8 border border-border glass-shadow">
-                                <h3 className="text-xs font-black text-primary uppercase tracking-[0.2em] mb-6 flex items-center gap-3">
-                                    <FileText className="w-4 h-4 text-accent" /> Mensagem Customizada
-                                </h3>
-                                <textarea 
-                                    className="w-full p-5 bg-slate-50 border border-border rounded-2xl text-xs font-bold text-slate-600 focus:ring-4 focus:ring-primary/5 focus:bg-white outline-none min-h-[160px] resize-none transition-all" 
-                                    value={clientData.observations} 
-                                    onChange={e => upd('observations', e.target.value)} 
-                                    placeholder="Adicione avisos importantes aqui..." 
+                                <SefazPasteSection 
+                                    showSefazPaste={showSefazPaste}
+                                    setShowSefazPaste={setShowSefazPaste}
+                                    sefazPasteText={sefazPasteText}
+                                    setSefazPasteText={setSefazPasteText}
+                                    handleSefazPaste={handleSefazPaste}
+                                    sefazHistory={clientData.sefazHistory || []}
+                                    setSefazHistory={(h) => updateClient('sefazHistory', h)}
                                 />
-                            </section>
+
+                                <section className="bg-white rounded-3xl p-8 border border-border glass-shadow">
+                                    <h2 className="text-xs font-black text-primary uppercase tracking-[0.2em] mb-6 flex items-center gap-3">
+                                        Observações
+                                    </h2>
+                                    <textarea 
+                                        className="w-full p-4 bg-slate-50 border border-border rounded-2xl text-xs font-bold focus:ring-4 focus:ring-primary/5 focus:bg-white outline-none min-h-[140px] resize-none"
+                                        placeholder="Digite observações importantes para o cliente..."
+                                        value={clientData.observations}
+                                        onChange={e => updateClient('observations', e.target.value)}
+                                    />
+                                </section>
+                            </div>
                         </div>
-                    </div>
+                    </>
                 ) : (
                     <div className="bg-slate-100 border border-slate-200 rounded-3xl p-10 glass-shadow flex flex-col">
                         <div className="flex justify-between items-start mb-10">
@@ -377,32 +297,30 @@ export default function Home() {
                                 >
                                     Voltar
                                 </button>
-                                <PDFDownloadLink
-                                    key={`pdf-btn-${calcId}`}
-                                    document={pdfDocument}
-                                    fileName={`Apuracao_Fiscal_${(clientData?.clientName || 'Cliente').replace(/\s+/g, '_')}.pdf`}
-                                    className="bg-accent text-primary px-10 py-5 rounded-2xl text-xs font-black uppercase flex items-center gap-4 hover:bg-yellow-400 shadow-2xl transition-all hover:scale-105 active:scale-95"
-                                >
-                                    {({ loading }) => (
-                                        <>
-                                            <Printer className="w-5 h-5" />
-                                            {loading ? 'Preparando...' : 'Gerar Relatório PDF'}
-                                        </>
-                                    )}
-                                </PDFDownloadLink>
+                                {isClient && pdfDocument && (
+                                    <PDFDownloadLink
+                                        key={`pdf-btn-${calcId}`}
+                                        document={pdfDocument}
+                                        fileName={`Apuracao_Fiscal_${(clientData?.clientName || 'Cliente').replace(/\s+/g, '_')}.pdf`}
+                                        className="bg-accent text-primary px-10 py-5 rounded-2xl text-xs font-black uppercase flex items-center gap-4 hover:bg-yellow-400 shadow-2xl transition-all hover:scale-105 active:scale-95"
+                                    >
+                                        {({ loading }) => (
+                                            <>
+                                                <Printer className="w-5 h-5" />
+                                                {loading ? 'Preparando...' : 'Gerar Relatório PDF'}
+                                            </>
+                                        )}
+                                    </PDFDownloadLink>
+                                )}
                             </div>
                         </div>
                         
                         <div className="bg-slate-800 rounded-3xl overflow-hidden border-8 border-slate-800 shadow-[0_0_50px_-12px_rgba(0,0,0,0.3)]" style={{ height: '1100px' }}>
-                            {isClient && (
+                            {isClient && pdfDocument && (
                                 <PDFViewer width="100%" height="100%" className="border-none">
                                     {pdfDocument}
                                 </PDFViewer>
                             )}
-                        </div>
-                        
-                        <div className="mt-8 flex justify-center">
-                            <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">Use o scroll interno para navegar entre as páginas</p>
                         </div>
                     </div>
                 )}

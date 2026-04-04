@@ -10,7 +10,7 @@ interface HeaderProps {
     copied: boolean;
 }
 
-export const Header: React.FC<HeaderProps> = ({ clearData, copyWpp, copied }) => {
+export function Header({ clearData, copyWpp, copied }: HeaderProps) {
     return (
         <header className="bg-white border-b border-border sticky top-0 z-50 glass-shadow">
             <div className="max-w-[1400px] mx-auto px-6 h-20 flex items-center justify-between">
@@ -52,4 +52,4 @@ export const Header: React.FC<HeaderProps> = ({ clearData, copyWpp, copied }) =>
             </div>
         </header>
     );
-};
+}

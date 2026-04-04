@@ -1,21 +1,21 @@
 import React from 'react';
 import { 
-    FileText, Plus, Trash2, Info
+    FileSpreadsheet, Clipboard, Trash2, Info, CheckCircle2
 } from 'lucide-react';
 import { fmtBRL } from '../../utils/taxCalculations';
 import { SefazHistory } from '../../types/fiscal';
 
 interface SefazPasteSectionProps {
     showSefazPaste: boolean;
-    setShowSefazPaste: (show: boolean) => void;
+    setShowSefazPaste: (val: boolean) => void;
     sefazPasteText: string;
-    setSefazPasteText: (text: string) => void;
+    setSefazPasteText: (val: string) => void;
     handleSefazPaste: () => void;
     sefazHistory: SefazHistory[];
-    setSefazHistory: (history: SefazHistory[]) => void;
+    setSefazHistory: (v: SefazHistory[]) => void;
 }
 
-export const SefazPasteSection: React.FC<SefazPasteSectionProps> = ({
+export function SefazPasteSection({
     showSefazPaste,
     setShowSefazPaste,
     sefazPasteText,
@@ -23,101 +23,82 @@ export const SefazPasteSection: React.FC<SefazPasteSectionProps> = ({
     handleSefazPaste,
     sefazHistory,
     setSefazHistory
-}) => {
+}: SefazPasteSectionProps) {
     return (
-        <section className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden mb-8">
-            <div className="p-6 border-b border-slate-50 flex items-center justify-between bg-emerald-50/30">
-                <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center">
-                        <FileText className="w-4 h-4 text-white" />
-                    </div>
-                    <div>
-                        <h2 className="text-sm font-black text-primary uppercase tracking-wider">Histórico SEFAZ / Entradas e Saídas</h2>
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Análise de fluxo para planejamento fiscal</p>
-                    </div>
-                </div>
-                <div className="flex items-center gap-2">
+        <section className="bg-white rounded-3xl p-8 border border-border glass-shadow relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-2 h-full bg-emerald-500" />
+            <div className="flex justify-between items-center mb-8">
+                <h2 className="text-xs font-black text-primary uppercase tracking-[0.2em] flex items-center gap-3">
+                    <FileSpreadsheet className="w-4 h-4 text-emerald-500" /> Histórico SEFAZ (Excel)
+                </h2>
+                {!showSefazPaste && (
                     <button 
-                        onClick={() => setShowSefazPaste(!showSefazPaste)}
-                        className="px-4 py-2 bg-emerald-500 text-white rounded-xl text-[10px] font-black uppercase hover:bg-emerald-600 transition-all shadow-md flex items-center gap-2"
+                        onClick={() => setShowSefazPaste(true)}
+                        className="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl text-[10px] font-black uppercase hover:bg-emerald-500 hover:text-white transition-all border border-emerald-100"
                     >
-                        <Plus className="w-3.5 h-3.5" /> Importar Excel
+                        Importar Dados
                     </button>
-                    <button 
-                        onClick={() => setSefazHistory([])}
-                        className="p-2 text-slate-400 hover:text-red-500 transition-colors"
-                        title="Limpar Histórico"
-                    >
-                        <Trash2 className="w-4 h-4" />
-                    </button>
-                </div>
+                )}
             </div>
 
-            <div className="p-6">
-                {showSefazPaste && (
-                    <div className="mb-6 p-5 bg-emerald-50 border border-emerald-100 rounded-2xl animate-in fade-in slide-in-from-top-2">
-                        <label className="text-[10px] font-black text-emerald-600 uppercase mb-2 block flex items-center gap-2">
-                            <Info className="w-3 h-3" /> Cole os dados (Selecionar no Excel e "CTRL+C")
-                        </label>
-                        <textarea 
-                            className="w-full p-4 bg-white border border-emerald-200 rounded-xl text-xs font-mono focus:ring-4 focus:ring-emerald-500/10 outline-none mb-3 transition-all min-h-[120px]"
-                            placeholder={`Exemplo de colunas no Excel:\nMês/Ano\t\t\tEntradas\t\tSaídas\nJan/2026\t\t15000,00\t\t25000,00`}
-                            value={sefazPasteText}
-                            onChange={(e) => setSefazPasteText(e.target.value)}
-                        />
-                        <div className="flex justify-end gap-3">
-                            <button 
-                                onClick={() => setShowSefazPaste(false)}
-                                className="px-4 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest"
-                            >
-                                Cancelar
-                            </button>
-                            <button 
-                                onClick={handleSefazPaste}
-                                className="px-5 py-2 bg-emerald-600 text-white rounded-lg text-[10px] font-black uppercase shadow-lg hover:bg-emerald-700 transition-all"
-                            >
-                                Processar Dados
-                            </button>
+            {showSefazPaste && (
+                <div className="mb-8 space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                    <div className="p-4 bg-emerald-50 rounded-2xl flex items-start gap-4 border border-emerald-100 mb-6">
+                        <Info className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+                        <div>
+                            <p className="text-xs font-bold text-emerald-800">Instruções de Importação</p>
+                            <p className="text-[10px] text-emerald-600 mt-1 leading-relaxed">
+                                No Excel da SEFAZ, selecione as colunas <span className="font-extrabold uppercase">Mês/Ano</span>, <span className="font-extrabold uppercase">Entradas</span> e <span className="font-extrabold uppercase">Saídas</span>, copie (Ctrl+C) e cole no campo abaixo.
+                            </p>
                         </div>
                     </div>
-                )}
+                    <textarea 
+                        className="w-full p-6 bg-slate-50 border border-border rounded-2xl text-xs font-mono focus:ring-4 focus:ring-emerald-500/5 focus:bg-white outline-none min-h-[160px] resize-none transition-all"
+                        placeholder="Cole aqui (Ex: 01/2026   150.000,00   180.000,00)"
+                        value={sefazPasteText}
+                        onChange={(e) => setSefazPasteText(e.target.value)}
+                    />
+                    <div className="flex gap-3 pt-2">
+                        <button onClick={handleSefazPaste} className="px-6 py-3 bg-emerald-500 text-white rounded-xl text-[10px] font-black uppercase hover:bg-emerald-600 shadow-lg shadow-emerald-500/20 transition-all flex items-center gap-2">
+                            <Clipboard className="w-3.5 h-3.5" /> Processar e Adicionar
+                        </button>
+                        <button onClick={() => { setShowSefazPaste(false); setSefazPasteText(''); }} className="px-6 py-3 bg-slate-100 text-slate-400 rounded-xl text-[10px] font-black uppercase hover:bg-slate-200 transition-all">
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            )}
 
-                {sefazHistory.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                        {sefazHistory.map((item, idx) => (
-                            <div key={item.id} className="p-4 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-md transition-all group">
-                                <div className="flex items-center justify-between mb-3 border-b border-white pb-2">
-                                    <span className="text-[10px] font-black text-slate-400 uppercase">{item.month}</span>
-                                    <button 
-                                        onClick={() => setSefazHistory(sefazHistory.filter((_, i) => i !== idx))}
-                                        className="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 transition-all"
-                                    >
-                                        <Trash2 className="w-3 h-3" />
-                                    </button>
+            {sefazHistory && sefazHistory.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    {sefazHistory.map((item) => (
+                        <div key={item.id} className="p-4 border border-slate-100 rounded-2xl bg-slate-50/50 group relative hover:border-emerald-200 transition-all">
+                            <div className="flex justify-between items-start mb-2">
+                                <span className="text-[10px] font-black text-primary bg-white px-2 py-1 rounded-lg border border-slate-100 shadow-sm">{item.month}</span>
+                                <button onClick={() => setSefazHistory(sefazHistory.filter(x => x.id !== item.id))} className="text-slate-300 hover:text-red-500 transition-colors">
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                            </div>
+                            <div className="space-y-1">
+                                <div className="flex justify-between">
+                                    <span className="text-[9px] text-slate-400 uppercase font-bold">Saídas:</span>
+                                    <span className="text-xs font-black text-emerald-600">{fmtBRL(item.saidas)}</span>
                                 </div>
-                                <div className="space-y-2">
-                                    <div>
-                                        <label className="text-[8px] font-black text-slate-400 uppercase block">Total Entradas</label>
-                                        <p className="text-sm font-black text-emerald-600">{fmtBRL(item.entradas)}</p>
-                                    </div>
-                                    <div>
-                                        <label className="text-[8px] font-black text-slate-400 uppercase block">Total Saídas</label>
-                                        <p className="text-sm font-black text-primary">{fmtBRL(item.saidas)}</p>
-                                    </div>
+                                <div className="flex justify-between">
+                                    <span className="text-[9px] text-slate-400 uppercase font-bold">Entradas:</span>
+                                    <span className="text-xs font-black text-slate-600">{fmtBRL(item.entradas)}</span>
                                 </div>
                             </div>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="py-12 flex flex-col items-center justify-center text-center">
-                        <div className="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center mb-4">
-                            <FileText className="w-8 h-8 text-slate-200" />
                         </div>
-                        <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest">Nenhum dado importado</h3>
-                        <p className="text-xs text-slate-300 mt-1">Clique em "Importar Excel" para começar a análise de faturamento real.</p>
-                    </div>
-                )}
-            </div>
+                    ))}
+                </div>
+            )}
+            
+            {(!sefazHistory || sefazHistory.length === 0) && !showSefazPaste && (
+                <div className="py-8 text-center bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
+                    <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Nenhum histórico importado</p>
+                </div>
+            )}
         </section>
     );
-};
+}
