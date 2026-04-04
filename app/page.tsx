@@ -362,31 +362,47 @@ export default function Home() {
                         </div>
                     </div>
                 ) : (
-                    <div className="bg-slate-50 border border-border rounded-3xl p-6 glass-shadow flex flex-col min-h-screen">
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-sm font-black text-primary uppercase tracking-[0.2em] flex items-center gap-3">
-                                <FileText className="w-5 h-5 text-accent" /> Visualização do Documento
-                            </h2>
-                            <PDFDownloadLink
-                                key={`pdf-btn-${calcId}`}
-                                document={pdfDocument}
-                                fileName={`Apuracao_Fiscal_${(clientData?.clientName || 'Cliente').replace(/\s+/g, '_')}.pdf`}
-                                className="bg-accent text-primary px-8 py-4 rounded-xl text-xs font-black uppercase flex items-center gap-3 hover:bg-yellow-400 shadow-xl transition-all scale-105"
-                            >
-                                {({ loading }) => (
-                                    <>
-                                        <Printer className="w-5 h-5" />
-                                        {loading ? 'Preparando...' : 'Baixar PDF'}
-                                    </>
-                                )}
-                            </PDFDownloadLink>
+                    <div className="bg-slate-100 border border-slate-200 rounded-3xl p-10 glass-shadow flex flex-col">
+                        <div className="flex justify-between items-start mb-10">
+                            <div>
+                                <h2 className="text-xl font-black text-primary uppercase tracking-[0.1em] flex items-center gap-3">
+                                    <FileText className="w-6 h-6 text-accent" /> Relatório Executivo
+                                </h2>
+                                <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest mt-2 ml-9">Confira a prévia das 3 páginas abaixo</p>
+                            </div>
+                            <div className="flex gap-4">
+                                <button 
+                                    onClick={() => setActiveTab('form')}
+                                    className="px-6 py-4 rounded-xl text-xs font-black uppercase text-slate-400 hover:text-primary transition-colors"
+                                >
+                                    Voltar
+                                </button>
+                                <PDFDownloadLink
+                                    key={`pdf-btn-${calcId}`}
+                                    document={pdfDocument}
+                                    fileName={`Apuracao_Fiscal_${(clientData?.clientName || 'Cliente').replace(/\s+/g, '_')}.pdf`}
+                                    className="bg-accent text-primary px-10 py-5 rounded-2xl text-xs font-black uppercase flex items-center gap-4 hover:bg-yellow-400 shadow-2xl transition-all hover:scale-105 active:scale-95"
+                                >
+                                    {({ loading }) => (
+                                        <>
+                                            <Printer className="w-5 h-5" />
+                                            {loading ? 'Preparando...' : 'Gerar Relatório PDF'}
+                                        </>
+                                    )}
+                                </PDFDownloadLink>
+                            </div>
                         </div>
-                        <div className="bg-slate-200 rounded-xl overflow-hidden border border-slate-300 flex-1" style={{ minHeight: '800px' }}>
+                        
+                        <div className="bg-slate-800 rounded-3xl overflow-hidden border-8 border-slate-800 shadow-[0_0_50px_-12px_rgba(0,0,0,0.3)]" style={{ height: '1100px' }}>
                             {isClient && (
                                 <PDFViewer width="100%" height="100%" className="border-none">
                                     {pdfDocument}
                                 </PDFViewer>
                             )}
+                        </div>
+                        
+                        <div className="mt-8 flex justify-center">
+                            <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">Use o scroll interno para navegar entre as páginas</p>
                         </div>
                     </div>
                 )}

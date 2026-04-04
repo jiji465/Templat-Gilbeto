@@ -31,7 +31,7 @@ const colors = {
 
 const styles = StyleSheet.create({
     page: {
-        padding: 30,
+        padding: 0,
         backgroundColor: colors.white,
         fontFamily: FONT_BODY,
         color: colors.primary,
@@ -39,12 +39,12 @@ const styles = StyleSheet.create({
     // COVER PAGE
     cover: {
         backgroundColor: colors.primary,
-        height: '100%',
         padding: 60,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
         alignItems: 'center',
+        flex: 1
     },
     coverTop: {
         alignItems: 'center',
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
 });
 
 const GLOSSARY_TERMS: Record<string, string> = {
-    'DAS': 'Documento de Arrecadação do Simples Nacional. Guia única que unifica o pagamento de diversos impostos.',
+    'DAS': 'Documento de Arrecadação do Simples Nacional. Guia única que unifica impostos e contribuições.',
     'IRPJ': 'Imposto de Renda da Pessoa Jurídica.',
     'CSLL': 'Contribuição Social sobre o Lucro Líquido.',
     'ICMS': 'Imposto sobre Circulação de Mercadorias e Serviços.',
@@ -152,28 +152,7 @@ const LogoIcon = ({ size = 40, color = colors.accent }) => (
     </Svg>
 );
 
-// --- Sub-components for PDF ---
-
-const PDFCover = ({ clientName, month, year }: { clientName: string, month: string, year: string }) => (
-    <Page size="A4" style={styles.cover}>
-        <View style={styles.coverTop}>
-            <LogoIcon size={100} />
-            <View style={{ marginTop: 40, alignItems: 'center' }}>
-                <Text style={styles.coverClientLabel}>APURAÇÃO FISCAL</Text>
-                <Text style={styles.coverClientName}>{clientName?.toUpperCase() || 'CLIENTE'}</Text>
-            </View>
-            <View style={styles.coverLine} />
-            <Text style={{ color: colors.white, fontSize: 12, letterSpacing: 2, textTransform: 'uppercase' }}>
-                Competência {month} / {year}
-            </Text>
-        </View>
-        <View style={styles.coverFooter}>
-            <Text style={{ color: colors.accent, fontSize: 12, fontFamily: FONT_BOLD, letterSpacing: 2 }}>{OFFICE.name}</Text>
-            <Text style={{ color: 'rgba(255,255,255,0.4)', fontSize: 7, marginTop: 10, textTransform: 'uppercase', letterSpacing: 2 }}>Versão {VERSION}</Text>
-        </View>
-    </Page>
-);
-
+// --- Content Page Helper ---
 const PageHeader = ({ title, month, year, clientName, pageNumber }: { title: string, month: string, year: string, clientName: string, pageNumber: string }) => (
     <View style={styles.header}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -191,7 +170,7 @@ const PageHeader = ({ title, month, year, clientName, pageNumber }: { title: str
 );
 
 const PageFooter = () => (
-    <View style={styles.footer}>
+    <View style={styles.footer} fixed>
         <Text style={styles.footerText}>{OFFICE.name} — Consultoria Estratégica</Text>
         <Text style={styles.footerText}>Relatório Gerado via Fiscal Pro Elite {VERSION}</Text>
     </View>
@@ -215,21 +194,40 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
 
     return (
         <Document title={`Relatorio_${data.clientName}`}>
-            <PDFCover clientName={data.clientName} month={month} year={year} />
+            {/* Página 1: Capa */}
+            <Page size="A4" style={styles.page}>
+                <View style={styles.cover}>
+                    <View style={styles.coverTop}>
+                        <LogoIcon size={100} />
+                        <View style={{ marginTop: 40, alignItems: 'center' }}>
+                            <Text style={styles.coverClientLabel}>APURAÇÃO FISCAL</Text>
+                            <Text style={styles.coverClientName}>{data.clientName?.toUpperCase() || 'CLIENTE'}</Text>
+                        </View>
+                        <View style={styles.coverLine} />
+                        <Text style={{ color: colors.white, fontSize: 12, letterSpacing: 2, textTransform: 'uppercase' }}>
+                            Competência {month} / {year}
+                        </Text>
+                    </View>
+                    <View style={styles.coverFooter}>
+                        <Text style={{ color: colors.accent, fontSize: 12, fontFamily: FONT_BOLD, letterSpacing: 2 }}>{OFFICE.name}</Text>
+                        <Text style={{ color: 'rgba(255,255,255,0.4)', fontSize: 7, marginTop: 10, textTransform: 'uppercase', letterSpacing: 2 }}>Versão {VERSION}</Text>
+                    </View>
+                </View>
+            </Page>
 
-            <Page size="A4" style={[styles.page, { padding: 0 }]}>
+            {/* Página 2: Detalhamento */}
+            <Page size="A4" style={styles.page}>
                 <PageHeader title="Detalhamento Tributário" month={month} year={year} clientName={data.clientName} pageNumber="2 / 3" />
-                
                 <View style={{ margin: 40, marginTop: 30 }}>
                     <Text style={styles.sectionTitle}>Dados da Apuração</Text>
                     <View style={{ flexDirection: 'row', gap: 10, marginBottom: 20 }}>
                         <View style={styles.kpiCard}>
                             <Text style={{ fontSize: 7, color: colors.slate, textTransform: 'uppercase', marginBottom: 5 }}>Receita Bruta 12M</Text>
-                            <Text style={{ fontSize: 14, fontFamily: FONT_BOLD, color: colors.primary }}>{fmtBRL(parseNum(data.rbt12))}</Text>
+                            <Text style={{ fontSize: 14, fontFamily: FONT_BOLD }}>{fmtBRL(parseNum(data.rbt12))}</Text>
                         </View>
                         <View style={styles.kpiCard}>
                             <Text style={{ fontSize: 7, color: colors.slate, textTransform: 'uppercase', marginBottom: 5 }}>Faturamento do Mês</Text>
-                            <Text style={{ fontSize: 14, fontFamily: FONT_BOLD, color: colors.primary }}>{fmtBRL(totalRev)}</Text>
+                            <Text style={{ fontSize: 14, fontFamily: FONT_BOLD }}>{fmtBRL(totalRev)}</Text>
                         </View>
                     </View>
 
@@ -243,7 +241,7 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
                             <Text style={[styles.th, { flex: 2, textAlign: 'right' }]}>Valor</Text>
                         </View>
                         {taxesList.map((t, i) => (
-                            <View key={i} style={[styles.tableRow, { borderLeftWidth: 3, borderLeftColor: colors.accent }]}>
+                            <View key={i} style={[styles.tableRow, { borderLeftWidth: 3, borderLeftColor: colors.accent }]} wrap={false}>
                                 <Text style={[styles.td, styles.tdBold, { flex: 3 }]}>{t.tax}</Text>
                                 <Text style={[styles.td, { flex: 1, textAlign: 'center' }]}>{t.rate}%</Text>
                                 <Text style={[styles.td, { flex: 1.5, textAlign: 'right' }]}>{t.base}</Text>
@@ -251,14 +249,21 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
                                 <Text style={[styles.td, styles.tdBold, { flex: 2, textAlign: 'right' }]}>{t.value}</Text>
                             </View>
                         ))}
-                        <View style={[styles.tableRow, { backgroundColor: colors.primary, color: colors.white, marginTop: 8, borderRadius: 4, paddingVertical: 10 }]}>
+                        <View style={[styles.tableRow, { backgroundColor: colors.primary, color: colors.white, marginTop: 8, borderRadius: 4, paddingVertical: 10 }]} wrap={false}>
                             <Text style={[styles.tdBold, { flex: 5, fontSize: 9 }]}>TOTAL CONSOLIDADO</Text>
                             <Text style={[styles.tdBold, { flex: 3, textAlign: 'right', fontSize: 14, color: colors.accent }]}>{fmtBRL(totalTrib)}</Text>
                         </View>
                     </View>
+                </View>
+                <PageFooter />
+            </Page>
 
+            {/* Página 3: Planejamento */}
+            <Page size="A4" style={styles.page}>
+                <PageHeader title="Planejamento e Glossário" month={month} year={year} clientName={data.clientName} pageNumber="3 / 3" />
+                <View style={{ margin: 40, marginTop: 30 }}>
                     <Text style={styles.sectionTitle}>Indicadores Fiscais</Text>
-                    <View style={{ flexDirection: 'row', gap: 10 }}>
+                    <View style={{ flexDirection: 'row', gap: 10, marginBottom: 25 }}>
                         <View style={{ flex: 1, backgroundColor: colors.light, padding: 15, borderRadius: 6, alignItems: 'center' }}>
                             <Text style={{ fontSize: 14, fontFamily: FONT_BOLD }}>{fmtPct(cargaEf)}</Text>
                             <Text style={{ fontSize: 6, color: colors.slate, marginTop: 5 }}>CARGA EFETIVA</Text>
@@ -272,26 +277,20 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
                             <Text style={{ fontSize: 6, color: colors.slate, marginTop: 5 }}>ALAVANCAGEM</Text>
                         </View>
                     </View>
-                </View>
-                <PageFooter />
-            </Page>
 
-            <Page size="A4" style={[styles.page, { padding: 0 }]}>
-                <PageHeader title="Planejamento e Glossário" month={month} year={year} clientName={data.clientName} pageNumber="3 / 3" />
-                <View style={{ margin: 40, marginTop: 30 }}>
                     <Text style={styles.sectionTitle}>Observações Estratégicas</Text>
-                    <View style={{ padding: 15, backgroundColor: colors.light, borderRadius: 6, minHeight: 100 }}>
+                    <View style={{ padding: 15, backgroundColor: colors.light, borderRadius: 6, minHeight: 120 }}>
                         <Text style={{ fontSize: 9, lineHeight: 1.5, color: colors.slate }}>
-                            {data.observations || 'Nenhuma observação adicional para este período.'}
+                            {data.observations || 'Nenhuma observação adicional selecionada para este período.'}
                         </Text>
                     </View>
 
                     <Text style={styles.sectionTitle}>Glossário de Termos</Text>
-                    <View style={{ gap: 8 }}>
+                    <View style={{ gap: 6 }}>
                         {Object.entries(GLOSSARY_TERMS).map(([term, desc]) => (
-                            <View key={term} style={{ marginBottom: 5 }}>
+                            <View key={term} style={{ marginBottom: 4 }}>
                                 <Text style={{ fontSize: 8, fontFamily: FONT_BOLD, color: colors.primary }}>{term}</Text>
-                                <Text style={{ fontSize: 7, color: colors.slate, marginTop: 2 }}>{desc}</Text>
+                                <Text style={{ fontSize: 7, color: colors.slate, marginTop: 1 }}>{desc}</Text>
                             </View>
                         ))}
                     </View>
