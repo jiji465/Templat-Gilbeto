@@ -1,0 +1,20 @@
+[0m[0m
+[0m[4mC:\Users\Admin\OneDrive\Desktop\Templat-Gilbeto\app\page.tsx[24m[0m
+[0m  [2m446:107[22m  [31merror[39m  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  [2mreact/no-unescaped-entities[22m[0m
+[0m  [2m446:114[22m  [31merror[39m  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  [2mreact/no-unescaped-entities[22m[0m
+[0m[0m
+[0m[4mC:\Users\Admin\OneDrive\Desktop\Templat-Gilbeto\patch_cover.js[24m[0m
+[0m  [2m1:12[22m  [31merror[39m  A `require()` style import is forbidden  [2m@typescript-eslint/no-require-imports[22m[0m
+[0m[0m
+[0m[4mC:\Users\Admin\OneDrive\Desktop\Templat-Gilbeto\patch_labels.js[24m[0m
+[0m  [2m1:12[22m  [31merror[39m  A `require()` style import is forbidden  [2m@typescript-eslint/no-require-imports[22m[0m
+[0m[0m
+[0m[4mC:\Users\Admin\OneDrive\Desktop\Templat-Gilbeto\patch_sefaz_fix.js[24m[0m
+[0m  [2m1:12[22m  [31merror[39m  A `require()` style import is forbidden  [2m@typescript-eslint/no-require-imports[22m[0m
+[0m[0m
+[0m[4mC:\Users\Admin\OneDrive\Desktop\Templat-Gilbeto\test_fator_r.js[24m[0m
+[0m  [2m1:1[22m   [31merror[39m  A `require()` style import is forbidden  [2m@typescript-eslint/no-require-imports[22m[0m
+[0m  [2m2:45[22m  [31merror[39m  A `require()` style import is forbidden  [2m@typescript-eslint/no-require-imports[22m[0m
+[0m[0m
+[0m[31m[1m✖ 7 problems (7 errors, 0 warnings)[22m[39m[0m
+[0m[31m[1m[22m[39m[0m
