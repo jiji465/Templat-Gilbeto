@@ -1,6 +1,7 @@
 import React from 'react';
-import { Shield, RotateCcw, Check, MessageSquare, Sparkles } from 'lucide-react';
+import { RotateCcw, Check, MessageSquare } from 'lucide-react';
 import { OFFICE } from '../../utils/taxCalculations';
+import { LogoIcon } from './LogoIcon';
 
 interface HeaderProps {
     clearData: () => void;
@@ -15,10 +16,10 @@ export function Header({ clearData, copyWpp, copied }: HeaderProps) {
                 {/* Logo */}
                 <div className="flex items-center gap-4">
                     <div
-                        className="w-10 h-10 rounded-[14px] flex items-center justify-center flex-shrink-0"
-                        style={{ background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)', boxShadow: '0 4px 16px rgba(201,162,39,0.35)' }}
+                        className="w-10 h-10 rounded-[14px] flex items-center justify-center flex-shrink-0 overflow-hidden"
+                        style={{ background: 'rgba(255,255,255,0.04)', boxShadow: '0 4px 16px rgba(201,162,39,0.3)' }}
                     >
-                        <Shield className="w-5 h-5" style={{ color: 'var(--primary)' }} />
+                        <LogoIcon size={36} />
                     </div>
                     <div>
                         <div className="flex items-center gap-2">

@@ -130,12 +130,33 @@ const s = StyleSheet.create({
 // -- Logo SVG
 const Logo = ({ size = 40, fill = C.accent }) => (
     <Svg width={size} height={size} viewBox="0 0 100 100">
+        {/* Barras */}
         <Rect x="12" y="40" width="22" height="32" rx="3" fill={fill} />
         <Rect x="39" y="22" width="22" height="50" rx="3" fill={fill} fillOpacity={0.8} />
         <Rect x="66" y="8" width="22" height="64" rx="3" fill={fill} fillOpacity={0.55} />
+        {/* Linha de base */}
         <Rect x="8" y="78" width="84" height="4" rx="2" fill={fill} />
+        {/* Seta diagonal — linha subindo da esquerda-baixo até direita-cima */}
+        <Path
+            d="M 10 75 L 82 12"
+            stroke="#FFFFFF"
+            strokeWidth="4.5"
+            strokeOpacity="0.85"
+            strokeLinecap="round"
+        />
+        {/* Ponta da seta no topo direito */}
+        <Path
+            d="M 65 10 L 84 11 L 83 30"
+            stroke="#FFFFFF"
+            strokeWidth="4.5"
+            strokeOpacity="0.85"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+        />
     </Svg>
 );
+
 
 // -- Decorative SVG shape
 const Hex = ({ size = 120 }) => (
