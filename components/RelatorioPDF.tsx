@@ -131,24 +131,24 @@ const s = StyleSheet.create({
 const Logo = ({ size = 40, fill = C.accent }) => (
     <Svg width={size} height={size} viewBox="0 0 100 100">
         {/* Barras */}
-        <Rect x="12" y="40" width="22" height="32" rx="3" fill={fill} />
-        <Rect x="39" y="22" width="22" height="50" rx="3" fill={fill} fillOpacity={0.8} />
-        <Rect x="66" y="8" width="22" height="64" rx="3" fill={fill} fillOpacity={0.55} />
-        {/* Linha de base */}
-        <Rect x="8" y="78" width="84" height="4" rx="2" fill={fill} />
-        {/* Seta diagonal — linha subindo da esquerda-baixo até direita-cima */}
+        <Rect x="22" y="50" width="18" height="35" rx="3" fill={fill} />
+        <Rect x="46" y="30" width="18" height="55" rx="3" fill={fill} fillOpacity={0.8} />
+        <Rect x="70" y="10" width="18" height="75" rx="3" fill={fill} fillOpacity={0.55} />
+        {/* Seta: V drop + diagonal */}
         <Path
-            d="M 10 75 L 82 12"
+            d="M 12 55 L 12 85 L 90 28"
             stroke="#FFFFFF"
-            strokeWidth="4.5"
+            strokeWidth="5"
             strokeOpacity="0.85"
             strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
         />
-        {/* Ponta da seta no topo direito */}
+        {/* Ponta da seta */}
         <Path
-            d="M 65 10 L 84 11 L 83 30"
+            d="M 74 28 L 90 28 L 84 43"
             stroke="#FFFFFF"
-            strokeWidth="4.5"
+            strokeWidth="5"
             strokeOpacity="0.85"
             strokeLinecap="round"
             strokeLinejoin="round"

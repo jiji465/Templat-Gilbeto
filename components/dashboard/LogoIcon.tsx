@@ -42,34 +42,33 @@ export function LogoIcon({ size = 40 }: LogoIconProps) {
             </defs>
 
             {/* Barra 1 — menor, esquerda */}
-            <rect x="8" y="58" width="22" height="34" rx="3" fill="url(#goldBar1)" />
+            <rect x="22" y="50" width="18" height="35" rx="3" fill="url(#goldBar1)" />
             {/* Brilho barra 1 */}
-            <rect x="8" y="58" width="7" height="34" rx="3" fill="url(#shineLeft)" />
+            <rect x="22" y="50" width="6" height="35" rx="3" fill="url(#shineLeft)" />
 
             {/* Barra 2 — média, centro */}
-            <rect x="38" y="36" width="22" height="56" rx="3" fill="url(#goldBar2)" />
+            <rect x="46" y="30" width="18" height="55" rx="3" fill="url(#goldBar2)" />
             {/* Brilho barra 2 */}
-            <rect x="38" y="36" width="7" height="56" rx="3" fill="url(#shineLeft)" />
+            <rect x="46" y="30" width="6" height="55" rx="3" fill="url(#shineLeft)" />
 
             {/* Barra 3 — maior, direita */}
-            <rect x="68" y="12" width="22" height="80" rx="3" fill="url(#goldBar3)" />
+            <rect x="70" y="10" width="18" height="75" rx="3" fill="url(#goldBar3)" />
             {/* Brilho barra 3 */}
-            <rect x="68" y="12" width="7" height="80" rx="3" fill="url(#shineLeft)" />
+            <rect x="70" y="10" width="6" height="75" rx="3" fill="url(#shineLeft)" />
 
-            {/* Linha da seta diagonal — de baixo-esquerda para cima-direita */}
-            <line
-                x1="10"
-                y1="78"
-                x2="83"
-                y2="14"
+            {/* Linha da seta (V drop + diagonal) */}
+            <path
+                d="M 12 55 L 12 85 L 90 28"
+                fill="none"
                 stroke="url(#arrowGrad)"
                 strokeWidth="6"
                 strokeLinecap="round"
+                strokeLinejoin="round"
             />
 
-            {/* Ponta da seta no topo direito */}
+            {/* Ponta da seta */}
             <path
-                d="M 66 12 L 85 13 L 84 32"
+                d="M 74 28 L 90 28 L 84 43"
                 fill="none"
                 stroke="url(#arrowGrad)"
                 strokeWidth="6"
