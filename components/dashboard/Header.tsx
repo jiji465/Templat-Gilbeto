@@ -24,22 +24,12 @@ export function Header({ clearData, copyWpp, copied }: HeaderProps) {
                     <div>
                         <div className="flex items-center gap-2">
                             <h1
-                                className="text-base font-black tracking-tight leading-none"
+                                className="text-base font-black tracking-tight leading-none uppercase"
                                 style={{ color: '#fff', fontFamily: 'var(--font-heading)' }}
                             >
-                                Fiscal <span style={{ color: 'var(--accent)' }}>Pro</span> Elite
+                                {OFFICE.name}
                             </h1>
-                            <span
-                                className="badge"
-                                style={{ background: 'rgba(201,162,39,0.15)', color: 'var(--accent)', fontSize: '0.5rem' }}
-                            >
-                                v2.0
-                            </span>
                         </div>
-                        <p className="text-[9px] font-medium mt-0.5 truncate max-w-[260px]"
-                           style={{ color: 'rgba(255,255,255,0.4)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
-                            {OFFICE.name}
-                        </p>
                     </div>
                 </div>
 

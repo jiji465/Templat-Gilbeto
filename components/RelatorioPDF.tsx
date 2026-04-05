@@ -186,7 +186,7 @@ const PageHeader = ({ title, sub }: { title: string, sub: string }) => (
 const PageFooter = ({ page }: { page: string }) => (
     <View style={s.pageFooter} fixed>
         <Text style={s.footerTxt}>{OFFICE.name}</Text>
-        <Text style={s.footerTxt}>Fiscal Pro Elite v{VERSION}   ·   {page}</Text>
+        <Text style={s.footerTxt}>Relatório de Apuração Fiscal   ·   {page}</Text>
     </View>
 );
 
@@ -258,7 +258,7 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
                         <View>
                             <Text style={{ fontSize: 11, fontFamily: FB, color: C.accent, letterSpacing: 1.5 }}>{OFFICE.name}</Text>
                             <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.25)', marginTop: 4, letterSpacing: 1 }}>
-                                Sistema Fiscal Pro Elite · Versão {VERSION}
+                                Relatório Gerado Automaticamente
                             </Text>
                         </View>
                         <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.2)', letterSpacing: 1, textTransform: 'uppercase' }}>
