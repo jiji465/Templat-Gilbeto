@@ -1,383 +1,451 @@
 'use client';
 
 import React from 'react';
-import { Page, Text, View, Document, StyleSheet, Svg, Path, Rect, Circle } from '@react-pdf/renderer';
-import { fmtBRL, fmtPct, MONTHS, OFFICE, parseNum, VERSION } from '../utils/taxCalculations';
+import { Page, Text, View, Document, StyleSheet, Svg, Path, Rect, Circle, Font } from '@react-pdf/renderer';
+import { fmtBRL, fmtPct, MONTHS, OFFICE, parseNum } from '../utils/taxCalculations';
 import { ClientData, TaxResult } from '../types/fiscal';
 
-const F = 'Helvetica';
-const FB = 'Helvetica-Bold';
+// -- FONT REGISTRATION (Google Fonts) --
+Font.register({
+    family: 'Playfair Display',
+    src: 'https://fonts.gstatic.com/s/playfairdisplay/v30/nuFvL-vYSZtu_93TZChdd0596UC7Sxf-5_XRaX6JAnpX.ttf',
+    fontWeight: 'bold',
+});
 
+Font.register({
+    family: 'Plus Jakarta Sans',
+    fonts: [
+        { src: 'https://fonts.gstatic.com/s/plusjakartasans/v8/L0xPDF6m28PyEr_Ry9A.ttf', fontWeight: 'normal' },
+        { src: 'https://fonts.gstatic.com/s/plusjakartasans/v8/L0xHDF6m28PyEr_Ry9A.ttf', fontWeight: 'bold' },
+    ],
+});
+
+Font.register({
+    family: 'JetBrains Mono',
+    src: 'https://fonts.gstatic.com/s/jetbrainsmono/v18/t6nuV0Pdb_GGBA_V6RTr86_f.ttf',
+    fontWeight: 'normal',
+});
+
+// -- COLOR SYSTEM (Gilberto Negreiros Identity) --
 const C = {
-    dark:    '#0F2318',
-    dark2:   '#1A3828',
-    accent:  '#C9A227',
-    accent2: '#E5C35D',
-    white:   '#FFFFFF',
-    offWhite:'#F8FAFB',
-    slate:   '#64748B',
-    muted:   '#94A3B8',
-    border:  '#E2EBE4',
-    success: '#059669',
-    teal:    '#0D9488',
-    bg:      '#F6F8F7',
+    // Moss Green
+    primary: '#27500A',
+    primaryLight: '#3B6D11',
+    primarySoft: '#EAF3DE',
+    
+    // Gold/Amber
+    accent: '#BA7517',
+    accentDark: '#854F0B',
+    accentSoft: '#FAEEDA',
+    accentLight: '#FAC775',
+    
+    // Neutrals
+    headerBg: '#1C2B1A',
+    bodyBg: '#FFFFFF',
+    offWhite: '#F9FAFB',
+    text: '#2D3436',
+    textMuted: '#636E72',
+    border: '#E8E8E8',
 };
 
 const s = StyleSheet.create({
-    // --- PAGE ---
-    page: { fontFamily: F, color: C.dark, backgroundColor: C.white },
+    // --- GENERAL ---
+    page: { 
+        fontFamily: 'Plus Jakarta Sans', 
+        fontSize: 10, 
+        color: C.text, 
+        backgroundColor: C.bodyBg,
+        padding: 0
+    },
 
-    // --- COVER ---
-    coverBg: { flex: 1, backgroundColor: C.dark, flexDirection: 'column', justifyContent: 'space-between' },
-    coverTop: { paddingHorizontal: 60, paddingTop: 80, alignItems: 'center' },
-    coverMid: { paddingHorizontal: 60, alignItems: 'center', marginTop: 60 },
-    coverLabel: { fontSize: 9, letterSpacing: 4, textTransform: 'uppercase', color: C.accent, marginBottom: 16, fontFamily: FB },
-    coverClientName: { fontSize: 30, fontFamily: FB, color: C.white, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 0 },
-    coverDivider: { width: 60, height: 2, backgroundColor: C.accent, marginVertical: 30 },
-    coverPeriod: { fontSize: 12, color: 'rgba(255,255,255,0.5)', letterSpacing: 3, textTransform: 'uppercase' },
+    // --- CAPA / HEADER ---
+    cover: { 
+        height: '100%', 
+        backgroundColor: C.headerBg, 
+        paddingHorizontal: 60, 
+        paddingVertical: 80,
+        flexDirection: 'column',
+    },
+    coverLabel: { 
+        fontSize: 10, 
+        fontFamily: 'Plus Jakarta Sans',
+        fontWeight: 'bold',
+        color: C.accent, 
+        textTransform: 'uppercase', 
+        letterSpacing: 3,
+        marginBottom: 12,
+    },
+    coverTitle: { 
+        fontSize: 42, 
+        fontFamily: 'Playfair Display', 
+        fontWeight: 'bold',
+        color: '#FFFFFF', 
+        lineHeight: 1.1,
+    },
+    coverClient: {
+        fontSize: 22,
+        fontFamily: 'Playfair Display',
+        color: C.accentLight,
+        marginTop: 10,
+        textTransform: 'uppercase',
+    },
+    coverBadge: {
+        backgroundColor: 'rgba(59, 109, 17, 0.2)',
+        border: '1px solid rgba(59, 109, 17, 0.4)',
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 4,
+        alignSelf: 'flex-start',
+        marginTop: 40,
+    },
+    coverBadgeText: {
+        fontSize: 8,
+        fontWeight: 'bold',
+        color: C.primarySoft,
+        textTransform: 'uppercase',
+        letterSpacing: 2,
+    },
     coverFooter: {
-        paddingHorizontal: 60, paddingBottom: 50,
-        flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end',
-        borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.06)', borderTopStyle: 'solid', paddingTop: 28,
-        marginHorizontal: 60,
+        marginTop: 'auto',
+        borderTopWidth: 1,
+        borderTopColor: 'rgba(255,255,255,0.06)',
+        paddingTop: 30,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-end',
     },
 
-    // --- HEADER / FOOTER ---
-    pageHeader: {
-        backgroundColor: C.dark, paddingHorizontal: 50, paddingVertical: 32,
-        flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    },
-    pageFooter: {
-        position: 'absolute', bottom: 28, left: 50, right: 50,
-        flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-        paddingTop: 14, borderTopWidth: 1, borderTopStyle: 'solid', borderTopColor: C.border,
-    },
-    footerTxt: { fontSize: 7, color: C.muted, textTransform: 'uppercase', letterSpacing: 1 },
-
-    // --- CONTENT ---
-    contentPad: { paddingHorizontal: 50, paddingTop: 36, paddingBottom: 80 },
-
-    sectionTitle: {
-        fontSize: 8, fontFamily: FB, color: C.accent,
-        textTransform: 'uppercase', letterSpacing: 3,
-        marginBottom: 16, marginTop: 28,
-    },
-
-    // --- METRIC CARDS ---
-    metricsRow: { flexDirection: 'row' },
-    metricCard: {
-        flex: 1, backgroundColor: C.white,
-        borderRadius: 10, padding: 16,
-        borderWidth: 1, borderColor: C.border, borderStyle: 'solid',
-    },
-    metricCardDark: {
-        flex: 1, backgroundColor: C.dark,
-        borderRadius: 10, padding: 16,
-    },
-    metricLabel: { fontSize: 7, color: C.muted, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 8 },
-    metricValue: { fontSize: 18, fontFamily: FB, color: C.dark },
-    metricValueAccent: { fontSize: 18, fontFamily: FB, color: C.accent },
-
-    // --- TABLE ---
-    tableHeader: {
-        flexDirection: 'row', backgroundColor: C.dark,
-        paddingHorizontal: 12, paddingVertical: 10,
-        borderRadius: 8, marginBottom: 4,
-    },
-    tableRow: {
-        flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 11,
-        borderBottomWidth: 1, borderBottomColor: '#F0F4F2', borderBottomStyle: 'solid',
+    // --- MAIN CONTENT ---
+    innerHeader: {
+        backgroundColor: C.headerBg,
+        paddingHorizontal: 50,
+        paddingVertical: 30,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
     },
-    tableRowEven: { backgroundColor: C.bg },
-    th: { fontSize: 7, fontFamily: FB, color: C.accent, textTransform: 'uppercase', letterSpacing: 1 },
-    td: { fontSize: 9, color: C.dark },
-    tdMuted: { fontSize: 9, color: C.slate },
-    tdBold: { fontSize: 9.5, fontFamily: FB, color: C.dark },
-    totalRow: {
-        flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 14,
-        backgroundColor: C.dark, borderRadius: 8, marginTop: 6,
-        alignItems: 'center', justifyContent: 'space-between',
+    content: { paddingHorizontal: 50, paddingVertical: 40 },
+    sectionLabel: { 
+        fontSize: 8, 
+        fontWeight: 'bold', 
+        color: C.accent, 
+        textTransform: 'uppercase', 
+        letterSpacing: 2,
+        marginBottom: 18,
     },
 
-    // --- INDICATOR CARDS (Page 3) ---
-    indicatorCard: {
-        flex: 1, padding: 18, borderRadius: 10,
-        backgroundColor: '#FDFAF2',
-        borderLeftWidth: 4, borderLeftColor: C.accent, borderLeftStyle: 'solid',
-        borderWidth: 1, borderColor: '#F2E8C6', borderStyle: 'solid',
+    // --- KPI CARDS ---
+    metricsRow: { flexDirection: 'row', gap: 14, marginBottom: 40 },
+    kpiCard: { 
+        flex: 1, 
+        backgroundColor: C.offWhite, 
+        borderRadius: 8, 
+        padding: 18,
+        borderLeftWidth: 3,
+        borderLeftColor: C.primaryLight,
     },
-    indicatorValue: { fontSize: 22, fontFamily: FB, color: C.dark, marginBottom: 4 },
-    indicatorLabel: { fontSize: 7, color: C.slate, textTransform: 'uppercase', letterSpacing: 1.5 },
+    kpiLabel: { fontSize: 8, color: C.textMuted, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 },
+    kpiValue: { fontSize: 20, fontFamily: 'JetBrains Mono', color: C.primary },
+    kpiValueAccent: { fontSize: 20, fontFamily: 'JetBrains Mono', color: C.accent },
 
-    // --- MEMO BOX ---
-    memo: {
-        backgroundColor: C.offWhite, borderRadius: 10, padding: 20,
-        borderLeftWidth: 4, borderLeftColor: C.slate, borderLeftStyle: 'solid',
-        minHeight: 90,
+    // --- TABLE ---
+    tableRow: { 
+        flexDirection: 'row', 
+        borderBottomWidth: 1, 
+        borderBottomColor: C.border, 
+        paddingVertical: 12, 
+        paddingHorizontal: 8,
+        alignItems: 'center',
     },
-    memoText: { fontSize: 10, color: C.dark2, lineHeight: 1.65 },
+    thRow: { 
+        flexDirection: 'row', 
+        backgroundColor: '#F3F4F6', 
+        borderRadius: 4, 
+        paddingVertical: 8, 
+        paddingHorizontal: 8,
+        marginBottom: 4,
+    },
+    thText: { fontSize: 7, fontWeight: 'bold', color: C.textMuted, textTransform: 'uppercase', letterSpacing: 1 },
+    tdText: { fontSize: 9, color: C.text },
+    tdMono: { fontSize: 9, fontFamily: 'JetBrains Mono', color: C.text },
+    tdBold: { fontSize: 9, fontWeight: 'bold', color: C.primary },
 
-    // --- GLOSSARY ---
-    glossItem: {
-        marginBottom: 10, paddingBottom: 10,
-        borderBottomWidth: 1, borderBottomColor: '#EFF2F0', borderBottomStyle: 'solid',
+    // --- TOTAL DAS BAR ---
+    totalBar: {
+        backgroundColor: C.accentSoft,
+        borderRadius: 6,
+        padding: 16,
+        marginTop: 24,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        border: `1px solid ${C.accentLight}`,
     },
-    glossTerm: { fontSize: 9, fontFamily: FB, color: C.dark, marginBottom: 3 },
-    glossDef: { fontSize: 8, color: C.slate, lineHeight: 1.5 },
+    totalLabel: { fontSize: 10, fontWeight: 'bold', color: C.accentDark, textTransform: 'uppercase', letterSpacing: 2 },
+    totalValue: { fontSize: 24, fontFamily: 'JetBrains Mono', color: C.accentDark },
+
+    // --- MODALITY BADGES ---
+    badge: { 
+        paddingHorizontal: 8, 
+        paddingVertical: 3, 
+        borderRadius: 3, 
+        alignSelf: 'center',
+    },
+    badgeText: { fontSize: 7, fontWeight: 'bold', textTransform: 'uppercase' },
+
+    // --- INDICATORS & GLOSSARY ---
+    indicatorBox: { flex: 1, padding: 20, borderRadius: 8, border: `1px solid ${C.border}`, backgroundColor: '#FFFFFF' },
+    indicatorTitle: { fontSize: 26, fontFamily: 'Playfair Display', fontWeight: 'bold', color: C.primary, marginBottom: 4 },
+    glossaryBox: { 
+        marginTop: 40,
+        padding: 20,
+        backgroundColor: C.primarySoft,
+        borderRadius: 8,
+    },
+    glossRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 20 },
+    glossItem: { width: '30%', marginBottom: 15 },
+    glossLabel: { fontSize: 8, fontWeight: 'bold', color: C.primaryLight, marginBottom: 4 },
+    glossDesc: { fontSize: 7.5, color: '#445533', lineHeight: 1.4 },
+
+    footer: {
+        position: 'absolute',
+        bottom: 30,
+        left: 50,
+        right: 50,
+        borderTopWidth: 1,
+        borderTopColor: C.border,
+        paddingTop: 15,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    footerLabel: { fontSize: 7, color: C.textMuted, textTransform: 'uppercase', letterSpacing: 1 },
 });
 
-// -- Logo SVG
-const Logo = ({ size = 40, fill = C.accent }) => (
-    <Svg width={size} height={size} viewBox="0 0 100 100">
-        {/* Barras */}
-        <Rect x="22" y="50" width="18" height="35" rx="3" fill={fill} />
-        <Rect x="46" y="30" width="18" height="55" rx="3" fill={fill} fillOpacity={0.8} />
-        <Rect x="70" y="10" width="18" height="75" rx="3" fill={fill} fillOpacity={0.55} />
-        {/* Seta: V drop + diagonal */}
-        <Path
-            d="M 12 55 L 12 85 L 90 28"
-            stroke="#FFFFFF"
-            strokeWidth="5"
-            strokeOpacity="0.85"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            fill="none"
-        />
-        {/* Ponta da seta */}
-        <Path
-            d="M 74 28 L 90 28 L 84 43"
-            stroke="#FFFFFF"
-            strokeWidth="5"
-            strokeOpacity="0.85"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            fill="none"
-        />
+// -- Geometry SVGs --
+const Geometry = () => (
+    <Svg width="300" height="300" style={{ position: 'absolute', right: -50, top: -50, opacity: 0.15 }}>
+        <Circle cx="150" cy="150" r="140" stroke="#FFFFFF" strokeWidth="0.5" fill="none" />
+        <Circle cx="150" cy="150" r="110" stroke="#FFFFFF" strokeWidth="0.5" fill="none" />
+        <Path d="M 150 10 L 150 290" stroke="#FFFFFF" strokeWidth="0.5" strokeDasharray="5,5" />
+        <Path d="M 10 150 L 290 150" stroke="#FFFFFF" strokeWidth="0.5" strokeDasharray="5,5" />
     </Svg>
 );
 
+const ModalityBadge = ({ modality }: { modality: string }) => {
+    let bgColor = C.offWhite;
+    let textColor = C.textMuted;
 
-// -- Decorative SVG shape
-const Hex = ({ size = 120 }) => (
-    <Svg width={size} height={size} viewBox="0 0 100 100">
-        <Circle cx="50" cy="50" r="45" fill="none" stroke={C.accent} strokeWidth="0.7" strokeOpacity="0.15" />
-        <Circle cx="50" cy="50" r="30" fill="none" stroke={C.accent} strokeWidth="0.7" strokeOpacity="0.1" />
-    </Svg>
-);
+    if (modality.includes('ST') && modality.includes('Mono')) {
+        bgColor = '#E0F2FE'; textColor = '#0369A1'; // Blue
+    } else if (modality.includes('ST')) {
+        bgColor = '#FEF3C7'; textColor = '#92400E'; // Amber
+    } else if (modality.includes('Mono')) {
+        bgColor = '#D1FAE5'; textColor = '#065F46'; // Emerald
+    } else {
+        bgColor = '#F3F4F6'; textColor = '#374151'; // Gray
+    }
 
-const PageHeader = ({ title, sub }: { title: string, sub: string }) => (
-    <View style={s.pageHeader}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Logo size={32} />
-            <View style={{ marginLeft: 14 }}>
-                <Text style={{ fontSize: 18, fontFamily: FB, color: C.white, marginBottom: 3 }}>{title}</Text>
-                <Text style={{ fontSize: 9, color: C.accent, letterSpacing: 1.5, textTransform: 'uppercase' }}>{sub}</Text>
-            </View>
+    return (
+        <View style={[s.badge, { backgroundColor: bgColor }]}>
+            <Text style={[s.badgeText, { color: textColor }]}>{modality}</Text>
         </View>
-        <View style={{ alignItems: 'flex-end' }}>
-            <Text style={{ fontSize: 9, color: 'rgba(255,255,255,0.25)', letterSpacing: 1, textTransform: 'uppercase' }}>
-                {OFFICE.name}
-            </Text>
-        </View>
-    </View>
-);
-
-const PageFooter = ({ page }: { page: string }) => (
-    <View style={s.pageFooter} fixed>
-        <Text style={s.footerTxt}>{OFFICE.name}</Text>
-        <Text style={s.footerTxt}>Relatório de Apuração Fiscal   ·   {page}</Text>
-    </View>
-);
+    );
+};
 
 export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResult[] }) => {
     const taxList = taxes || [];
-    const totalRev = (data?.revenues || []).reduce((s, r) => s + parseNum(r.value), 0);
-    const totalTrib = taxList.reduce((s, t) => s + parseNum(t.value), 0);
-    const totalEfetivo = taxList
-        .filter(t => !String(t.tax).toUpperCase().includes('PARCELAMENTO'))
-        .reduce((s, t) => s + parseNum(t.value), 0);
-    const cargaEf = totalRev > 0 ? (totalEfetivo / totalRev) * 100 : 0;
+    const totalRev = (data?.revenues || []).reduce((sum, r) => sum + parseNum(r.value), 0);
+    const totalTrib = taxList.reduce((sum, t) => sum + parseNum(t.value), 0);
+    const cargaEf = totalRev > 0 ? (totalTrib / totalRev) * 100 : 0;
+    const faturamentoSobreImposto = totalTrib > 0 ? (totalRev / totalTrib).toFixed(1) : '0.0';
 
     const mi = parseInt(data?.compMonth || '1') - 1;
-    const month = MONTHS[mi >= 0 && mi < 12 ? mi : 0] || 'Janeiro';
+    const month = MONTHS[mi >= 0 && mi < 12 ? mi : 0] || 'Março';
     const year = data?.compYear || '2026';
 
-    const top = [...taxList].sort((a, b) => parseNum(b.value) - parseNum(a.value))[0];
-    const topName = top ? String(top.tax).split(' ')[0] : '—';
-    const leverage = totalTrib > 0 ? (totalRev / totalTrib) : 0;
-
     return (
-        <Document title={`Relatorio_${data.clientName}_${month}_${year}`}>
-
-            {/* ===================== PÁGINA 1: CAPA ===================== */}
+        <Document title={`Relatório Fiscal - ${data.clientName || 'Cliente'}`}>
+            
+            {/* --- PAGE 1: CAPA --- */}
             <Page size="A4" style={s.page}>
-                <View style={s.coverBg}>
-                    {/* Decorative circles top-right */}
-                    <View style={{ position: 'absolute', top: -20, right: -20 }}>
-                        <Hex size={200} />
+                <View style={s.cover}>
+                    <Geometry />
+                    <Text style={s.coverLabel}>Apuração Fiscal Mensal</Text>
+                    <Text style={s.coverTitle}>{OFFICE.name}</Text>
+                    <Text style={s.coverClient}>{data.clientName || 'Cliente'}</Text>
+
+                    <View style={s.coverBadge}>
+                        <Text style={s.coverBadgeText}>{data.regime || 'Simples Nacional'}</Text>
                     </View>
 
-                    {/* Logo + Title */}
-                    <View style={s.coverTop}>
-                        <Logo size={80} />
+                    <View style={{ marginTop: 60, gap: 10 }}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', width: 80 }}>COMPETÊNCIA</Text>
+                            <Text style={{ fontSize: 9, color: '#FFFFFF', fontWeight: 'bold' }}>{month} / {year}</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', width: 80 }}>RBT12</Text>
+                            <Text style={{ fontSize: 9, color: C.accentLight, fontWeight: 'bold' }}>{fmtBRL(parseNum(data.rbt12))}</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', width: 80 }}>VENCIMENTO</Text>
+                            <Text style={{ fontSize: 9, color: '#FFFFFF', fontWeight: 'bold' }}>20/{String(mi + 2).padStart(2, '0')}/{year}</Text>
+                        </View>
                     </View>
 
-                    <View style={s.coverMid}>
-                        <Text style={s.coverLabel}>Relatório de Apuração Fiscal</Text>
-                        <Text style={s.coverClientName}>{data.clientName?.toUpperCase() || 'CLIENTE'}</Text>
-                        <View style={s.coverDivider} />
-                        <Text style={s.coverPeriod}>Competência  {month} · {year}</Text>
-                    </View>
-
-                    <View style={{ flex: 1 }} />
-
-                    {/* KPI bar na capa */}
-                    <View style={{ marginHorizontal: 60, marginBottom: 30, flexDirection: 'row' }}>
-                        {[
-                            { label: 'RBT12', value: fmtBRL(parseNum(data.rbt12)) },
-                            { label: 'Regime', value: data.regime || 'Simples Nacional' },
-                            { label: 'Competência', value: `${month} / ${year}` },
-                        ].map((kpi, i) => (
-                            <View key={i} style={{
-                                flex: 1,
-                                marginRight: i < 2 ? 10 : 0,
-                                padding: 14,
-                                backgroundColor: 'rgba(255,255,255,0.05)',
-                                borderRadius: 10,
-                                borderWidth: 1, borderColor: 'rgba(255,255,255,0.07)', borderStyle: 'solid',
-                            }}>
-                                <Text style={{ fontSize: 7, color: C.accent, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 5 }}>{kpi.label}</Text>
-                                <Text style={{ fontSize: 11, fontFamily: FB, color: C.white }}>{kpi.value}</Text>
-                            </View>
-                        ))}
-                    </View>
-
-                    {/* Footer */}
                     <View style={s.coverFooter}>
                         <View>
-                            <Text style={{ fontSize: 11, fontFamily: FB, color: C.accent, letterSpacing: 1.5 }}>{OFFICE.name}</Text>
-                            <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.25)', marginTop: 4, letterSpacing: 1 }}>
-                                Relatório Gerado Automaticamente
-                            </Text>
+                            <Text style={{ fontSize: 8, color: C.accent, fontWeight: 'bold', letterSpacing: 1 }}>RELATÓRIO FINANCEIRO</Text>
+                            <Text style={{ fontSize: 7, color: 'rgba(255,255,255,0.2)', marginTop: 4 }}>Gerado automaticamente pelo Motor Fiscal Pro</Text>
                         </View>
-                        <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.2)', letterSpacing: 1, textTransform: 'uppercase' }}>
-                            CONFIDENCIAL
-                        </Text>
+                        <Text style={{ fontSize: 8, color: 'rgba(255,255,255,0.3)', letterSpacing: 2 }}>CONFIDENCIAL</Text>
                     </View>
                 </View>
             </Page>
 
-            {/* ===================== PÁGINA 2: DETALHAMENTO ===================== */}
+            {/* --- PAGE 2: DEMONSTRATIVO --- */}
             <Page size="A4" style={s.page}>
-                <PageHeader
-                    title="Detalhamento Tributário"
-                    sub={`${month} ${year}  ·  ${data.clientName}`}
-                />
+                <View style={s.innerHeader}>
+                    <View>
+                        <Text style={{ fontSize: 16, fontFamily: 'Playfair Display', fontWeight: 'bold', color: '#FFFFFF' }}>Detalhamento Mensal</Text>
+                        <Text style={{ fontSize: 8, color: C.accent, letterSpacing: 2 }}>{data.clientName} · {month}/{year}</Text>
+                    </View>
+                    <View style={{ alignItems: 'flex-end' }}>
+                        <Text style={{ fontSize: 7, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase' }}>Cód. Cliente: #4269</Text>
+                    </View>
+                </View>
 
-                <View style={s.contentPad}>
-                    {/* Metrics row */}
-                    <Text style={s.sectionTitle}>Métricas de Faturamento</Text>
+                <View style={s.content}>
+                    <Text style={s.sectionLabel}>Indicadores Chave</Text>
                     <View style={s.metricsRow}>
-                        <View style={[s.metricCard, { marginRight: 12 }]}>
-                            <Text style={s.metricLabel}>Receita do Mês</Text>
-                            <Text style={s.metricValue}>{fmtBRL(totalRev)}</Text>
+                        <View style={s.kpiCard}>
+                            <Text style={s.kpiLabel}>Receita do Mês</Text>
+                            <Text style={s.kpiValue}>{fmtBRL(totalRev)}</Text>
                         </View>
-                        <View style={[s.metricCard, { marginRight: 12 }]}>
-                            <Text style={s.metricLabel}>RBT – Acum. 12 Meses</Text>
-                            <Text style={s.metricValue}>{fmtBRL(parseNum(data.rbt12))}</Text>
+                        <View style={[s.kpiCard, { borderLeftColor: C.accent }]}>
+                            <Text style={s.kpiLabel}>Total a Recolher</Text>
+                            <Text style={s.kpiValueAccent}>{fmtBRL(totalTrib)}</Text>
                         </View>
-                        <View style={s.metricCardDark}>
-                            <Text style={[s.metricLabel, { color: 'rgba(255,255,255,0.3)' }]}>Total a Recolher</Text>
-                            <Text style={s.metricValueAccent}>{fmtBRL(totalTrib)}</Text>
+                        <View style={s.kpiCard}>
+                            <Text style={s.kpiLabel}>Carga Efetiva</Text>
+                            <Text style={[s.kpiValue, { color: C.primaryLight }]}>{fmtPct(cargaEf)}</Text>
                         </View>
                     </View>
 
-                    {/* Table */}
-                    <Text style={s.sectionTitle}>Cálculo Consolidado de Tributos</Text>
-                    <View style={s.tableHeader}>
-                        <Text style={[s.th, { flex: 4 }]}>Tributo / Descrição</Text>
-                        <Text style={[s.th, { flex: 1.2, textAlign: 'center' }]}>Alíq.</Text>
-                        <Text style={[s.th, { flex: 2, textAlign: 'right' }]}>Base</Text>
-                        <Text style={[s.th, { flex: 1.8, textAlign: 'center' }]}>Venc.</Text>
-                        <Text style={[s.th, { flex: 2, textAlign: 'right' }]}>Valor</Text>
+                    <Text style={s.sectionLabel}>Demonstrativo de Tributos</Text>
+                    <View style={s.thRow}>
+                        <Text style={[s.thText, { flex: 3.5 }]}>Descrição do Tributo</Text>
+                        <Text style={[s.thText, { flex: 1.5, textAlign: 'center' }]}>Modalidade</Text>
+                        <Text style={[s.thText, { flex: 1.2, textAlign: 'right' }]}>Alíq.</Text>
+                        <Text style={[s.thText, { flex: 1.8, textAlign: 'right' }]}>Valor Bruto</Text>
                     </View>
 
-                    {taxList.map((t, i) => (
-                        <View key={i} style={[s.tableRow, i % 2 === 1 ? s.tableRowEven : {}]} wrap={false}>
-                            <View style={{ flex: 4, flexDirection: 'row', alignItems: 'center' }}>
-                                <View style={{ width: 3, height: 18, borderRadius: 2, backgroundColor: C.accent, marginRight: 8 }} />
-                                <Text style={s.tdBold}>{t.tax}</Text>
+                    {taxList.map((t, idx) => {
+                        const isNormal = t.tax.includes('Normal');
+                        const isST = t.modality?.includes('ST') || t.tax.includes('ST');
+                        const isMono = t.modality?.includes('Mono') || t.tax.includes('Mono');
+                        
+                        let label = 'Normal';
+                        if (isST && isMono) label = 'ST + Mono';
+                        else if (isST) label = 'ICMS-ST';
+                        else if (isMono) label = 'Monofásico';
+
+                        return (
+                            <View key={idx} style={s.tableRow} wrap={false}>
+                                <Text style={[s.tdBold, { flex: 3.5 }]}>{t.tax}</Text>
+                                <View style={{ flex: 1.5, alignItems: 'center' }}>
+                                    <ModalityBadge modality={label} />
+                                </View>
+                                <Text style={[s.tdMono, { flex: 1.2, textAlign: 'right' }]}>{t.rate}%</Text>
+                                <Text style={[s.tdMono, { flex: 1.8, textAlign: 'right' }]}>{t.value}</Text>
                             </View>
-                            <Text style={[s.tdMuted, { flex: 1.2, textAlign: 'center' }]}>{t.rate}%</Text>
-                            <Text style={[s.tdMuted, { flex: 2, textAlign: 'right' }]}>{t.base}</Text>
-                            <Text style={[s.tdMuted, { flex: 1.8, textAlign: 'center' }]}>{t.dueDate}</Text>
-                            <Text style={[s.tdBold, { flex: 2, textAlign: 'right' }]}>{t.value}</Text>
-                        </View>
-                    ))}
+                        );
+                    })}
 
-                    <View style={s.totalRow}>
-                        <Text style={{ fontSize: 10, fontFamily: FB, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: 2 }}>
-                            Guia Única Consolidada
-                        </Text>
-                        <Text style={{ fontSize: 22, fontFamily: FB, color: C.accent }}>{fmtBRL(totalTrib)}</Text>
+                    <View style={s.totalBar}>
+                        <View>
+                            <Text style={s.totalLabel}>Guia Única DAS (Total)</Text>
+                            <Text style={{ fontSize: 8, color: C.accentDark, marginTop: 4 }}>Vencimento: 20/{String(mi + 2).padStart(2, '0')}/{year}</Text>
+                        </View>
+                        <Text style={s.totalValue}>{fmtBRL(totalTrib)}</Text>
                     </View>
                 </View>
 
-                <PageFooter page="Pág. 2 / 3" />
+                <View style={s.footer}>
+                    <Text style={s.footerLabel}>{OFFICE.name}  ·  CRCES 1234/O</Text>
+                    <Text style={s.footerLabel}>Pagina 2 / 3</Text>
+                </View>
             </Page>
 
-            {/* ===================== PÁGINA 3: INSIGHTS + GLOSSÁRIO ===================== */}
+            {/* --- PAGE 3: INSIGHTS --- */}
             <Page size="A4" style={s.page}>
-                <PageHeader
-                    title="Indicadores e Glossário"
-                    sub={`${month} ${year}  ·  ${data.clientName}`}
-                />
+                <View style={s.innerHeader}>
+                    <View>
+                        <Text style={{ fontSize: 16, fontFamily: 'Playfair Display', fontWeight: 'bold', color: '#FFFFFF' }}>Performance & Insights</Text>
+                        <Text style={{ fontSize: 8, color: C.accent, letterSpacing: 2 }}>Análise Fiscal Proativa</Text>
+                    </View>
+                </View>
 
-                <View style={s.contentPad}>
-                    {/* Indicator cards */}
-                    <Text style={s.sectionTitle}>Performance Fiscal do Período</Text>
-                    <View style={{ flexDirection: 'row' }}>
-                        <View style={[s.indicatorCard, { marginRight: 12 }]}>
-                            <Text style={s.indicatorValue}>{fmtPct(cargaEf)}</Text>
-                            <Text style={s.indicatorLabel}>Carga Tributária Efetiva</Text>
+                <View style={s.content}>
+                    <Text style={s.sectionLabel}>Resultados Analíticos</Text>
+                    <View style={{ flexDirection: 'row', gap: 14 }}>
+                        <View style={s.indicatorBox}>
+                            <Text style={s.indicatorTitle}>{fmtPct(cargaEf)}</Text>
+                            <Text style={{ fontSize: 8, color: C.textMuted, textTransform: 'uppercase', letterSpacing: 1 }}>Carga Tributária Efetiva</Text>
                         </View>
-                        <View style={[s.indicatorCard, { marginRight: 12 }]}>
-                            <Text style={s.indicatorValue}>{topName}</Text>
-                            <Text style={s.indicatorLabel}>Maior Imposto do Mês</Text>
-                        </View>
-                        <View style={s.indicatorCard}>
-                            <Text style={s.indicatorValue}>{leverage.toFixed(1)}×</Text>
-                            <Text style={s.indicatorLabel}>Faturamento / Impostos</Text>
+                        <View style={s.indicatorBox}>
+                            <Text style={s.indicatorTitle}>{faturamentoSobreImposto}x</Text>
+                            <Text style={{ fontSize: 8, color: C.textMuted, textTransform: 'uppercase', letterSpacing: 1 }}>Índice Fat. / Impostos</Text>
                         </View>
                     </View>
 
-                    {/* Observations */}
-                    <Text style={s.sectionTitle}>Observações Estratégicas</Text>
-                    <View style={s.memo}>
-                        <Text style={s.memoText}>
-                            {data.observations ||
-                                'Nenhuma observação estratégica registrada para este ciclo. Siga as orientações padrão do escritório e acompanhe as guias de recolhimento nos prazos indicados.'}
+                    <Text style={[s.sectionLabel, { marginTop: 40 }]}>Observações Estratégicas</Text>
+                    <View style={{ padding: 20, backgroundColor: C.offWhite, borderRadius: 8, borderLeftWidth: 3, borderLeftColor: C.accent }}>
+                        <Text style={{ fontSize: 10, lineHeight: 1.6, color: C.text }}>
+                            {data.observations || "Nenhuma observação específica registrada para este período financeiro. Recomenda-se a manutenção do planejamento tributário vigente."}
                         </Text>
                     </View>
 
-                    {/* Glossary */}
-                    <Text style={s.sectionTitle}>Glossário Técnico-Fiscal</Text>
-                    {[
-                        ['DAS', 'Documento de Arrecadação do Simples Nacional — guia unificada de todos os tributos do Simples.'],
-                        ['CARGA EFETIVA', 'Percentual real de impostos pagos sobre o total do faturamento bruto do período.'],
-                        ['RBT12', 'Receita Bruta Total dos últimos 12 meses, usada para definir a faixa e alíquota do Simples Nacional.'],
-                        ['PIS/COFINS MONOFÁSICO', 'Modalidade em que o recolhimento é feito apenas pelo fabricante/importador, isentando as etapas seguintes.'],
-                        ['ICMS ST', 'Substituição Tributária — o recolhimento do ICMS é antecipado para o início da cadeia de produção e distribuição.'],
-                    ].map(([t, d]) => (
-                        <View key={t} style={s.glossItem}>
-                            <Text style={s.glossTerm}>{t}</Text>
-                            <Text style={s.glossDef}>{d}</Text>
+                    <View style={s.glossaryBox}>
+                        <Text style={{ fontSize: 9, fontWeight: 'bold', color: C.primary, marginBottom: 15, textTransform: 'uppercase', letterSpacing: 1 }}>Glossário Técnico-Fiscal</Text>
+                        <View style={s.glossRow}>
+                            <View style={s.glossItem}>
+                                <Text style={s.glossLabel}>DAS</Text>
+                                <Text style={s.glossDesc}>Documento de Arrecadação do Simples Nacional que consolida tributos.</Text>
+                            </View>
+                            <View style={s.glossItem}>
+                                <Text style={s.glossLabel}>RBT12</Text>
+                                <Text style={s.glossDesc}>Receita Bruta Acumulada nos últimos 12 meses anteriores à apuração.</Text>
+                            </View>
+                            <View style={s.glossItem}>
+                                <Text style={s.glossLabel}>ICMS-ST</Text>
+                                <Text style={s.glossDesc}>Substituição Tributária onde o imposto é recolhido antecipadamente.</Text>
+                            </View>
+                            <View style={s.glossItem}>
+                                <Text style={s.glossLabel}>Monofásico</Text>
+                                <Text style={s.glossDesc}>Incidência única de tributos federais no início da cadeia produtiva.</Text>
+                            </View>
+                            <View style={s.glossItem}>
+                                <Text style={s.glossLabel}>Carga Efetiva</Text>
+                                <Text style={s.glossDesc}>Custo real de impostos em relação ao faturamento bruto operacional.</Text>
+                            </View>
                         </View>
-                    ))}
+                    </View>
+
+                    <View style={{ marginTop: 40, alignItems: 'center' }}>
+                        <Svg width="40" height="2" viewBox="0 0 40 2">
+                            <Rect width="40" height="2" fill={C.border} />
+                        </Svg>
+                        <Text style={{ fontSize: 7, color: C.textMuted, marginTop: 10, textAlign: 'center' }}>
+                            Este relatório é de caráter informativo e confidencial. Seu conteúdo baseia-se nas informações fornecidas pelo cliente e na legislação tributária vigente na data de sua geração.
+                        </Text>
+                    </View>
                 </View>
 
-                <PageFooter page="Pág. 3 / 3" />
+                <View style={s.footer}>
+                    <Text style={s.footerLabel}>Relatório gerado automaticamente</Text>
+                    <Text style={s.footerLabel}>Pagina 3 / 3</Text>
+                </View>
             </Page>
         </Document>
     );
