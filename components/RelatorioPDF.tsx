@@ -356,3 +356,4 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
         </Document>
     );
 };
+// force update 
