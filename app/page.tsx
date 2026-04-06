@@ -415,7 +415,7 @@ export default function Home() {
                             )}
                             
                             {isClient && pdfDocument && (
-                                <PDFViewer width="100%" height="100%" style={{ border: 'none' }} className="relative z-10" title="Visualizador do Relatório em PDF">
+                                <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
                                     {pdfDocument}
                                 </PDFViewer>
                             )}
