@@ -6,25 +6,10 @@ import { fmtBRL, fmtPct, MONTHS, OFFICE, parseNum } from '../utils/taxCalculatio
 import { ClientData, TaxResult } from '../types/fiscal';
 
 // -- FONT REGISTRATION (Google Fonts) --
-Font.register({
-    family: 'Playfair Display',
-    src: 'https://fonts.gstatic.com/s/playfairdisplay/v30/nuFvL-vYSZtu_93TZChdd0596UC7Sxf-5_XRaX6JAnpX.ttf',
-    fontWeight: 'bold',
-});
-
-Font.register({
-    family: 'Plus Jakarta Sans',
-    fonts: [
-        { src: 'https://fonts.gstatic.com/s/plusjakartasans/v8/L0xPDF6m28PyEr_Ry9A.ttf', fontWeight: 'normal' },
-        { src: 'https://fonts.gstatic.com/s/plusjakartasans/v8/L0xHDF6m28PyEr_Ry9A.ttf', fontWeight: 'bold' },
-    ],
-});
-
-Font.register({
-    family: 'JetBrains Mono',
-    src: 'https://fonts.gstatic.com/s/jetbrainsmono/v18/t6nuV0Pdb_GGBA_V6RTr86_f.ttf',
-    fontWeight: 'normal',
-});
+// Fontes customizadas via URL externa estavam retornando WOFF2 ou 404, engasgando o PDF rendering nativo.
+// Por estabilidade e para gerar o relatório imediatamente, o sistema faz fallback para as fontes serifs/sans
+// nativas e padrão de altíssima qualidade do próprio PDF render (Times-Roman, Helvetica, Courier).
+// Para fontes customizadas futuramente, baixe os .ttf na pasta /public.
 
 // -- COLOR SYSTEM (Gilberto Negreiros Identity) --
 const C = {
@@ -51,7 +36,7 @@ const C = {
 const s = StyleSheet.create({
     // --- GENERAL ---
     page: { 
-        fontFamily: 'Plus Jakarta Sans', 
+        fontFamily: 'Helvetica', 
         fontSize: 10, 
         color: C.text, 
         backgroundColor: C.bodyBg,
@@ -68,7 +53,7 @@ const s = StyleSheet.create({
     },
     coverLabel: { 
         fontSize: 10, 
-        fontFamily: 'Plus Jakarta Sans',
+        fontFamily: 'Helvetica-Bold',
         fontWeight: 'bold',
         color: C.accent, 
         textTransform: 'uppercase', 
@@ -77,14 +62,14 @@ const s = StyleSheet.create({
     },
     coverTitle: { 
         fontSize: 42, 
-        fontFamily: 'Playfair Display', 
+        fontFamily: 'Times-Bold', 
         fontWeight: 'bold',
         color: '#FFFFFF', 
         lineHeight: 1.1,
     },
     coverClient: {
         fontSize: 22,
-        fontFamily: 'Playfair Display',
+        fontFamily: 'Times-Bold',
         color: C.accentLight,
         marginTop: 10,
         textTransform: 'uppercase',
@@ -148,8 +133,8 @@ const s = StyleSheet.create({
         marginHorizontal: 7,
     },
     kpiLabel: { fontSize: 8, color: C.textMuted, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 },
-    kpiValue: { fontSize: 20, fontFamily: 'JetBrains Mono', color: C.primary },
-    kpiValueAccent: { fontSize: 20, fontFamily: 'JetBrains Mono', color: C.accent },
+    kpiValue: { fontSize: 20, fontFamily: 'Courier-Bold', color: C.primary },
+    kpiValueAccent: { fontSize: 20, fontFamily: 'Courier-Bold', color: C.accent },
 
     // --- TABLE ---
     tableRow: { 
@@ -170,7 +155,7 @@ const s = StyleSheet.create({
     },
     thText: { fontSize: 7, fontWeight: 'bold', color: C.textMuted, textTransform: 'uppercase', letterSpacing: 1 },
     tdText: { fontSize: 9, color: C.text },
-    tdMono: { fontSize: 9, fontFamily: 'JetBrains Mono', color: C.text },
+    tdMono: { fontSize: 9, fontFamily: 'Courier', color: C.text },
     tdBold: { fontSize: 9, fontWeight: 'bold', color: C.primary },
 
     // --- TOTAL DAS BAR ---
@@ -187,7 +172,7 @@ const s = StyleSheet.create({
         borderColor: C.accentLight,
     },
     totalLabel: { fontSize: 10, fontWeight: 'bold', color: C.accentDark, textTransform: 'uppercase', letterSpacing: 2 },
-    totalValue: { fontSize: 24, fontFamily: 'JetBrains Mono', color: C.accentDark },
+    totalValue: { fontSize: 24, fontFamily: 'Courier-Bold', color: C.accentDark },
 
     // --- MODALITY BADGES ---
     badge: { 
@@ -200,7 +185,7 @@ const s = StyleSheet.create({
 
     // --- INDICATORS & GLOSSARY ---
     indicatorBox: { flex: 1, padding: 20, borderRadius: 8, borderWidth: 1, borderStyle: 'solid', borderColor: C.border, backgroundColor: '#FFFFFF' },
-    indicatorTitle: { fontSize: 26, fontFamily: 'Playfair Display', fontWeight: 'bold', color: C.primary, marginBottom: 4 },
+    indicatorTitle: { fontSize: 26, fontFamily: 'Times-Bold', fontWeight: 'bold', color: C.primary, marginBottom: 4 },
     glossaryBox: { 
         marginTop: 40,
         padding: 20,
@@ -312,7 +297,7 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
             <Page size="A4" style={s.page}>
                 <View style={s.innerHeader}>
                     <View>
-                        <Text style={{ fontSize: 16, fontFamily: 'Playfair Display', fontWeight: 'bold', color: '#FFFFFF' }}>Detalhamento Mensal</Text>
+                        <Text style={{ fontSize: 16, fontFamily: 'Times-Bold', fontWeight: 'bold', color: '#FFFFFF' }}>Detalhamento Mensal</Text>
                         <Text style={{ fontSize: 8, color: C.accent, letterSpacing: 2 }}>{data.clientName} · {month}/{year}</Text>
                     </View>
                     <View style={{ alignItems: 'flex-end' }}>
@@ -387,7 +372,7 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
             <Page size="A4" style={s.page}>
                 <View style={s.innerHeader}>
                     <View>
-                        <Text style={{ fontSize: 16, fontFamily: 'Playfair Display', fontWeight: 'bold', color: '#FFFFFF' }}>Performance & Insights</Text>
+                        <Text style={{ fontSize: 16, fontFamily: 'Times-Bold', fontWeight: 'bold', color: '#FFFFFF' }}>Performance & Insights</Text>
                         <Text style={{ fontSize: 8, color: C.accent, letterSpacing: 2 }}>Análise Fiscal Proativa</Text>
                     </View>
                 </View>
