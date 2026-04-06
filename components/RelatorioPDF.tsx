@@ -91,7 +91,9 @@ const s = StyleSheet.create({
     },
     coverBadge: {
         backgroundColor: 'rgba(59, 109, 17, 0.2)',
-        border: '1px solid rgba(59, 109, 17, 0.4)',
+        borderWidth: 1,
+        borderStyle: 'solid',
+        borderColor: 'rgba(59, 109, 17, 0.4)',
         paddingHorizontal: 12,
         paddingVertical: 6,
         borderRadius: 4,
@@ -135,7 +137,7 @@ const s = StyleSheet.create({
     },
 
     // --- KPI CARDS ---
-    metricsRow: { flexDirection: 'row', gap: 14, marginBottom: 40 },
+    metricsRow: { flexDirection: 'row', marginBottom: 40, justifyContent: 'space-between' },
     kpiCard: { 
         flex: 1, 
         backgroundColor: C.offWhite, 
@@ -143,6 +145,7 @@ const s = StyleSheet.create({
         padding: 18,
         borderLeftWidth: 3,
         borderLeftColor: C.primaryLight,
+        marginHorizontal: 7,
     },
     kpiLabel: { fontSize: 8, color: C.textMuted, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 },
     kpiValue: { fontSize: 20, fontFamily: 'JetBrains Mono', color: C.primary },
@@ -179,7 +182,9 @@ const s = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        border: `1px solid ${C.accentLight}`,
+        borderWidth: 1,
+        borderStyle: 'solid',
+        borderColor: C.accentLight,
     },
     totalLabel: { fontSize: 10, fontWeight: 'bold', color: C.accentDark, textTransform: 'uppercase', letterSpacing: 2 },
     totalValue: { fontSize: 24, fontFamily: 'JetBrains Mono', color: C.accentDark },
@@ -194,7 +199,7 @@ const s = StyleSheet.create({
     badgeText: { fontSize: 7, fontWeight: 'bold', textTransform: 'uppercase' },
 
     // --- INDICATORS & GLOSSARY ---
-    indicatorBox: { flex: 1, padding: 20, borderRadius: 8, border: `1px solid ${C.border}`, backgroundColor: '#FFFFFF' },
+    indicatorBox: { flex: 1, padding: 20, borderRadius: 8, borderWidth: 1, borderStyle: 'solid', borderColor: C.border, backgroundColor: '#FFFFFF' },
     indicatorTitle: { fontSize: 26, fontFamily: 'Playfair Display', fontWeight: 'bold', color: C.primary, marginBottom: 4 },
     glossaryBox: { 
         marginTop: 40,
@@ -202,7 +207,7 @@ const s = StyleSheet.create({
         backgroundColor: C.primarySoft,
         borderRadius: 8,
     },
-    glossRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 20 },
+    glossRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
     glossItem: { width: '30%', marginBottom: 15 },
     glossLabel: { fontSize: 8, fontWeight: 'bold', color: C.primaryLight, marginBottom: 4 },
     glossDesc: { fontSize: 7.5, color: '#445533', lineHeight: 1.4 },
@@ -278,12 +283,12 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
                         <Text style={s.coverBadgeText}>{data.regime || 'Simples Nacional'}</Text>
                     </View>
 
-                    <View style={{ marginTop: 60, gap: 10 }}>
-                        <View style={{ flexDirection: 'row' }}>
+                    <View style={{ marginTop: 60 }}>
+                        <View style={{ flexDirection: 'row', marginBottom: 10 }}>
                             <Text style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', width: 80 }}>COMPETÊNCIA</Text>
                             <Text style={{ fontSize: 9, color: '#FFFFFF', fontWeight: 'bold' }}>{month} / {year}</Text>
                         </View>
-                        <View style={{ flexDirection: 'row' }}>
+                        <View style={{ flexDirection: 'row', marginBottom: 10 }}>
                             <Text style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', width: 80 }}>RBT12</Text>
                             <Text style={{ fontSize: 9, color: C.accentLight, fontWeight: 'bold' }}>{fmtBRL(parseNum(data.rbt12))}</Text>
                         </View>
@@ -341,9 +346,10 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
                     </View>
 
                     {taxList.map((t, idx) => {
-                        const isNormal = t.tax.toUpperCase().includes('NORMAL');
-                        const isST = t.tax.toUpperCase().includes('ST');
-                        const isMono = t.tax.toUpperCase().includes('MONO');
+                        const taxDesc = t.tax || '';
+                        const isNormal = taxDesc.toUpperCase().includes('NORMAL');
+                        const isST = taxDesc.toUpperCase().includes('ST');
+                        const isMono = taxDesc.toUpperCase().includes('MONO');
                         
                         let label = 'Normal';
                         if (isST && isMono) label = 'ST + Mono';
@@ -388,12 +394,12 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
 
                 <View style={s.content}>
                     <Text style={s.sectionLabel}>Resultados Analíticos</Text>
-                    <View style={{ flexDirection: 'row', gap: 14 }}>
-                        <View style={s.indicatorBox}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <View style={[s.indicatorBox, { marginRight: 7 }]}>
                             <Text style={s.indicatorTitle}>{fmtPct(cargaEf)}</Text>
                             <Text style={{ fontSize: 8, color: C.textMuted, textTransform: 'uppercase', letterSpacing: 1 }}>Carga Tributária Efetiva</Text>
                         </View>
-                        <View style={s.indicatorBox}>
+                        <View style={[s.indicatorBox, { marginLeft: 7 }]}>
                             <Text style={s.indicatorTitle}>{faturamentoSobreImposto}x</Text>
                             <Text style={{ fontSize: 8, color: C.textMuted, textTransform: 'uppercase', letterSpacing: 1 }}>Índice Fat. / Impostos</Text>
                         </View>
