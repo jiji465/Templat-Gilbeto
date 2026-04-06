@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Page, Text, View, Document, StyleSheet, Svg, Path, Rect, Circle } from '@react-pdf/renderer';
-import { fmtBRL, fmtPct, MONTHS, OFFICE, parseNum } from '../utils/taxCalculations';
+import { fmtBRL, fmtPct, MONTHS, OFFICE, parseNum, VERSION } from '../utils/taxCalculations';
 import { ClientData, TaxResult } from '../types/fiscal';
 
 // -- FONT DEFINITION (Using native High-Quality PDF Fonts) --
