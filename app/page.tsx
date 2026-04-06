@@ -130,13 +130,17 @@ export default function Home() {
 
     return (
         <div className="min-h-screen" style={{ background: 'var(--bg)' }}>
+            <a href="#main-content" className="skip-to-content">
+                Pular para o conteúdo principal
+            </a>
+            
             <Header clearData={clearData} copyWpp={copyWpp} copied={copied} />
 
             {/* Page content */}
-            <main className="max-w-[1440px] mx-auto px-8 py-8">
+            <main id="main-content" className="max-w-[1440px] mx-auto px-8 py-8 animate-fadeInUp">
 
                 {activeTab === 'form' ? (
-                    <>
+                    <div className="animate-scaleIn" style={{ animationDuration: '0.4s' }}>
                         <KpiCards totalRev={totalRev} totalTrib={totalTrib} cargaEf={cargaEf} totalEcon={totalEcon} />
 
                         <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 items-start">
@@ -144,45 +148,55 @@ export default function Home() {
                             {/* Left column */}
                             <div className="space-y-6">
                                 {/* Client Profile */}
-                                <div className="card">
+                                <section className="card animate-fadeInUp mb-6" aria-labelledby="profile-heading" style={{ animationDelay: '0.1s' }}>
                                     <div className="card-header">
-                                        <div className="section-heading">
-                                            <div className="w-7 h-7 rounded-lg flex items-center justify-center"
-                                                 style={{ background: 'var(--primary)' }}>
-                                                <Building2 className="w-3.5 h-3.5" style={{ color: 'var(--accent)' }} />
+                                        <h2 id="profile-heading" className="section-heading m-0">
+                                            <div className="section-icon shadow-md">
+                                                <Building2 className="w-3.5 h-3.5 relative z-10" style={{ color: 'var(--accent)' }} aria-hidden="true" />
                                             </div>
                                             Perfil do Cliente
-                                        </div>
+                                        </h2>
                                     </div>
                                     <div className="card-body">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             {/* Left */}
                                             <div className="space-y-4">
-                                                <div>
-                                                    <label className="field-label">
-                                                        <Building2 style={{ display: 'inline', width: 10, height: 10, marginRight: 4 }} />
+                                                <div className="input-wrapper">
+                                                    <label htmlFor="clientName" className="field-label">
+                                                        <Building2 style={{ display: 'inline', width: 10, height: 10, marginRight: 4 }} aria-hidden="true" />
                                                         Razão Social / Nome
                                                     </label>
-                                                    <input type="text" className="input-premium"
+                                                    <input 
+                                                        id="clientName"
+                                                        type="text" 
+                                                        className="input-premium focus-ring"
                                                         placeholder="Nome da empresa ou pessoa..."
                                                         value={clientData.clientName}
-                                                        onChange={e => updateClient('clientName', e.target.value)} />
+                                                        onChange={e => updateClient('clientName', e.target.value)} 
+                                                    />
                                                 </div>
-                                                <div>
-                                                    <label className="field-label">
-                                                        <Hash style={{ display: 'inline', width: 10, height: 10, marginRight: 4 }} />
+                                                <div className="input-wrapper">
+                                                    <label htmlFor="cnpj" className="field-label">
+                                                        <Hash style={{ display: 'inline', width: 10, height: 10, marginRight: 4 }} aria-hidden="true" />
                                                         CNPJ
                                                     </label>
-                                                    <input type="text" className="input-premium"
+                                                    <input 
+                                                        id="cnpj"
+                                                        type="text" 
+                                                        className="input-premium focus-ring"
                                                         placeholder="00.000.000/0001-00"
                                                         value={clientData.cnpj}
-                                                        onChange={e => updateClient('cnpj', fmtCNPJ(e.target.value))} />
+                                                        onChange={e => updateClient('cnpj', fmtCNPJ(e.target.value))} 
+                                                    />
                                                 </div>
-                                                <div>
-                                                    <label className="field-label">Regime Tributário</label>
-                                                    <select className="input-premium"
+                                                <div className="input-wrapper">
+                                                    <label htmlFor="regime" className="field-label">Regime Tributário</label>
+                                                    <select 
+                                                        id="regime"
+                                                        className="input-premium focus-ring"
                                                         value={clientData.regime}
-                                                        onChange={e => updateClient('regime', e.target.value)}>
+                                                        onChange={e => updateClient('regime', e.target.value)}
+                                                    >
                                                         <option>Simples Nacional</option>
                                                         <option>Lucro Presumido</option>
                                                         <option>Lucro Real</option>
@@ -193,38 +207,50 @@ export default function Home() {
                                             {/* Right */}
                                             <div className="space-y-4">
                                                 <div className="grid grid-cols-2 gap-4">
-                                                    <div>
-                                                        <label className="field-label">
-                                                            <CalendarDays style={{ display: 'inline', width: 10, height: 10, marginRight: 4 }} />
+                                                    <div className="input-wrapper">
+                                                        <label htmlFor="compMonth" className="field-label">
+                                                            <CalendarDays style={{ display: 'inline', width: 10, height: 10, marginRight: 4 }} aria-hidden="true" />
                                                             Mês
                                                         </label>
-                                                        <select className="input-premium"
+                                                        <select 
+                                                            id="compMonth"
+                                                            className="input-premium focus-ring"
                                                             value={clientData.compMonth}
-                                                            onChange={e => updateClient('compMonth', e.target.value)}>
+                                                            onChange={e => updateClient('compMonth', e.target.value)}
+                                                        >
                                                             {MONTHS.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
                                                         </select>
                                                     </div>
-                                                    <div>
-                                                        <label className="field-label">Ano</label>
-                                                        <input type="number" className="input-premium"
+                                                    <div className="input-wrapper">
+                                                        <label htmlFor="compYear" className="field-label">Ano</label>
+                                                        <input 
+                                                            id="compYear"
+                                                            type="number" 
+                                                            className="input-premium focus-ring"
                                                             value={clientData.compYear}
-                                                            onChange={e => updateClient('compYear', e.target.value)} />
+                                                            onChange={e => updateClient('compYear', e.target.value)} 
+                                                        />
                                                     </div>
                                                 </div>
-                                                <div>
-                                                    <label className="field-label">
-                                                        <BarChart3 style={{ display: 'inline', width: 10, height: 10, marginRight: 4 }} />
-                                                        RBT12 — Receita Bruta Acumulada 12M
+                                                <div className="input-wrapper">
+                                                    <label htmlFor="rbt12" className="field-label">
+                                                        <BarChart3 style={{ display: 'inline', width: 10, height: 10, marginRight: 4 }} aria-hidden="true" />
+                                                        RBT12 — Receita Acumulada 12M
                                                     </label>
-                                                    <input type="text" className="input-premium text-right font-black"
-                                                        style={{ borderColor: 'rgba(201,162,39,0.3)', background: 'rgba(201,162,39,0.04)' }}
+                                                    <input 
+                                                        id="rbt12"
+                                                        type="text" 
+                                                        className="input-premium focus-ring text-right font-black"
+                                                        style={{ borderColor: 'rgba(201,162,39,0.3)', background: 'rgba(201,162,39,0.04)', color: 'var(--primary)' }}
                                                         value={clientData.rbt12}
-                                                        onChange={e => updateClient('rbt12', inputBRL(e.target.value))} />
+                                                        onChange={e => updateClient('rbt12', inputBRL(e.target.value))} 
+                                                    />
                                                 </div>
-                                                <div>
-                                                    <label className="field-label">Observações para o Relatório</label>
+                                                <div className="input-wrapper">
+                                                    <label htmlFor="observations" className="field-label">Observações para o Relatório</label>
                                                     <textarea
-                                                        className="input-premium resize-none"
+                                                        id="observations"
+                                                        className="input-premium focus-ring resize-none"
                                                         style={{ minHeight: 80, lineHeight: 1.6 }}
                                                         placeholder="Notas estratégicas, alertas, orientações..."
                                                         value={clientData.observations}
@@ -234,64 +260,64 @@ export default function Home() {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </section>
 
                                 <RevenueForm revenues={clientData.revenues} addRev={addRev} rmRev={rmRev} updRev={updRev} />
                                 <TaxResultsTable taxes={taxes} totalTrib={totalTrib} />
                             </div>
 
                             {/* Right sidebar */}
-                            <div className="space-y-5">
+                            <aside className="space-y-6" aria-label="Painel de Controle">
                                 {/* Action Panel */}
-                                <div
-                                    className="rounded-[20px] p-6 relative overflow-hidden"
-                                    style={{
-                                        background: 'var(--primary)',
-                                        boxShadow: '0 16px 48px -12px rgba(15,35,24,0.5)',
-                                    }}
+                                <section
+                                    className="action-panel"
+                                    aria-labelledby="action-panel-heading"
                                 >
-                                    {/* Glow effects */}
-                                    <div style={{
-                                        position: 'absolute', top: -40, right: -40,
-                                        width: 120, height: 120,
-                                        background: 'radial-gradient(circle, rgba(201,162,39,0.15), transparent 70%)',
-                                        borderRadius: '50%',
-                                    }} />
-                                    <div style={{
-                                        position: 'absolute', bottom: -30, left: -30,
-                                        width: 100, height: 100,
-                                        background: 'radial-gradient(circle, rgba(201,162,39,0.08), transparent 70%)',
-                                        borderRadius: '50%',
-                                    }} />
+                                    {/* Glassmorphism background effect over primary color */}
+                                    <div className="absolute inset-0 z-0 bg-gradient-to-br from-white/10 to-transparent mix-blend-overlay"></div>
 
-                                    <div className="relative">
-                                        <p className="field-label mb-5" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                                            <Sparkles style={{ display: 'inline', width: 10, height: 10, marginRight: 4 }} />
+                                    {/* Action Glow Orbs */}
+                                    <div className="panel-orb" style={{
+                                        top: -40, right: -40, width: 150, height: 150,
+                                        background: 'rgba(201,162,39,0.15)',
+                                    }} aria-hidden="true" />
+                                    <div className="panel-orb" style={{
+                                        bottom: -30, left: -40, width: 120, height: 120,
+                                        background: 'rgba(201,162,39,0.1)',
+                                    }} aria-hidden="true" />
+
+                                    <div className="relative z-10">
+                                        <h2 id="action-panel-heading" className="field-label mb-5" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                                            <Sparkles style={{ display: 'inline', width: 12, height: 12, marginRight: 6, color: 'var(--accent)' }} aria-hidden="true" />
                                             Ações do Sistema
-                                        </p>
+                                        </h2>
 
                                         <button
                                             onClick={runCalculation}
                                             disabled={isCalcLoading}
-                                            className="btn-primary mb-3"
+                                            aria-busy={isCalcLoading}
+                                            className="btn-primary mb-3 focus-ring"
                                         >
                                             {isCalcLoading ? (
                                                 <span className="flex items-center gap-2">
-                                                    <span className="w-4 h-4 rounded-full border-2 border-primary/30 border-t-primary/80 animate-spin" />
+                                                    <span className="w-4 h-4 rounded-full border-2 border-primary/30 border-t-primary/80 animate-spin" aria-hidden="true" />
                                                     Calculando...
                                                 </span>
                                             ) : (
-                                                <><Calculator className="w-4 h-4" /> Calcular Impostos</>
+                                                <><Calculator className="w-4 h-4" aria-hidden="true" /> Calcular Impostos</>
                                             )}
                                         </button>
 
                                         <button
                                             onClick={() => setActiveTab('preview')}
                                             disabled={taxes.length === 0}
-                                            className="btn-secondary"
+                                            aria-disabled={taxes.length === 0}
+                                            title={taxes.length === 0 ? "Calcule os impostos primeiro" : "Visualizar relatório"}
+                                            className="btn-secondary focus-ring tooltip-trigger"
                                         >
-                                            <Printer className="w-4 h-4" style={{ color: 'var(--accent)' }} />
+                                            <Printer className="w-4 h-4" style={{ color: 'var(--accent)' }} aria-hidden="true" />
                                             Ver Relatório PDF
+                                            {taxes.length === 0 && <span className="tooltip-content" role="tooltip">Calcule os impostos primeiro</span>}
                                         </button>
                                     </div>
 
@@ -299,18 +325,18 @@ export default function Home() {
                                         <div className="relative mt-5 pt-4"
                                              style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
                                             <p className="text-[9px] mb-2 font-bold uppercase"
-                                               style={{ color: 'rgba(255,255,255,0.25)', letterSpacing: '0.15em' }}>
+                                               style={{ color: 'rgba(255,255,255,0.4)', letterSpacing: '0.15em' }}>
                                                 Último cálculo
                                             </p>
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-[11px]" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                                            <div className="flex items-center justify-between group">
+                                                <span className="text-[11px]" style={{ color: 'rgba(255,255,255,0.7)' }}>
                                                     {taxes.length} tributo{taxes.length !== 1 ? 's' : ''} apurado{taxes.length !== 1 ? 's' : ''}
                                                 </span>
-                                                <ChevronRight style={{ width: 14, height: 14, color: 'var(--accent)' }} />
+                                                <ChevronRight className="transition-transform group-hover:translate-x-1" style={{ width: 14, height: 14, color: 'var(--accent)' }} aria-hidden="true" />
                                             </div>
                                         </div>
                                     )}
-                                </div>
+                                </section>
 
                                 <SefazPasteSection
                                     showSefazPaste={showSefazPaste}
@@ -321,28 +347,28 @@ export default function Home() {
                                     sefazHistory={clientData.sefazHistory || []}
                                     setSefazHistory={h => updateClient('sefazHistory', h)}
                                 />
-                            </div>
+                            </aside>
                         </div>
-                    </>
+                    </div>
                 ) : (
                     /* PDF Preview */
-                    <div className="rounded-[24px] overflow-hidden" style={{ border: '1px solid var(--border)', background: '#fff' }}>
+                    <section aria-label="Visualização do PDF" className="pdf-preview-frame animate-fadeInUp">
                         {/* Preview Header */}
-                        <div className="flex items-center justify-between px-8 py-5"
-                             style={{ borderBottom: '1px solid var(--border)', background: 'linear-gradient(135deg, #f9fafb 0%, #ffffff 100%)' }}>
+                        <div className="pdf-toolbar">
                             <div>
-                                <div className="section-heading mb-1">
-                                    <FileText style={{ width: 14, height: 14, color: 'var(--accent)' }} />
+                                <h2 className="section-heading mb-1 text-[0.8rem]">
+                                    <FileText style={{ width: 16, height: 16, color: 'var(--accent)' }} aria-hidden="true" />
                                     Pré-visualização do Relatório
-                                </div>
-                                <p className="text-xs mt-1" style={{ color: 'var(--text-muted)', marginLeft: '1.6rem' }}>
-                                    {clientData.clientName || 'Cliente'} — Competência {MONTHS[(parseInt(clientData.compMonth) || 1) - 1]} / {clientData.compYear}
+                                </h2>
+                                <p className="text-sm font-medium mt-1" style={{ color: 'var(--text-muted)', marginLeft: '1.75rem' }}>
+                                    {clientData.clientName || 'Cliente'} <span className="opacity-50 mx-2">—</span> Competência {MONTHS[(parseInt(clientData.compMonth) || 1) - 1]} / {clientData.compYear}
                                 </p>
                             </div>
                             <div className="flex items-center gap-3">
                                 <button
                                     onClick={() => setActiveTab('form')}
-                                    className="px-4 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all"
+                                    aria-label="Voltar para a tela de preenchimento de dados"
+                                    className="px-4 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all shadow-sm hover:shadow-md focus-ring"
                                     style={{ background: '#f3f6f4', color: 'var(--text-muted)', letterSpacing: '0.1em' }}
                                 >
                                     ← Voltar
@@ -358,16 +384,18 @@ export default function Home() {
                                             borderRadius: 14,
                                             background: 'linear-gradient(135deg, var(--accent), var(--accent-light))',
                                             color: 'var(--primary)',
-                                            fontSize: '0.7rem',
+                                            fontSize: '0.75rem',
                                             fontWeight: 900,
                                             textTransform: 'uppercase',
                                             letterSpacing: '0.1em',
                                             textDecoration: 'none',
                                             boxShadow: '0 6px 20px rgba(201,162,39,0.35)',
+                                            transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
                                         }}
+                                        className="focus-ring hover:scale-105 hover:shadow-[0_12px_32px_-6px_rgba(201,162,39,0.5)] active:scale-95"
                                     >
                                         {({ loading }) => (
-                                            <><Printer style={{ width: 16, height: 16 }} />
+                                            <><Printer style={{ width: 16, height: 16 }} aria-hidden="true" />
                                             {loading ? 'Processando...' : 'Baixar PDF'}</>
                                         )}
                                     </PDFDownloadLink>
@@ -376,14 +404,23 @@ export default function Home() {
                         </div>
 
                         {/* PDF Viewer */}
-                        <div style={{ height: '1100px', background: '#3c3c3c' }}>
+                        <div className="pdf-viewer-container" style={{ height: '1100px' }}>
+                            {/* Loading Skeleton */}
+                            {(!isClient || !pdfDocument) && (
+                                <div className="absolute inset-0 p-8 flex flex-col gap-4 z-0">
+                                    <div className="skeleton h-8 w-1/3 mb-4 rounded-lg"></div>
+                                    <div className="skeleton h-32 w-full rounded-xl"></div>
+                                    <div className="skeleton h-[400px] w-full rounded-xl"></div>
+                                </div>
+                            )}
+                            
                             {isClient && pdfDocument && (
-                                <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
+                                <PDFViewer width="100%" height="100%" style={{ border: 'none' }} className="relative z-10" title="Visualizador do Relatório em PDF">
                                     {pdfDocument}
                                 </PDFViewer>
                             )}
                         </div>
-                    </div>
+                    </section>
                 )}
             </main>
         </div>
