@@ -341,9 +341,9 @@ export const RelatorioPDF = ({ data, taxes }: { data: ClientData, taxes: TaxResu
                     </View>
 
                     {taxList.map((t, idx) => {
-                        const isNormal = t.tax.includes('Normal');
-                        const isST = t.modality?.includes('ST') || t.tax.includes('ST');
-                        const isMono = t.modality?.includes('Mono') || t.tax.includes('Mono');
+                        const isNormal = t.tax.toUpperCase().includes('NORMAL');
+                        const isST = t.tax.toUpperCase().includes('ST');
+                        const isMono = t.tax.toUpperCase().includes('MONO');
                         
                         let label = 'Normal';
                         if (isST && isMono) label = 'ST + Mono';
